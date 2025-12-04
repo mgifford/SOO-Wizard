@@ -1,0 +1,225 @@
+version: 1
+meta:
+  title: "SOO Wizard v2"
+  description: "Guided statutory SOO authoring with readiness gates, vision structuring, and vendor PWS request generation."
+
+steps:
+
+  - id: readiness
+    title: "Readiness assessment"
+    help: "If you lack a Product Owner or access to end users, the tool will advise against a full agile contract and suggest a pilot or training first."
+    fields:
+      - id: has_po
+        type: textarea
+        label: "Is your team trained in Agile and do you already have a dedicated Product Owner for this contract?"
+        hint: "Yes/No and brief explanation. A Product Owner has authority to prioritize features and make trade-offs."
+        rows: 4
+      - id: end_user_access
+        type: textarea
+        label: "Do you have access to end users for research during SOO development AND ongoing feedback after contract award?"
+        hint: "Yes/No and explain timing. Best case: access now for discovery and later for validation."
+        rows: 4
+      - id: approvals_cycle
+        type: textarea
+        label: "Describe approvals and release constraints (what slows iteration and when releases can happen)."
+        hint: "E.g., quarterly release windows, security gates take 6 weeks, requires 3 levels of approval. Be specific about timing."
+        rows: 4
+
+  - id: readiness_results
+    title: "Readiness Results"
+    help: "Based on your readiness answers, the wizard recommends a contracting strategy. Review and confirm before proceeding."
+    fields:
+      - id: readiness_summary
+        type: textarea
+        label: "Readiness Summary (auto-generated)"
+        hint: "Read-only. Describes your readiness posture and recommends a contracting path."
+        rows: 8
+        readonly: true
+      - id: confirm_readiness
+        type: checkbox
+        label: "I understand the readiness assessment and am ready to proceed."
+        required: true
+
+  - id: vision
+    title: "Product Vision Board (3–5 year true north)"
+    help: "Focus on outcomes and user experience. Do not describe tasks or solutions."
+    fields:
+      - id: vision
+        type: textarea
+        label: "Vision"
+        hint: "3–5 years. A clear outcome statement."
+        rows: 4
+      - id: target_group
+        type: textarea
+        label: "Target group"
+        hint: "Who are the primary users?"
+        rows: 3
+      - id: needs
+        type: textarea
+        label: "Needs (current state pain points)"
+        hint: "Describe what is broken today and why it matters."
+        rows: 6
+      - id: product
+        type: textarea
+        label: "Product (key capabilities framed as outcomes, not features)"
+        rows: 5
+      - id: business_goals
+        type: textarea
+        label: "Business goals"
+        hint: "Strategic outcomes you expect from this product"
+        rows: 4
+
+  - id: vision_moore
+    title: "Product Vision: Moore Template"
+    help: "Use Geoffrey Moore's sentence structure to refine your vision into a focused, differentiated product statement."
+    fields:
+      - id: target_customer
+        type: textarea
+        label: "For [target customer]"
+        hint: "Who is the target customer segment?"
+        rows: 3
+      - id: customer_need
+        type: textarea
+        label: "who [need/problem]"
+        hint: "What is their critical need or problem?"
+        rows: 3
+      - id: product_name
+        type: text
+        label: "Product name"
+        hint: "What is the name of your product or service?"
+      - id: product_category
+        type: text
+        label: "Product category"
+        hint: "Is it a platform, service, tool, capability?"
+      - id: key_benefit
+        type: textarea
+        label: "Key benefit"
+        hint: "What is the primary outcome for the customer?"
+        rows: 3
+      - id: alternative
+        type: textarea
+        label: "Unlike [alternative]"
+        hint: "What is the status quo or competitor you're replacing?"
+        rows: 3
+      - id: differentiation
+        type: textarea
+        label: "Our product [primary differentiation]"
+        hint: "What makes your solution unique?"
+        rows: 3
+
+  - id: methodology
+    title: "Methodology selector"
+    help: "This does not create requirements. It changes language and suggestions later."
+    fields:
+      - id: context
+        type: select
+        label: "Primary contracting context"
+        options:
+          - value: "new_dev"
+            label: "New development"
+          - value: "legacy_maint"
+            label: "Maintenance of legacy system"
+          - value: "ops_support"
+            label: "Operations and support"
+          - value: "discovery"
+            label: "Discovery or research"
+          - value: "migration"
+            label: "Migration"
+        default: "new_dev"
+
+  - id: soo_inputs
+    title: "SOO inputs (Objectives and Constraints only)"
+    help: "Tasks and requirements are blocked here. Objectives are outcomes. Constraints are boundaries."
+    gateLint: true
+    fields:
+      - id: problem_context
+        type: textarea
+        label: "Problem context (current state only)"
+        hint: "No solutioning. Describe impacts and gaps. Example: 'Citizens cannot renew licenses online, requiring 4-6 week wait in-person.'"
+        rows: 7
+      - id: objectives
+        type: textarea
+        label: "Objectives (one per line)"
+        hint: "Outcomes only. Example: 'Reduce time-to-complete license renewal from 4–6 weeks to under 2 hours'."
+        rows: 8
+      - id: constraints
+        type: textarea
+        label: "Constraints (one per line)"
+        hint: "Compliance, schedule, environment, data handling, standards. Example: 'Comply with FedRAMP Moderate' or 'Deploy by Q4 2025' or 'Operate within existing Azure environment'."
+        rows: 8
+
+  - id: soo_review_gate
+    title: "SOO Review Gate"
+    help: "Before generating the draft, review your SOO for compliance. Check each box to confirm."
+    gateLint: false
+    fields:
+      - id: check_no_tasks
+        type: checkbox
+        label: "✓ No tasks, deliverables, or requirements language (shall, must, need to, build, implement, etc.)"
+        required: true
+      - id: check_problem_current_state
+        type: checkbox
+        label: "✓ Problem statement describes only the current state and gaps, not solutions"
+        required: true
+      - id: check_objectives_outcomes
+        type: checkbox
+        label: "✓ Objectives are outcome-based (e.g., 'Reduce X from Y to Z') and not task-based"
+        required: true
+      - id: check_constraints_boundaries
+        type: checkbox
+        label: "✓ Constraints are boundaries: compliance rules, schedule deadlines, environment limits, not tasks"
+        required: true
+      - id: check_vision_not_solution
+        type: checkbox
+        label: "✓ Vision and objectives stay outcome-focused; no technology selection or design decisions"
+        required: true
+
+  - id: generate
+    title: "Generate SOO draft"
+    help: "The tool will call your local AI to draft the SOO, linted for tasks/requirements. You can edit the output and regenerate."
+    fields: []
+
+  - id: soo_output
+    title: "SOO Draft Review and Edit"
+    help: "Review the generated SOO. You can edit it here. If you make changes, regenerate to re-lint."
+    fields:
+      - id: soo_draft
+        type: textarea
+        label: "SOO Markdown (editable)"
+        hint: "Edit if needed. Click 'Regenerate' to rewrite with AI, or 'Next' to accept."
+        rows: 15
+
+  - id: pws_vendor_pack
+    title: "Vendor PWS Request Pack"
+    help: "Generate a vendor-facing instruction pack that asks them to propose a PWS responding to your SOO."
+    fields:
+      - id: pws_pack_preview
+        type: textarea
+        label: "PWS Request Pack (Markdown, read-only)"
+        hint: "This pack will be exported. It instructs vendors on the SOO and what you expect in their PWS response."
+        rows: 12
+        readonly: true
+
+  - id: export_center
+    title: "Export Center"
+    help: "Download your complete SOO Wizard bundle: inputs, SOO, PWS request pack, audit log, and prompts used."
+    fields:
+      - id: export_summary
+        type: textarea
+        label: "Export Summary"
+        hint: "Shows what will be included in your download."
+        rows: 6
+        readonly: true
+      - id: include_audit
+        type: checkbox
+        label: "Include audit.json (readiness answers, lint results, AI call details)"
+        default: true
+      - id: include_prompts
+        type: checkbox
+        label: "Include prompts.txt (all AI prompts used for transparency)"
+        default: true
+
+meta_lint:
+  description: "Lint is applied to the soo_inputs step to block tasks/requirements/deliverables."
+  description_2: "Lint is also applied to generated SOO output before the user sees it."
+  description_3: "The soo_review_gate step is manual but required; it cannot be auto-passed."

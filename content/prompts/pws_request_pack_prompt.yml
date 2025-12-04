@@ -1,0 +1,11 @@
+id: pws_request_pack
+title: Vendor PWS Request Pack Generator
+version: 1.0
+description: Generates vendor instruction pack
+
+template: |
+  Generate a vendor instruction pack for responding to this SOO:
+  
+  {{soo_draft}}
+  
+  Include instructions for vendors on how to propose their PWS.

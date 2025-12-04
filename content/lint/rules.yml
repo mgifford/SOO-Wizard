@@ -1,0 +1,149 @@
+# SOO Wizard Lint Rules v2 (Simplified - Dec 2 2025)
+
+version: 1
+
+lint:
+  disallow:
+    - id: REQ_SHALL
+      severity: error
+      context: soo
+      pattern: '\bshall\b'
+      message: "Use objectives, not requirements"
+    
+    - id: REQ_MUST
+      severity: error
+      context: soo
+      pattern: '\bmust\b'
+      message: "Use objectives, not requirements"
+    
+    - id: REQ_REQUIRED
+      severity: error
+      context: soo
+      pattern: '\brequired\b'
+      message: "Use objectives, not requirements"
+    
+    - id: REQ_NEED
+      severity: error
+      context: soo
+      pattern: '\bneed to\b'
+      message: "Use objectives, not requirements"
+    
+    - id: REQ_WILL
+      severity: error
+      context: soo
+      pattern: '\bwill be required\b'
+      message: "Use objectives, not requirements"
+    
+    - id: TASK_BUILD
+      severity: error
+      context: soo
+      pattern: '\bbuild\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_DEVELOP
+      severity: error
+      context: soo
+      pattern: '\bdevelop\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_IMPLEMENT
+      severity: error
+      context: soo
+      pattern: '\bimplement\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_CONFIGURE
+      severity: error
+      context: soo
+      pattern: '\bconfigure\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_MIGRATE
+      severity: error
+      context: soo
+      pattern: '\bmigrate\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_DESIGN
+      severity: error
+      context: soo
+      pattern: '\bdesign\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_CODE
+      severity: error
+      context: soo
+      pattern: '\bcode\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_CREATE
+      severity: error
+      context: soo
+      pattern: '\bcreate\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_DELIVER
+      severity: error
+      context: soo
+      pattern: '\bdeliver\b'
+      message: "Remove task verbs"
+    
+    - id: TASK_WRITE
+      severity: error
+      context: soo
+      pattern: '\bwrite\b'
+      message: "Remove task verbs"
+    
+    - id: DELIV_SOW
+      severity: error
+      context: soo
+      pattern: '\bSOW\b'
+      message: "Remove deliverable references"
+    
+    - id: DELIV_PWS
+      severity: error
+      context: soo
+      pattern: '\bPWS\b'
+      message: "Remove deliverable references"
+    
+    - id: DELIV_STORIES
+      severity: error
+      context: soo
+      pattern: '\buser stories\b'
+      message: "Remove deliverable references"
+    
+    - id: DELIV_BACKLOG
+      severity: error
+      context: soo
+      pattern: '\bbacklog\b'
+      message: "Remove deliverable references"
+    
+    - id: DELIV_PROTOTYPE
+      severity: error
+      context: soo
+      pattern: '\bprototype\b'
+      message: "Remove deliverable references"
+    
+    - id: VISION_SOLUTION
+      severity: warning
+      context: vision
+      pattern: '\bthe solution\b'
+      message: "Avoid solution references in vision"
+    
+    - id: VISION_SOLUTIONING
+      severity: warning
+      context: vision
+      pattern: '\bsolutioning\b'
+      message: "Avoid solutioning language in vision"
+    
+    - id: VISION_APPROACH
+      severity: warning
+      context: vision
+      pattern: '\bour approach\b'
+      message: "Focus on outcomes, not approach"
+    
+    - id: VISION_METHODOLOGY
+      severity: warning
+      context: vision
+      pattern: '\bour methodology\b'
+      message: "Focus on outcomes, not methodology"

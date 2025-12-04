@@ -1,0 +1,14 @@
+id: soo_draft
+title: SOO Draft Generator
+version: 1.1
+description: Generates a compliant Federal SOO
+
+template: |
+  Generate a Federal Statement of Objectives based on these inputs:
+  
+  Vision: {{vision}}
+  Problem: {{problem_context}}
+  Objectives: {{objectives}}
+  Constraints: {{constraints}}
+  
+  Output a compliant SOO in Markdown format.

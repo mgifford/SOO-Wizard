@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YAML Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+</head>
+<body>
+  <h1>YAML Parse Test</h1>
+  <div id="result"></div>
+  <script>
+    async function test() {
+      const url = './content/lint/rules.yml?t=' + Date.now();
+      try {
+        const resp = await fetch(url);
+        const text = await resp.text();
+        console.log('Fetched', text.length, 'bytes');
+        console.log('First 100 chars:', text.substring(0, 100));
+        
+        const data = window.jsyaml.load(text);
+        document.getElementById('result').innerHTML = `
+          <p style="color: green;">✅ YAML parsed successfully!</p>
+          <p>Version: ${data.version}</p>
+          <p>Disallow rules: ${data.lint.disallow.length}</p>
+          <p>Warn rules: ${data.lint.warn.length}</p>
+        `;
+      } catch (e) {
+        document.getElementById('result').innerHTML = `
+          <p style="color: red;">❌ Error: ${e.message}</p>
+          <pre>${e.stack}</pre>
+        `;
+      }
+    }
+    test();
+  </script>
+</body>
+</html>

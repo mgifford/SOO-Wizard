@@ -1,0 +1,11 @@
+id: soo_rewrite
+title: SOO Rewrite with Compliance
+version: 1.0
+description: Rewrites SOO to enforce compliance
+
+template: |
+  Rewrite this SOO draft to fix any compliance violations:
+  
+  {{soo_draft}}
+  
+  Remove tasks, requirements, and deliverables. Focus on objectives and outcomes.
