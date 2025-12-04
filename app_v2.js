@@ -14,7 +14,16 @@ const state = {
   prompts: {},
   stepIndex: 0,
   answers: loadState() || {},
-  audit: { events: [] }
+  audit: { 
+    metadata: {
+      sessionStart: new Date().toISOString(),
+      wizardVersion: "2.0"
+    },
+    readiness: {},
+    lintResults: {},
+    events: [],
+    stepCompletions: []
+  }
 };
 
 function loadState() {
@@ -259,6 +268,24 @@ function render() {
   if (step.id === "readiness_results") {
     const summary = analyzeReadiness();
     setAnswer("readiness_results", "readiness_summary", summary);
+    
+    // Capture readiness assessment in audit
+    const has_po = getAnswer("readiness", "has_po", "").toLowerCase();
+    const end_user = getAnswer("readiness", "end_user_access", "").toLowerCase();
+    const hasPo = has_po.includes("yes");
+    const hasUsers = end_user.includes("yes");
+    
+    let readinessLevel = "LOW";
+    if (hasPo && hasUsers) readinessLevel = "STRONG";
+    else if (hasPo || hasUsers) readinessLevel = "MEDIUM";
+    
+    state.audit.readiness = {
+      timestamp: new Date().toISOString(),
+      level: readinessLevel,
+      has_product_owner: hasPo,
+      has_end_user_access: hasUsers,
+      summary: summary
+    };
   }
 
   // Special handling for soo_review_gate: checkboxes are just UI, no auto-action
@@ -846,6 +873,23 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
     // Gate: Lint check on soo_inputs
     if (step.gateLint && step.id !== "generate") {
       const lint = lintStep(step);
+      
+      // Log lint results to audit
+      state.audit.lintResults[step.id] = {
+        timestamp: new Date().toISOString(),
+        stepId: step.id,
+        stepTitle: step.title,
+        hasErrors: lint.summary.hasErrors,
+        errorCount: lint.summary.errorCount,
+        warnCount: lint.summary.warnCount,
+        findings: lint.findings.map(f => ({
+          severity: f.severity,
+          ruleId: f.id,
+          message: f.message,
+          match: f.match
+        }))
+      };
+      
       if (lint.summary.hasErrors) {
         messages.appendChild(renderLintAlert(lint));
         return;
@@ -866,6 +910,23 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
         `));
         return;
       }
+      
+      // Lint the draft and capture results
+      const draftLint = lintText(draft);
+      state.audit.lintResults['soo_draft'] = {
+        timestamp: new Date().toISOString(),
+        stepId: 'generate',
+        documentType: 'soo_draft',
+        hasErrors: draftLint.summary.hasErrors,
+        errorCount: draftLint.summary.errorCount,
+        warnCount: draftLint.summary.warnCount,
+        findings: draftLint.findings.map(f => ({
+          severity: f.severity,
+          ruleId: f.id,
+          message: f.message,
+          match: f.match
+        }))
+      };
     }
 
     if (step.id === "soo_output") {
@@ -880,39 +941,259 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
       // Trigger the bundle download
       const sooMd = getAnswer("soo_output", "soo_draft", "");
       const pwsMd = getAnswer("pws_vendor_pack", "pws_pack_preview", "");
+      
+      // Finalize audit metadata
+      state.audit.metadata.sessionEnd = new Date().toISOString();
+      state.audit.metadata.totalStepsCompleted = state.audit.stepCompletions.length;
+      state.audit.metadata.aiCallsAttempted = state.audit.events.filter(e => e.event.includes('generation')).length;
+      state.audit.metadata.aiCallsSuccessful = state.audit.events.filter(e => e.event.includes('success')).length;
+      
       const auditJson = JSON.stringify(state.audit, null, 2);
-      const promptsTxt = [state.prompts.soo?.template, state.prompts.pws?.template, state.prompts.rewrite?.template].filter(Boolean).join('\n\n---\n\n');
+      
+      // Build prompts.txt with actual values substituted
+      const buildPromptsFile = () => {
+        const inputs = {
+          vision: getAnswer("vision", "vision", ""),
+          target_group: getAnswer("vision", "target_group", ""),
+          needs: getAnswer("vision", "needs", ""),
+          product: getAnswer("vision", "product", ""),
+          business_goals: getAnswer("vision", "business_goals", ""),
+          target_customer: getAnswer("vision_moore", "target_customer", ""),
+          customer_need: getAnswer("vision_moore", "customer_need", ""),
+          product_name: getAnswer("vision_moore", "product_name", ""),
+          product_category: getAnswer("vision_moore", "product_category", ""),
+          key_benefit: getAnswer("vision_moore", "key_benefit", ""),
+          alternative: getAnswer("vision_moore", "alternative", ""),
+          differentiation: getAnswer("vision_moore", "differentiation", ""),
+          has_po: getAnswer("readiness", "has_po", ""),
+          end_user_access: getAnswer("readiness", "end_user_access", ""),
+          approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+          context: getAnswer("methodology", "context", "new_dev"),
+          problem_context: getAnswer("soo_inputs", "problem_context", ""),
+          objectives: getAnswer("soo_inputs", "objectives", ""),
+          constraints: getAnswer("soo_inputs", "constraints", ""),
+          soo_draft: sooMd
+        };
+        
+        const sections = [];
+        
+        if (state.prompts.soo?.template) {
+          sections.push("# SOO Generation Prompt\n\n" + renderTemplate(state.prompts.soo.template, inputs));
+        }
+        
+        if (state.prompts.pws?.template) {
+          sections.push("# PWS Request Pack Generation Prompt\n\n" + renderTemplate(state.prompts.pws.template, inputs));
+        }
+        
+        if (state.prompts.rewrite?.template) {
+          sections.push("# SOO Rewrite Prompt\n\n" + renderTemplate(state.prompts.rewrite.template, inputs));
+        }
+        
+        return sections.join('\n\n---\n\n');
+      };
+      
+      const promptsTxt = buildPromptsFile();
       function markdownToHtml(md) {
-        let html = md
-          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-          .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-          .replace(/\*\*(.*?)\*\*/gim, '<b>$1</b>')
-          .replace(/\*(.*?)\*/gim, '<i>$1</i>')
-          .replace(/^\s*[-*] (.*$)/gim, '<li>$1</li>')
-          .replace(/\n/g, '<br>');
-        html = html.replace(/(<li>.*?<\/li>)/gims, '<ul>$1</ul>');
-        return `<html><body>${html}</body></html>`;
+        const lines = md.split('\n');
+        let html = '';
+        let inTable = false;
+        let tableRows = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          
+          // Detect table rows (contain | characters)
+          if (line.includes('|') && line.trim().startsWith('|')) {
+            if (!inTable) {
+              inTable = true;
+              tableRows = [];
+            }
+            // Skip separator rows (|---|---|)
+            if (!line.match(/^\|\s*[-:]+\s*\|/)) {
+              tableRows.push(line);
+            }
+          } else {
+            // End of table - render it
+            if (inTable && tableRows.length > 0) {
+              html += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin:1em 0;">\n';
+              tableRows.forEach((row, rowIdx) => {
+                const cells = row.split('|').filter(c => c.trim());
+                const tag = rowIdx === 0 ? 'th' : 'td';
+                html += '<tr>';
+                cells.forEach(cell => {
+                  let cellContent = cell.trim()
+                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                    .replace(/\*(.*?)\*/g, '<i>$1</i>');
+                  html += `<${tag}>${cellContent}</${tag}>`;
+                });
+                html += '</tr>\n';
+              });
+              html += '</table>\n';
+              inTable = false;
+              tableRows = [];
+            }
+            
+            // Process regular lines
+            if (line.startsWith('# ')) {
+              html += '<h1>' + line.substring(2) + '</h1>\n';
+            } else if (line.startsWith('## ')) {
+              html += '<h2>' + line.substring(3) + '</h2>\n';
+            } else if (line.startsWith('### ')) {
+              html += '<h3>' + line.substring(4) + '</h3>\n';
+            } else if (line.match(/^\s*[-*]\s+/)) {
+              html += '<li>' + line.replace(/^\s*[-*]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') + '</li>\n';
+            } else if (line.trim()) {
+              html += '<p>' + line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') + '</p>\n';
+            } else {
+              html += '<br>\n';
+            }
+          }
+        }
+        
+        // Handle table at end of document
+        if (inTable && tableRows.length > 0) {
+          html += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin:1em 0;">\n';
+          tableRows.forEach((row, rowIdx) => {
+            const cells = row.split('|').filter(c => c.trim());
+            const tag = rowIdx === 0 ? 'th' : 'td';
+            html += '<tr>';
+            cells.forEach(cell => {
+              let cellContent = cell.trim()
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\*(.*?)\*/g, '<i>$1</i>');
+              html += `<${tag}>${cellContent}</${tag}>`;
+            });
+            html += '</tr>\n';
+          });
+          html += '</table>\n';
+        }
+        
+        // Wrap list items in <ul> tags
+        html = html.replace(/(<li>.*?<\/li>\n)+/gs, '<ul>$&</ul>\n');
+        
+        return `<html><head><meta charset="UTF-8"><title>SOO Document</title></head><body>${html}</body></html>`;
       }
-      function textToDocx(text) {
-        const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-          <w:body>
-            <w:p><w:r><w:t>${escapeHtml(text)}</w:t></w:r></w:p>
-          </w:body>
-        </w:document>`;
-        return xml;
+      function markdownToRtf(md) {
+        // RTF requires ASCII encoding - convert special characters
+        function escapeRtf(text) {
+          return text
+            // Common Unicode replacements
+            .replace(/'/g, "'")  // Smart single quotes
+            .replace(/'/g, "'")
+            .replace(/"/g, '"')  // Smart double quotes
+            .replace(/"/g, '"')
+            .replace(/—/g, '--') // Em dash
+            .replace(/–/g, '-')  // En dash
+            .replace(/…/g, '...') // Ellipsis
+            .replace(/£/g, 'GBP') // Pound
+            .replace(/€/g, 'EUR') // Euro
+            .replace(/©/g, '(c)') // Copyright
+            .replace(/®/g, '(R)') // Registered
+            .replace(/™/g, '(TM)') // Trademark
+            .replace(/°/g, ' degrees') // Degree
+            .replace(/±/g, '+/-') // Plus-minus
+            .replace(/×/g, 'x')   // Multiplication
+            .replace(/÷/g, '/')   // Division
+            .replace(/≤/g, '<=')  // Less than or equal
+            .replace(/≥/g, '>=')  // Greater than or equal
+            .replace(/≠/g, '!=')  // Not equal
+            .replace(/²/g, '2')   // Superscript 2
+            .replace(/³/g, '3')   // Superscript 3
+            .replace(/₂/g, '2')   // Subscript 2 (CO2)
+            .replace(/\u00A0/g, ' ') // Non-breaking space
+            // Remove any remaining non-ASCII characters
+            .replace(/[^\x00-\x7F]/g, '');
+        }
+        
+        let rtf = '{\\rtf1\\ansi\\deff0\n';
+        rtf += '{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n';
+        const lines = md.split('\n');
+        let inTable = false;
+        let tableRows = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.includes('|') && line.trim().startsWith('|')) {
+            if (!inTable) {
+              inTable = true;
+              tableRows = [];
+            }
+            if (!line.match(/^\|\s*[-:]+\s*\|/)) {
+              tableRows.push(line);
+            }
+          } else {
+            if (inTable && tableRows.length > 0) {
+              const cols = tableRows[0].split('|').filter(c => c.trim()).length;
+              const colWidth = Math.floor(9000 / cols);
+              tableRows.forEach((row, rowIdx) => {
+                const cells = row.split('|').filter(c => c.trim());
+                rtf += '\\trowd\\trgaph108\\trleft-108';
+                for (let c = 0; c < cells.length; c++) {
+                  rtf += `\\cellx${(c + 1) * colWidth}`;
+                }
+                rtf += '\n';
+                cells.forEach(cell => {
+                  const cleanCell = escapeRtf(cell.trim()).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0');
+                  if (rowIdx === 0) {
+                    rtf += '\\pard\\intbl\\b ' + cleanCell + '\\b0\\cell\n';
+                  } else {
+                    rtf += '\\pard\\intbl ' + cleanCell + '\\cell\n';
+                  }
+                });
+                rtf += '\\row\n';
+              });
+              rtf += '\\pard\\par\n';
+              inTable = false;
+              tableRows = [];
+            }
+            if (line.startsWith('# ')) {
+              rtf += '\\pard\\fs32\\b ' + escapeRtf(line.substring(2).replace(/\*\*/g, '')) + '\\b0\\fs24\\par\n';
+            } else if (line.startsWith('## ')) {
+              rtf += '\\pard\\fs28\\b ' + escapeRtf(line.substring(3).replace(/\*\*/g, '')) + '\\b0\\fs24\\par\n';
+            } else if (line.startsWith('### ')) {
+              rtf += '\\pard\\fs26\\b ' + escapeRtf(line.substring(4).replace(/\*\*/g, '')) + '\\b0\\fs24\\par\n';
+            } else if (line.match(/^[-*]\s+/)) {
+              rtf += '\\pard\\fi-360\\li720 \\bullet ' + escapeRtf(line.replace(/^[-*]\s+/, '')).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0') + '\\par\n';
+            } else if (line.trim()) {
+              rtf += '\\pard ' + escapeRtf(line).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0') + '\\par\n';
+            } else {
+              rtf += '\\par\n';
+            }
+          }
+        }
+        if (inTable && tableRows.length > 0) {
+          const cols = tableRows[0].split('|').filter(c => c.trim()).length;
+          const colWidth = Math.floor(9000 / cols);
+          tableRows.forEach((row, rowIdx) => {
+            const cells = row.split('|').filter(c => c.trim());
+            rtf += '\\trowd\\trgaph108\\trleft-108';
+            for (let c = 0; c < cells.length; c++) {
+              rtf += `\\cellx${(c + 1) * colWidth}`;
+            }
+            rtf += '\n';
+            cells.forEach(cell => {
+              const cleanCell = escapeRtf(cell.trim()).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0');
+              if (rowIdx === 0) {
+                rtf += '\\pard\\intbl\\b ' + cleanCell + '\\b0\\cell\n';
+              } else {
+                rtf += '\\pard\\intbl ' + cleanCell + '\\cell\n';
+              }
+            });
+            rtf += '\\row\n';
+          });
+        }
+        rtf += '}';
+        return rtf;
       }
       const files = {
-        "inputs.yml": buildInputsYml(),
-        "outputs/soo.md": sooMd,
-        "outputs/soo.html": markdownToHtml(sooMd),
-        "outputs/soo.docx.xml": textToDocx(sooMd),
-        "outputs/pws_request_pack.md": pwsMd,
-        "outputs/pws_request_pack.html": markdownToHtml(pwsMd),
-        "outputs/pws_request_pack.docx.xml": textToDocx(pwsMd),
-        "audit.json": auditJson,
-        "prompts.txt": promptsTxt
+        "soo.md": sooMd,
+        "soo.html": markdownToHtml(sooMd),
+        "soo.rtf": markdownToRtf(sooMd),
+        "pws_request_pack.md": pwsMd,
+        "pws_request_pack.html": markdownToHtml(pwsMd),
+        "pws_request_pack.rtf": markdownToRtf(pwsMd),
+        "source/inputs.yml": buildInputsYml(),
+        "source/audit.json": auditJson,
+        "source/prompts.txt": promptsTxt
       };
       // Generate filename with product name and timestamp
       const productName = getAnswer("vision_moore", "product_name", "") || getAnswer("vision", "product", "") || "SOO";
@@ -930,6 +1211,14 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
       return;
     }
 
+    // Log step completion
+    state.audit.stepCompletions.push({
+      timestamp: new Date().toISOString(),
+      stepId: step.id,
+      stepTitle: step.title,
+      stepNumber: state.stepIndex + 1
+    });
+    
     state.stepIndex = Math.min(state.flow.steps.length - 1, state.stepIndex + 1);
     render();
     });
@@ -955,25 +1244,213 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
   const auditJson = JSON.stringify(state.audit, null, 2);
   const promptsTxt = [state.prompts.soo?.template, state.prompts.pws?.template, state.prompts.rewrite?.template].filter(Boolean).join('\n\n---\n\n');
   function markdownToHtml(md) {
-    let html = md
-      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      .replace(/\*\*(.*?)\*\*/gim, '<b>$1</b>')
-      .replace(/\*(.*?)\*/gim, '<i>$1</i>')
-      .replace(/^\s*[-*] (.*$)/gim, '<li>$1</li>')
-      .replace(/\n/g, '<br>');
-    html = html.replace(/(<li>.*?<\/li>)/gims, '<ul>$1</ul>');
-    return `<html><body>${html}</body></html>`;
+    const lines = md.split('\n');
+    let html = '';
+    let inTable = false;
+    let tableRows = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Detect table rows (contain | characters)
+      if (line.includes('|') && line.trim().startsWith('|')) {
+        if (!inTable) {
+          inTable = true;
+          tableRows = [];
+        }
+        // Skip separator rows (|---|---|)
+        if (!line.match(/^\|\s*[-:]+\s*\|/)) {
+          tableRows.push(line);
+        }
+      } else {
+        // End of table - render it
+        if (inTable && tableRows.length > 0) {
+          html += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin:1em 0;">\n';
+          tableRows.forEach((row, rowIdx) => {
+            const cells = row.split('|').filter(c => c.trim());
+            const tag = rowIdx === 0 ? 'th' : 'td';
+            html += '<tr>';
+            cells.forEach(cell => {
+              let cellContent = cell.trim()
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\*(.*?)\*/g, '<i>$1</i>');
+              html += `<${tag}>${cellContent}</${tag}>`;
+            });
+            html += '</tr>\n';
+          });
+          html += '</table>\n';
+          inTable = false;
+          tableRows = [];
+        }
+        
+        // Process regular lines
+        if (line.startsWith('# ')) {
+          html += '<h1>' + line.substring(2) + '</h1>\n';
+        } else if (line.startsWith('## ')) {
+          html += '<h2>' + line.substring(3) + '</h2>\n';
+        } else if (line.startsWith('### ')) {
+          html += '<h3>' + line.substring(4) + '</h3>\n';
+        } else if (line.match(/^\s*[-*]\s+/)) {
+          html += '<li>' + line.replace(/^\s*[-*]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') + '</li>\n';
+        } else if (line.trim()) {
+          html += '<p>' + line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') + '</p>\n';
+        } else {
+          html += '<br>\n';
+        }
+      }
+    }
+    
+    // Handle table at end of document
+    if (inTable && tableRows.length > 0) {
+      html += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin:1em 0;">\n';
+      tableRows.forEach((row, rowIdx) => {
+        const cells = row.split('|').filter(c => c.trim());
+        const tag = rowIdx === 0 ? 'th' : 'td';
+        html += '<tr>';
+        cells.forEach(cell => {
+          let cellContent = cell.trim()
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\*(.*?)\*/g, '<i>$1</i>');
+          html += `<${tag}>${cellContent}</${tag}>`;
+        });
+        html += '</tr>\n';
+      });
+      html += '</table>\n';
+    }
+    
+    // Wrap list items in <ul> tags
+    html = html.replace(/(<li>.*?<\/li>\n)+/gs, '<ul>$&</ul>\n');
+    
+    return `<html><head><meta charset="UTF-8"><title>SOO Document</title></head><body>${html}</body></html>`;
   }
-  function textToDocx(text) {
-    const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-      <w:body>
-        <w:p><w:r><w:t>${escapeHtml(text)}</w:t></w:r></w:p>
-      </w:body>
-    </w:document>`;
-    return xml;
+  function markdownToRtf(md) {
+    // RTF requires ASCII encoding - convert special characters
+    function escapeRtf(text) {
+      return text
+        // Common Unicode replacements
+        .replace(/'/g, "'")  // Smart single quotes
+        .replace(/'/g, "'")
+        .replace(/"/g, '"')  // Smart double quotes
+        .replace(/"/g, '"')
+        .replace(/—/g, '--') // Em dash
+        .replace(/–/g, '-')  // En dash
+        .replace(/…/g, '...') // Ellipsis
+        .replace(/£/g, 'GBP') // Pound
+        .replace(/€/g, 'EUR') // Euro
+        .replace(/©/g, '(c)') // Copyright
+        .replace(/®/g, '(R)') // Registered
+        .replace(/™/g, '(TM)') // Trademark
+        .replace(/°/g, ' degrees') // Degree
+        .replace(/±/g, '+/-') // Plus-minus
+        .replace(/×/g, 'x')   // Multiplication
+        .replace(/÷/g, '/')   // Division
+        .replace(/≤/g, '<=')  // Less than or equal
+        .replace(/≥/g, '>=')  // Greater than or equal
+        .replace(/≠/g, '!=')  // Not equal
+        .replace(/²/g, '2')   // Superscript 2
+        .replace(/³/g, '3')   // Superscript 3
+        .replace(/₂/g, '2')   // Subscript 2 (CO2)
+        .replace(/\u00A0/g, ' ') // Non-breaking space
+        // Remove any remaining non-ASCII characters
+        .replace(/[^\x00-\x7F]/g, '');
+    }
+    
+    // RTF header
+    let rtf = '{\\rtf1\\ansi\\deff0\n';
+    rtf += '{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n';
+    
+    const lines = md.split('\n');
+    let inTable = false;
+    let tableRows = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Detect table rows (contain | characters)
+      if (line.includes('|') && line.trim().startsWith('|')) {
+        if (!inTable) {
+          inTable = true;
+          tableRows = [];
+        }
+        // Skip separator rows (|---|---|)
+        if (!line.match(/^\|\s*[-:]+\s*\|/)) {
+          tableRows.push(line);
+        }
+      } else {
+        // End of table - render it
+        if (inTable && tableRows.length > 0) {
+          const cols = tableRows[0].split('|').filter(c => c.trim()).length;
+          const colWidth = Math.floor(9000 / cols); // Distribute width evenly
+          
+          tableRows.forEach((row, rowIdx) => {
+            const cells = row.split('|').filter(c => c.trim());
+            rtf += '\\trowd\\trgaph108\\trleft-108';
+            // Define column widths
+            for (let c = 0; c < cells.length; c++) {
+              rtf += `\\cellx${(c + 1) * colWidth}`;
+            }
+            rtf += '\n';
+            // Add cells
+            cells.forEach(cell => {
+              const cleanCell = escapeRtf(cell.trim()).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0');
+              if (rowIdx === 0) {
+                // Header row - bold
+                rtf += '\\pard\\intbl\\b ' + cleanCell + '\\b0\\cell\n';
+              } else {
+                rtf += '\\pard\\intbl ' + cleanCell + '\\cell\n';
+              }
+            });
+            rtf += '\\row\n';
+          });
+          rtf += '\\pard\\par\n'; // Space after table
+          
+          inTable = false;
+          tableRows = [];
+        }
+        
+        // Process regular lines
+        if (line.startsWith('# ')) {
+          rtf += '\\pard\\fs32\\b ' + escapeRtf(line.substring(2).replace(/\*\*/g, '')) + '\\b0\\fs24\\par\n';
+        } else if (line.startsWith('## ')) {
+          rtf += '\\pard\\fs28\\b ' + escapeRtf(line.substring(3).replace(/\*\*/g, '')) + '\\b0\\fs24\\par\n';
+        } else if (line.startsWith('### ')) {
+          rtf += '\\pard\\fs26\\b ' + escapeRtf(line.substring(4).replace(/\*\*/g, '')) + '\\b0\\fs24\\par\n';
+        } else if (line.match(/^[-*]\s+/)) {
+          rtf += '\\pard\\fi-360\\li720 \\bullet ' + escapeRtf(line.replace(/^[-*]\s+/, '')).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0') + '\\par\n';
+        } else if (line.trim()) {
+          rtf += '\\pard ' + escapeRtf(line).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0') + '\\par\n';
+        } else {
+          rtf += '\\par\n';
+        }
+      }
+    }
+    
+    // Handle table at end of document
+    if (inTable && tableRows.length > 0) {
+      const cols = tableRows[0].split('|').filter(c => c.trim()).length;
+      const colWidth = Math.floor(9000 / cols);
+      
+      tableRows.forEach((row, rowIdx) => {
+        const cells = row.split('|').filter(c => c.trim());
+        rtf += '\\trowd\\trgaph108\\trleft-108';
+        for (let c = 0; c < cells.length; c++) {
+          rtf += `\\cellx${(c + 1) * colWidth}`;
+        }
+        rtf += '\n';
+        cells.forEach(cell => {
+          const cleanCell = escapeRtf(cell.trim()).replace(/\*\*(.*?)\*\*/g, '\\b $1\\b0').replace(/\*(.*?)\*/g, '\\i $1\\i0');
+          if (rowIdx === 0) {
+            rtf += '\\pard\\intbl\\b ' + cleanCell + '\\b0\\cell\n';
+          } else {
+            rtf += '\\pard\\intbl ' + cleanCell + '\\cell\n';
+          }
+        });
+        rtf += '\\row\n';
+      });
+    }
+    
+    rtf += '}';
+    return rtf;
   }
 
   // Export buttons
@@ -986,16 +1463,68 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
   const downloadBundleZipBtn = app.querySelector('#downloadBundleZip');
   if (downloadBundleZipBtn) {
     downloadBundleZipBtn.addEventListener('click', () => {
+      // Finalize audit metadata before export
+      state.audit.metadata.sessionEnd = new Date().toISOString();
+      state.audit.metadata.totalStepsCompleted = state.audit.stepCompletions.length;
+      state.audit.metadata.aiCallsAttempted = state.audit.events.filter(e => e.event.includes('generation')).length;
+      state.audit.metadata.aiCallsSuccessful = state.audit.events.filter(e => e.event.includes('success')).length;
+      
+      const updatedAuditJson = JSON.stringify(state.audit, null, 2);
+      
+      // Build prompts.txt with actual values substituted
+      const buildPromptsFileForAccordion = () => {
+        const inputs = {
+          vision: getAnswer("vision", "vision", ""),
+          target_group: getAnswer("vision", "target_group", ""),
+          needs: getAnswer("vision", "needs", ""),
+          product: getAnswer("vision", "product", ""),
+          business_goals: getAnswer("vision", "business_goals", ""),
+          target_customer: getAnswer("vision_moore", "target_customer", ""),
+          customer_need: getAnswer("vision_moore", "customer_need", ""),
+          product_name: getAnswer("vision_moore", "product_name", ""),
+          product_category: getAnswer("vision_moore", "product_category", ""),
+          key_benefit: getAnswer("vision_moore", "key_benefit", ""),
+          alternative: getAnswer("vision_moore", "alternative", ""),
+          differentiation: getAnswer("vision_moore", "differentiation", ""),
+          has_po: getAnswer("readiness", "has_po", ""),
+          end_user_access: getAnswer("readiness", "end_user_access", ""),
+          approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+          context: getAnswer("methodology", "context", "new_dev"),
+          problem_context: getAnswer("soo_inputs", "problem_context", ""),
+          objectives: getAnswer("soo_inputs", "objectives", ""),
+          constraints: getAnswer("soo_inputs", "constraints", ""),
+          soo_draft: sooMd
+        };
+        
+        const sections = [];
+        
+        if (state.prompts.soo?.template) {
+          sections.push("# SOO Generation Prompt\n\n" + renderTemplate(state.prompts.soo.template, inputs));
+        }
+        
+        if (state.prompts.pws?.template) {
+          sections.push("# PWS Request Pack Generation Prompt\n\n" + renderTemplate(state.prompts.pws.template, inputs));
+        }
+        
+        if (state.prompts.rewrite?.template) {
+          sections.push("# SOO Rewrite Prompt\n\n" + renderTemplate(state.prompts.rewrite.template, inputs));
+        }
+        
+        return sections.join('\n\n---\n\n');
+      };
+      
+      const updatedPromptsTxt = buildPromptsFileForAccordion();
+      
       const files = {
-        "inputs.yml": buildInputsYml(),
-        "outputs/soo.md": sooMd,
-        "outputs/soo.html": markdownToHtml(sooMd),
-        "outputs/soo.docx.xml": textToDocx(sooMd),
-        "outputs/pws_request_pack.md": pwsMd,
-        "outputs/pws_request_pack.html": markdownToHtml(pwsMd),
-        "outputs/pws_request_pack.docx.xml": textToDocx(pwsMd),
-        "audit.json": auditJson,
-        "prompts.txt": promptsTxt
+        "soo.md": sooMd,
+        "soo.html": markdownToHtml(sooMd),
+        "soo.rtf": markdownToRtf(sooMd),
+        "pws_request_pack.md": pwsMd,
+        "pws_request_pack.html": markdownToHtml(pwsMd),
+        "pws_request_pack.rtf": markdownToRtf(pwsMd),
+        "source/inputs.yml": buildInputsYml(),
+        "source/audit.json": updatedAuditJson,
+        "source/prompts.txt": updatedPromptsTxt
       };
       downloadZip('bundle.zip', files);
     });
@@ -1010,50 +1539,145 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
   const downloadPromptsTxtBtn = app.querySelector('#downloadPromptsTxt');
   if (downloadPromptsTxtBtn) {
     downloadPromptsTxtBtn.addEventListener('click', () => {
-      const promptsTxt = [state.prompts.soo?.template, state.prompts.pws?.template, state.prompts.rewrite?.template].filter(Boolean).join('\n\n---\n\n');
+      // Build prompts.txt with actual values substituted
+      const inputs = {
+        vision: getAnswer("vision", "vision", ""),
+        target_group: getAnswer("vision", "target_group", ""),
+        needs: getAnswer("vision", "needs", ""),
+        product: getAnswer("vision", "product", ""),
+        business_goals: getAnswer("vision", "business_goals", ""),
+        target_customer: getAnswer("vision_moore", "target_customer", ""),
+        customer_need: getAnswer("vision_moore", "customer_need", ""),
+        product_name: getAnswer("vision_moore", "product_name", ""),
+        product_category: getAnswer("vision_moore", "product_category", ""),
+        key_benefit: getAnswer("vision_moore", "key_benefit", ""),
+        alternative: getAnswer("vision_moore", "alternative", ""),
+        differentiation: getAnswer("vision_moore", "differentiation", ""),
+        has_po: getAnswer("readiness", "has_po", ""),
+        end_user_access: getAnswer("readiness", "end_user_access", ""),
+        approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+        context: getAnswer("methodology", "context", "new_dev"),
+        problem_context: getAnswer("soo_inputs", "problem_context", ""),
+        objectives: getAnswer("soo_inputs", "objectives", ""),
+        constraints: getAnswer("soo_inputs", "constraints", ""),
+        soo_draft: getAnswer("soo_output", "soo_draft", "")
+      };
+      
+      const sections = [];
+      
+      if (state.prompts.soo?.template) {
+        sections.push("# SOO Generation Prompt\n\n" + renderTemplate(state.prompts.soo.template, inputs));
+      }
+      
+      if (state.prompts.pws?.template) {
+        sections.push("# PWS Request Pack Generation Prompt\n\n" + renderTemplate(state.prompts.pws.template, inputs));
+      }
+      
+      if (state.prompts.rewrite?.template) {
+        sections.push("# SOO Rewrite Prompt\n\n" + renderTemplate(state.prompts.rewrite.template, inputs));
+      }
+      
+      const promptsTxt = sections.join('\n\n---\n\n');
       downloadText('prompts.txt', promptsTxt);
     });
   }
 
-  // Export Center: add HTML and DOCX to ZIP
+  // Export Center: add HTML to ZIP
   if (step.id === "export_center") {
-    // Helper: Simple Markdown to HTML converter (basic)
+    // Helper: Markdown to HTML converter with table support
     function markdownToHtml(md) {
-      let html = md
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-        .replace(/\*\*(.*?)\*\*/gim, '<b>$1</b>')
-        .replace(/\*(.*?)\*/gim, '<i>$1</i>')
-        .replace(/^\s*[-*] (.*$)/gim, '<li>$1</li>')
-        .replace(/\n/g, '<br>');
-      html = html.replace(/(<li>.*?<\/li>)/gims, '<ul>$1</ul>');
-      return `<html><body>${html}</body></html>`;
-    }
-    // Helper: Minimal DOCX generator (Word XML)
-    function textToDocx(text) {
-      const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-      <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-        <w:body>
-          <w:p><w:r><w:t>${escapeHtml(text)}</w:t></w:r></w:p>
-        </w:body>
-      </w:document>`;
-      return xml;
+      const lines = md.split('\n');
+      let html = '';
+      let inTable = false;
+      let tableRows = [];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // Detect table rows (contain | characters)
+        if (line.includes('|') && line.trim().startsWith('|')) {
+          if (!inTable) {
+            inTable = true;
+            tableRows = [];
+          }
+          // Skip separator rows (|---|---|)
+          if (!line.match(/^\|\s*[-:]+\s*\|/)) {
+            tableRows.push(line);
+          }
+        } else {
+          // End of table - render it
+          if (inTable && tableRows.length > 0) {
+            html += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin:1em 0;">\n';
+            tableRows.forEach((row, rowIdx) => {
+              const cells = row.split('|').filter(c => c.trim());
+              const tag = rowIdx === 0 ? 'th' : 'td';
+              html += '<tr>';
+              cells.forEach(cell => {
+                let cellContent = cell.trim()
+                  .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                  .replace(/\*(.*?)\*/g, '<i>$1</i>');
+                html += `<${tag}>${cellContent}</${tag}>`;
+              });
+              html += '</tr>\n';
+            });
+            html += '</table>\n';
+            inTable = false;
+            tableRows = [];
+          }
+          
+          // Process regular lines
+          if (line.startsWith('# ')) {
+            html += '<h1>' + line.substring(2) + '</h1>\n';
+          } else if (line.startsWith('## ')) {
+            html += '<h2>' + line.substring(3) + '</h2>\n';
+          } else if (line.startsWith('### ')) {
+            html += '<h3>' + line.substring(4) + '</h3>\n';
+          } else if (line.match(/^\s*[-*]\s+/)) {
+            html += '<li>' + line.replace(/^\s*[-*]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') + '</li>\n';
+          } else if (line.trim()) {
+            html += '<p>' + line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') + '</p>\n';
+          } else {
+            html += '<br>\n';
+          }
+        }
+      }
+      
+      // Handle table at end of document
+      if (inTable && tableRows.length > 0) {
+        html += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;margin:1em 0;">\n';
+        tableRows.forEach((row, rowIdx) => {
+          const cells = row.split('|').filter(c => c.trim());
+          const tag = rowIdx === 0 ? 'th' : 'td';
+          html += '<tr>';
+          cells.forEach(cell => {
+            let cellContent = cell.trim()
+              .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+              .replace(/\*(.*?)\*/g, '<i>$1</i>');
+            html += `<${tag}>${cellContent}</${tag}>`;
+          });
+          html += '</tr>\n';
+        });
+        html += '</table>\n';
+      }
+      
+      // Wrap list items in <ul> tags
+      html = html.replace(/(<li>.*?<\/li>\n)+/gs, '<ul>$&</ul>\n');
+      return `<html><head><meta charset="UTF-8"><title>SOO Document</title></head><body>${html}</body></html>`;
     }
     const sooMd = getAnswer("soo_output", "soo_draft", "");
     const pwsMd = getAnswer("pws_vendor_pack", "pws_pack_preview", "");
     const auditJson = JSON.stringify(state.audit, null, 2);
     const promptsTxt = [state.prompts.soo?.template, state.prompts.pws?.template, state.prompts.rewrite?.template].filter(Boolean).join('\n\n---\n\n');
     const files = {
-      "inputs.yml": buildInputsYml(),
-      "outputs/soo.md": sooMd,
-      "outputs/soo.html": markdownToHtml(sooMd),
-      "outputs/soo.docx.xml": textToDocx(sooMd),
-      "outputs/pws_request_pack.md": pwsMd,
-      "outputs/pws_request_pack.html": markdownToHtml(pwsMd),
-      "outputs/pws_request_pack.docx.xml": textToDocx(pwsMd),
-      "audit.json": auditJson,
-      "prompts.txt": promptsTxt
+      "soo.md": sooMd,
+      "soo.html": markdownToHtml(sooMd),
+      "soo.rtf": markdownToRtf(sooMd),
+      "pws_request_pack.md": pwsMd,
+      "pws_request_pack.html": markdownToHtml(pwsMd),
+      "pws_request_pack.rtf": markdownToRtf(pwsMd),
+      "source/inputs.yml": buildInputsYml(),
+      "source/audit.json": auditJson,
+      "source/prompts.txt": promptsTxt
     };
     // Add export button to download ZIP
     let exportBtn = document.getElementById('downloadBundleZip');
@@ -1072,7 +1696,16 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
     resetBtn.addEventListener("click", () => {
       if (confirm("Reset all answers? This cannot be undone.")) {
         state.answers = {};
-        state.audit = { events: [] };
+        state.audit = { 
+          metadata: {
+            sessionStart: new Date().toISOString(),
+            wizardVersion: "2.0"
+          },
+          readiness: {},
+          lintResults: {},
+          events: [],
+          stepCompletions: []
+        };
         saveState();
         state.stepIndex = 0;
         render();
