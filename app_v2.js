@@ -297,15 +297,316 @@ Click "Download bundle.zip" below to get everything.
     if (fields) fields.appendChild(el(`<p class="text-base">No fields on this step.</p>`));
   }
 
-  // If soo_output, populate soo_draft field
+  // If soo_output, show critical review with AI-generated questions
   if (step.id === "soo_output") {
-    const existing = getAnswer("soo_output", "soo_draft", "");
-    if (existing) {
-      const ta = fields.querySelector("textarea");
-      if (ta) {
-        ta.classList.add("large-textarea");
-        ta.value = existing;
+    const draft = getAnswer("soo_output", "soo_draft", "");
+    const reviewQuestions = getAnswer("soo_output", "review_questions", "");
+    
+    if (!draft) {
+      if (fields) {
+        fields.innerHTML = `
+          <div class="usa-alert usa-alert--warning">
+            <div class="usa-alert__body">
+              <p>No SOO draft found. Please go back to Step 8 and generate a draft first.</p>
+            </div>
+          </div>
+        `;
       }
+      return;
+    }
+    
+    if (fields) {
+      fields.innerHTML = `
+        <div class="margin-bottom-3">
+          <h3>Critical Review Questions</h3>
+          <p class="usa-prose">Use these questions to critically evaluate your SOO draft and identify areas for improvement.</p>
+          
+          <div id="reviewQuestionsSection"></div>
+          
+          <div class="margin-bottom-2">
+            <button class="usa-button" id="generateReviewBtn">Generate Review Questions with AI</button>
+            <button class="usa-button usa-button--outline" id="copyReviewPromptBtn">Copy Review Prompt (for external AI)</button>
+          </div>
+          
+          <div id="reviewStatus" class="margin-bottom-3"></div>
+        </div>
+        
+        <div class="margin-bottom-2">
+          <label for="soo_draft_review" class="usa-label">SOO Markdown (editable)</label>
+          <div class="usa-hint">Review the questions above, then edit your SOO draft to address any concerns or improvements.</div>
+          <textarea id="soo_draft_review" class="usa-textarea large-textarea" style="font-family:monospace;font-size:14px;">${escapeHtml(draft)}</textarea>
+        </div>
+      `;
+      
+      const draftField = fields.querySelector('#soo_draft_review');
+      const reviewStatus = fields.querySelector('#reviewStatus');
+      const generateReviewBtn = fields.querySelector('#generateReviewBtn');
+      const copyReviewPromptBtn = fields.querySelector('#copyReviewPromptBtn');
+      const reviewQuestionsSection = fields.querySelector('#reviewQuestionsSection');
+      
+      // Render existing questions as checkboxes if available
+      const renderQuestions = (questions) => {
+        const lines = questions.split('\n');
+        let checkboxesHtml = '';
+        let questionIndex = 0;
+        
+        lines.forEach((line, idx) => {
+          // Only match lines that start with - or * (bullet points), not numbered headers
+          if (line.match(/^\s*[-*]\s+/)) {
+            const checked = getAnswer("soo_output", `review_q_${questionIndex}`, false) ? 'checked' : '';
+            const lineText = line.replace(/^\s*[-*]\s+/, '').trim();
+            checkboxesHtml += `
+              <div class="usa-checkbox margin-bottom-1">
+                <input class="usa-checkbox__input review-checkbox" type="checkbox" id="review_q_${questionIndex}" data-index="${questionIndex}" ${checked} />
+                <label class="usa-checkbox__label" for="review_q_${questionIndex}" style="font-weight:normal;">${escapeHtml(lineText)}</label>
+              </div>
+            `;
+            questionIndex++;
+          } else if (line.trim()) {
+            // Section headers or other text - display as-is
+            checkboxesHtml += `<div style="margin-bottom:0.5rem;${line.match(/^\d+\./) ? 'font-weight:bold;margin-top:1rem;' : ''}">${escapeHtml(line)}</div>`;
+          }
+        });
+        
+        reviewQuestionsSection.innerHTML = `
+          <div class="card margin-bottom-2" style="background:#f9f9f9;padding:1.5rem;">
+            <div style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:bold;">Review each question as you address it:</span>
+              <span id="reviewProgress" style="color:#005ea2;font-weight:bold;">0 / ${questionIndex} reviewed</span>
+            </div>
+            ${checkboxesHtml}
+          </div>
+        `;
+        
+        document.querySelectorAll('.review-checkbox').forEach(checkbox => {
+          checkbox.addEventListener('change', (e) => {
+            const index = e.target.dataset.index;
+            setAnswer("soo_output", `review_q_${index}`, e.target.checked);
+            updateReviewProgress();
+          });
+        });
+        
+        updateReviewProgress();
+      };
+      
+      const updateReviewProgress = () => {
+        const total = document.querySelectorAll('.review-checkbox').length;
+        const checked = document.querySelectorAll('.review-checkbox:checked').length;
+        const progress = document.querySelector('#reviewProgress');
+        if (progress) {
+          progress.textContent = `${checked} / ${total} reviewed`;
+          if (checked === total) {
+            progress.style.color = '#00a91c';
+            progress.textContent = `✓ ${checked} / ${total} reviewed`;
+          }
+        }
+      };
+      
+      // Initialize with existing questions or show prompt
+      if (reviewQuestions) {
+        renderQuestions(reviewQuestions);
+      } else {
+        reviewQuestionsSection.innerHTML = `
+          <div class="usa-alert usa-alert--info margin-bottom-2">
+            <div class="usa-alert__body">
+              <p>Generate critical review questions to help improve your SOO draft.</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Save draft changes
+      draftField.addEventListener('input', e => {
+        setAnswer("soo_output", "soo_draft", e.target.value);
+      });
+      
+      // Build review prompt
+      const buildReviewPrompt = () => {
+        return `You are an expert procurement advisor reviewing a Statement of Objectives (SOO) for a federal agency. Your role is to critically evaluate the SOO and generate thoughtful questions that will help the author improve it.
+
+INSTRUCTIONS:
+1. Read the SOO draft carefully
+2. Identify potential gaps, ambiguities, or areas that need strengthening
+3. Generate 8-12 critical review questions that prompt deeper thinking
+4. Focus on: clarity, completeness, measurability, compliance, feasibility, and vendor understanding
+5. Format questions as a numbered list
+
+SOO DRAFT:
+${draft}
+
+GENERATE CRITICAL REVIEW QUESTIONS:`;
+      };
+      
+      const reviewPrompt = buildReviewPrompt();
+      
+      // Copy review prompt
+      copyReviewPromptBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(reviewPrompt).then(() => {
+          reviewStatus.innerHTML = `
+            <div class="usa-alert usa-alert--success">
+              <div class="usa-alert__body">
+                <p>✓ Review prompt copied! Paste it into your AI tool, then paste the response back here using "Generate Review Questions".</p>
+              </div>
+            </div>
+          `;
+        }).catch(() => {
+          const tempTextarea = document.createElement('textarea');
+          tempTextarea.value = reviewPrompt;
+          document.body.appendChild(tempTextarea);
+          tempTextarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(tempTextarea);
+          reviewStatus.innerHTML = `
+            <div class="usa-alert usa-alert--success">
+              <div class="usa-alert__body">
+                <p>✓ Review prompt copied! Paste it into your AI tool, then paste the response back here using "Generate Review Questions".</p>
+              </div>
+            </div>
+          `;
+        });
+      });
+      
+      // Generate review questions with AI
+      generateReviewBtn.addEventListener('click', async () => {
+        const endpoint = aiConfig.aiEndpoint?.trim();
+        const model = aiConfig.model?.trim();
+        const timeout = aiConfig.timeout * 1000;
+        
+        if (!endpoint) {
+          reviewStatus.innerHTML = `
+            <div class="usa-alert usa-alert--warning">
+              <div class="usa-alert__body">
+                <h3 class="usa-alert__heading">No AI endpoint configured</h3>
+                <p>Click "Copy Review Prompt" above, paste it into your AI tool, then manually paste the questions into the review section.</p>
+              </div>
+            </div>
+          `;
+          return;
+        }
+        
+        reviewStatus.innerHTML = `
+          <div class="usa-alert usa-alert--info">
+            <div class="usa-alert__body">
+              <p><strong>Generating critical review questions... Please wait</strong></p>
+            </div>
+          </div>
+        `;
+        generateReviewBtn.disabled = true;
+        
+        try {
+          const base = endpoint.replace(/\/$/, "");
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), timeout);
+          const r = await fetch(`${base}/api/generate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ model, prompt: reviewPrompt, stream: false }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          
+          if (!r.ok) {
+            const err = await r.text();
+            throw new Error(`AI error ${r.status}: ${err}`);
+          }
+          
+          const data = await r.json();
+          const questions = data?.response || "";
+          
+          if (questions) {
+            setAnswer("soo_output", "review_questions", questions);
+            
+            // Parse questions and create checkboxes
+            const lines = questions.split('\n');
+            let checkboxesHtml = '';
+            let questionIndex = 0;
+            
+            lines.forEach((line, idx) => {
+              // Only match lines that start with - or * (bullet points), not numbered headers
+              if (line.match(/^\s*[-*]\s+/)) {
+                const checked = getAnswer("soo_output", `review_q_${questionIndex}`, false) ? 'checked' : '';
+                const lineText = line.replace(/^\s*[-*]\s+/, '').trim();
+                checkboxesHtml += `
+                  <div class="usa-checkbox margin-bottom-1">
+                    <input class="usa-checkbox__input review-checkbox" type="checkbox" id="review_q_${questionIndex}" data-index="${questionIndex}" ${checked} />
+                    <label class="usa-checkbox__label" for="review_q_${questionIndex}" style="font-weight:normal;">${escapeHtml(lineText)}</label>
+                  </div>
+                `;
+                questionIndex++;
+              } else if (line.trim()) {
+                // Section headers or other text - display as-is
+                checkboxesHtml += `<div style="margin-bottom:0.5rem;${line.match(/^\d+\./) ? 'font-weight:bold;margin-top:1rem;' : ''}">${escapeHtml(line)}</div>`;
+              }
+            });
+            
+            document.querySelector('#reviewQuestionsSection').innerHTML = `
+              <div class="card margin-bottom-2" style="background:#f9f9f9;padding:1.5rem;">
+                <div style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-weight:bold;">Review each question as you address it:</span>
+                  <span id="reviewProgress" style="color:#005ea2;font-weight:bold;">0 / ${questionIndex} reviewed</span>
+                </div>
+                ${checkboxesHtml}
+              </div>
+            `;
+            
+            // Add event listeners to checkboxes
+            document.querySelectorAll('.review-checkbox').forEach(checkbox => {
+              checkbox.addEventListener('change', (e) => {
+                const index = e.target.dataset.index;
+                setAnswer("soo_output", `review_q_${index}`, e.target.checked);
+                updateReviewProgress();
+              });
+            });
+            
+            // Update progress counter
+            const updateReviewProgress = () => {
+              const total = document.querySelectorAll('.review-checkbox').length;
+              const checked = document.querySelectorAll('.review-checkbox:checked').length;
+              const progress = document.querySelector('#reviewProgress');
+              if (progress) {
+                progress.textContent = `${checked} / ${total} reviewed`;
+                if (checked === total) {
+                  progress.style.color = '#00a91c';
+                  progress.textContent = `✓ ${checked} / ${total} reviewed`;
+                }
+              }
+            };
+            
+            updateReviewProgress();
+            
+            reviewStatus.innerHTML = `
+              <div class="usa-alert usa-alert--success">
+                <div class="usa-alert__body">
+                  <p>✓ Review questions generated! Check each box as you address the question in your SOO draft below.</p>
+                </div>
+              </div>
+            `;
+            state.audit.events.push({
+              timestamp: new Date().toISOString(),
+              event: "review_questions_generated",
+              questionsLength: questions.length,
+              questionCount: questionIndex
+            });
+          }
+        } catch (e) {
+          reviewStatus.innerHTML = `
+            <div class="usa-alert usa-alert--error">
+              <div class="usa-alert__body">
+                <h3 class="usa-alert__heading">AI generation failed</h3>
+                <p>${escapeHtml(e.message || "Unknown error")}</p>
+                <p>Use "Copy Review Prompt" to get questions from an external AI tool.</p>
+              </div>
+            </div>
+          `;
+          state.audit.events.push({
+            timestamp: new Date().toISOString(),
+            event: "review_questions_failed",
+            error: e.message
+          });
+        } finally {
+          generateReviewBtn.disabled = false;
+        }
+      });
     }
   }
 
@@ -325,73 +626,169 @@ Click "Download bundle.zip" below to get everything.
     }
   }
 
-  // If generate step, show SOO draft textarea for editing
+  // If generate step, show prompt and draft management
   if (step.id === "generate" && fields) {
+    // Build the prompt
+    const inputs = {
+      vision: getAnswer("vision", "vision", ""),
+      target_group: getAnswer("vision", "target_group", ""),
+      needs: getAnswer("vision", "needs", ""),
+      product: getAnswer("vision", "product", ""),
+      business_goals: getAnswer("vision", "business_goals", ""),
+      target_customer: getAnswer("vision_moore", "target_customer", ""),
+      customer_need: getAnswer("vision_moore", "customer_need", ""),
+      product_name: getAnswer("vision_moore", "product_name", ""),
+      product_category: getAnswer("vision_moore", "product_category", ""),
+      key_benefit: getAnswer("vision_moore", "key_benefit", ""),
+      alternative: getAnswer("vision_moore", "alternative", ""),
+      differentiation: getAnswer("vision_moore", "differentiation", ""),
+      has_po: getAnswer("readiness", "has_po", ""),
+      end_user_access: getAnswer("readiness", "end_user_access", ""),
+      approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+      context: getAnswer("methodology", "context", "new_dev"),
+      problem_context: getAnswer("soo_inputs", "problem_context", ""),
+      objectives: getAnswer("soo_inputs", "objectives", ""),
+      constraints: getAnswer("soo_inputs", "constraints", "")
+    };
+    const promptDoc = state.prompts.soo;
+    const prompt = renderTemplate(promptDoc.template, inputs);
     const draft = getAnswer("soo_output", "soo_draft", "");
+    
     fields.innerHTML = `
-      <div class="margin-bottom-2">
-        <div class="display-flex flex-justify flex-align-center margin-bottom-1">
-          <label for="soo_draft" class="usa-label margin-y-0">SOO Markdown (editable)</label>
-          <button class="usa-button usa-button--unstyled" id="expandDraft" title="Expand to full screen" style="padding:0.5rem;font-size:1.2rem;">⛶</button>
+      <div class="margin-bottom-3">
+        <label for="soo_prompt" class="usa-label">SOO Prompt (editable)</label>
+        <div class="usa-hint">Edit the prompt if needed, then click "Generate with AI" or copy it to use externally.</div>
+        <textarea id="soo_prompt" class="usa-textarea large-textarea mono" rows="10" style="font-size:13px;">${escapeHtml(prompt)}</textarea>
+        <div class="margin-top-2 display-flex flex-justify">
+          <button class="usa-button usa-button--outline" id="copyPrompt">Copy Prompt</button>
+          <button class="usa-button" id="generateBtn">Generate with AI</button>
         </div>
-        <textarea id="soo_draft" class="usa-textarea large-textarea" rows="25" style="font-family:monospace;font-size:14px;width:100%;box-sizing:border-box;">${escapeHtml(draft)}</textarea>
-        <div class="usa-hint">Edit if needed. Click 'Regenerate' to rewrite with AI, or 'Next' to accept.</div>
+      </div>
+      
+      <div id="aiStatus" class="margin-bottom-3"></div>
+      
+      <div class="margin-bottom-2">
+        <label for="soo_draft" class="usa-label">SOO Markdown (editable)</label>
+        <div class="usa-hint">The AI-generated or manually entered SOO draft. Edit as needed.</div>
+        <textarea id="soo_draft" class="usa-textarea large-textarea" style="font-family:monospace;font-size:14px;">${escapeHtml(draft)}</textarea>
+        <div class="margin-top-2">
+          <button class="usa-button usa-button--secondary" id="regenerateBtn">Regenerate with AI</button>
+        </div>
       </div>
     `;
-    // Save changes to draft
+    
+    const promptField = fields.querySelector('#soo_prompt');
     const draftField = fields.querySelector('#soo_draft');
-    if (draftField) {
-      draftField.addEventListener('input', e => {
-        setAnswer("soo_output", "soo_draft", e.target.value);
-      });
-    }
-    // Full-screen expand functionality
-    const expandBtn = fields.querySelector('#expandDraft');
-    if (expandBtn) {
-      expandBtn.addEventListener('click', () => {
-        const isExpanded = draftField.classList.contains('fullscreen-editor');
-        if (isExpanded) {
-          draftField.classList.remove('fullscreen-editor');
-          expandBtn.textContent = '⛶';
-          expandBtn.title = 'Expand to full screen';
-          document.body.style.overflow = '';
-        } else {
-          draftField.classList.add('fullscreen-editor');
-          expandBtn.textContent = '⛶';
-          expandBtn.title = 'Exit full screen';
-          document.body.style.overflow = 'hidden';
-          draftField.focus();
-        }
-      });
-      // Add ESC key listener to exit full-screen
-      draftField.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && draftField.classList.contains('fullscreen-editor')) {
-          expandBtn.click();
-        }
-      });
-    }
-    // Add CSS for full-screen mode
-    if (!document.getElementById('fullscreen-editor-style')) {
-      const style = document.createElement('style');
-      style.id = 'fullscreen-editor-style';
-      style.textContent = `
-        .fullscreen-editor {
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 100vw !important;
-          height: 100vh !important;
-          z-index: 10000 !important;
-          margin: 0 !important;
-          padding: 2rem !important;
-          border: none !important;
-          border-radius: 0 !important;
-          background: #fff !important;
-          box-shadow: none !important;
-        }
+    const aiStatus = fields.querySelector('#aiStatus');
+    const copyBtn = fields.querySelector('#copyPrompt');
+    const generateBtn = fields.querySelector('#generateBtn');
+    const regenerateBtn = fields.querySelector('#regenerateBtn');
+    
+    // Save draft changes
+    draftField.addEventListener('input', e => {
+      setAnswer("soo_output", "soo_draft", e.target.value);
+    });
+    
+    // Copy prompt to clipboard
+    copyBtn.addEventListener('click', () => {
+      promptField.select();
+      document.execCommand("copy");
+      aiStatus.innerHTML = '<div class="usa-alert usa-alert--success"><div class="usa-alert__body"><p>Prompt copied to clipboard!</p></div></div>';
+      setTimeout(() => { aiStatus.innerHTML = ''; }, 3000);
+    });
+    
+    // Generate with AI function
+    const generateWithAI = async () => {
+      const endpoint = aiConfig.aiEndpoint?.trim();
+      const model = aiConfig.model?.trim();
+      const timeout = aiConfig.timeout * 1000;
+      const currentPrompt = promptField.value;
+      
+      if (!endpoint) {
+        aiStatus.innerHTML = `
+          <div class="usa-alert usa-alert--warning">
+            <div class="usa-alert__body">
+              <h3 class="usa-alert__heading">No AI endpoint configured</h3>
+              <p>Take this prompt and put it into the AI of your choice. When you are satisfied with the response, put it into the SOO Markdown field above.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      // Show generating status
+      aiStatus.innerHTML = `
+        <div class="usa-alert usa-alert--info">
+          <div class="usa-alert__body">
+            <p><strong>AI Generation of Draft... Please Wait</strong></p>
+            <p>Calling ${escapeHtml(endpoint)} with model ${escapeHtml(model)}...</p>
+          </div>
+        </div>
       `;
-      document.head.appendChild(style);
-    }
+      generateBtn.disabled = true;
+      regenerateBtn.disabled = true;
+      
+      try {
+        const base = endpoint.replace(/\/$/, "");
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        const r = await fetch(`${base}/api/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model, prompt: currentPrompt, stream: false }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!r.ok) {
+          const err = await r.text();
+          throw new Error(`AI error ${r.status}: ${err}`);
+        }
+        
+        const data = await r.json();
+        const text = data?.response || "";
+        
+        if (text) {
+          draftField.value = text;
+          setAnswer("soo_output", "soo_draft", text);
+          aiStatus.innerHTML = `
+            <div class="usa-alert usa-alert--success">
+              <div class="usa-alert__body">
+                <p>✓ AI generation complete! Review the draft below and edit as needed.</p>
+              </div>
+            </div>
+          `;
+          state.audit.events.push({
+            timestamp: new Date().toISOString(),
+            event: "ai_generation_success",
+            endpoint,
+            model,
+            textLength: text.length
+          });
+        }
+      } catch (e) {
+        aiStatus.innerHTML = `
+          <div class="usa-alert usa-alert--error">
+            <div class="usa-alert__body">
+              <h3 class="usa-alert__heading">AI generation failed</h3>
+              <p>${escapeHtml(e.message || "Unknown error")}</p>
+              <p>Take the prompt above and put it into the AI of your choice. When you are satisfied with the response, paste it into the SOO Markdown field.</p>
+            </div>
+          </div>
+        `;
+        state.audit.events.push({
+          timestamp: new Date().toISOString(),
+          event: "ai_generation_failed",
+          error: e.message
+        });
+      } finally {
+        generateBtn.disabled = false;
+        regenerateBtn.disabled = false;
+      }
+    };
+    
+    generateBtn.addEventListener('click', generateWithAI);
+    regenerateBtn.addEventListener('click', generateWithAI);
   }
 
   const backBtn = app.querySelector("#back");
@@ -455,9 +852,20 @@ Click "Download bundle.zip" below to get everything.
       }
     }
 
+    // Step 8 (generate) - just validate that draft exists before proceeding
     if (step.id === "generate") {
-      await runGeneration(app);
-      return;
+      const draft = getAnswer("soo_output", "soo_draft", "").trim();
+      if (!draft) {
+        messages.appendChild(el(`
+          <div class="usa-alert usa-alert--warning">
+            <div class="usa-alert__body">
+              <h3 class="usa-alert__heading">No SOO draft yet</h3>
+              <p>Please generate a draft using AI or paste one manually before proceeding.</p>
+            </div>
+          </div>
+        `));
+        return;
+      }
     }
 
     if (step.id === "soo_output") {
@@ -798,6 +1206,26 @@ function renderLintAlert(lint) {
 }
 
 function buildInputsYml() {
+  // Collect review question checkbox states
+  const reviewQuestions = getAnswer("soo_output", "review_questions", "");
+  const reviewChecklist = {};
+  if (reviewQuestions) {
+    const lines = reviewQuestions.split('\n');
+    let questionIndex = 0;
+    lines.forEach((line) => {
+      // Only match lines that start with - or * (bullet points)
+      if (line.match(/^\s*[-*]\s+/)) {
+        const checked = getAnswer("soo_output", `review_q_${questionIndex}`, false);
+        const lineText = line.replace(/^\s*[-*]\s+/, '').trim();
+        reviewChecklist[`question_${questionIndex}`] = {
+          text: lineText,
+          reviewed: checked
+        };
+        questionIndex++;
+      }
+    });
+  }
+  
   const inputs = {
     version: 1,
     metadata: {
@@ -833,6 +1261,12 @@ function buildInputsYml() {
       problem_context: getAnswer("soo_inputs", "problem_context", ""),
       objectives: getAnswer("soo_inputs", "objectives", ""),
       constraints: getAnswer("soo_inputs", "constraints", "")
+    },
+    soo_review: {
+      review_questions: reviewQuestions,
+      review_checklist: reviewChecklist,
+      total_questions: Object.keys(reviewChecklist).length,
+      questions_reviewed: Object.values(reviewChecklist).filter(q => q.reviewed).length
     }
   };
 
