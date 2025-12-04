@@ -1,0 +1,285 @@
+version: 1
+metadata:
+  createdAt: '2025-12-04T17:45:00.000Z'
+  wizardVersion: '2.0'
+readiness:
+  has_po: 'yes'
+  end_user_access: 'direct'
+  approvals_cycle: 'semi-annual'
+product_vision_board:
+  vision: >-
+    Federal agencies can design and build truly accessible digital services by
+    understanding how people with disabilities actually interact with government
+    web components and digital tools
+  target_group: >-
+    Federal web developers, UX designers, accessibility specialists, product
+    managers, and procurement officers responsible for digital service delivery
+  needs: >-
+    Government teams lack comprehensive research data on how people with
+    disabilities use common web components. Current accessibility testing relies
+    heavily on automated tools and compliance checklists rather than actual user
+    experience with assistive technologies across diverse disability types.
+  product: >-
+    A comprehensive user research study that documents how people with
+    disabilities interact with 100+ common web components, providing actionable
+    usability insights and design recommendations
+  business_goals: >-
+    Improve Section 508 compliance across federal websites by 40% within 18
+    months. Reduce accessibility-related user complaints by 60%. Establish
+    evidence-based accessibility design patterns that can be adopted government-wide
+    and reduce remediation costs by $50M annually.
+product_vision_moore:
+  target_customer: Federal agencies and their digital service teams
+  customer_need: >-
+    evidence-based accessibility research and design patterns for web components
+  product_name: Federal Accessibility Research Initiative (FARI)
+  product_category: government user research program
+  key_benefit: >-
+    comprehensive usability data for 100+ web components tested with diverse
+    disability communities
+  alternative: >-
+    relying on automated accessibility scanners and generic WCAG compliance
+    checklists
+  differentiation: >-
+    real-world user research with people across cognitive, motor, sensory, and
+    multiple disability types using actual assistive technologies
+  moore_statement: >-
+    For Federal agencies and their digital service teams who need evidence-based
+    accessibility research and design patterns for web components, the Federal
+    Accessibility Research Initiative (FARI) is a government user research
+    program that provides comprehensive usability data for 100+ web components
+    tested with diverse disability communities. Unlike relying on automated
+    accessibility scanners and generic WCAG compliance checklists, our program
+    offers real-world user research with people across cognitive, motor,
+    sensory, and multiple disability types using actual assistive technologies.
+methodology:
+  context: new_dev
+soo_inputs:
+  problem_context: >-
+    Federal agencies struggle to create truly accessible digital services
+    because current accessibility practices focus on technical compliance rather
+    than user experience. Automated scanning tools catch only 20-30% of
+    accessibility barriers, and generic WCAG guidelines don't provide specific
+    guidance for complex interactive components. Government teams lack access to
+    people with disabilities for testing, and when research is conducted, it
+    often focuses on single disability types rather than the full spectrum of
+    accessibility needs. This results in websites that technically comply with
+    Section 508 but still present significant usability barriers for citizens
+    with disabilities.
+  objectives: |-
+    - People with diverse disabilities can successfully complete tasks using 100+ common government web components within target timeframes
+    - Federal development teams can access detailed usability findings and design recommendations for each tested component
+    - Government agencies can implement evidence-based accessibility design patterns that improve user success rates by 75%
+    - Citizens with disabilities report improved satisfaction with federal digital services from baseline 2.8/5 to 4.2/5
+    - Federal accessibility specialists can validate that recommended design patterns work across multiple assistive technology combinations
+    - Research participants represent the full spectrum of disability types including cognitive, motor, sensory, and multiple disabilities
+    - Study results demonstrate measurable improvements in task completion rates and user satisfaction for citizens with disabilities
+  constraints: |-
+    - Must comply with federal human subjects research requirements and IRB approval processes
+    - Must recruit participants across cognitive disabilities (learning, attention, memory), motor disabilities (limited mobility, tremor, paralysis), sensory disabilities (blindness, low vision, deafness, hard of hearing), and multiple disabilities
+    - Must test components with major assistive technologies including screen readers (JAWS, NVDA, VoiceOver), voice control software, switch navigation, and magnification tools
+    - Must protect participant privacy and accommodate communication preferences and accessibility needs during research sessions
+    - Research timeline must account for extended recruitment periods needed to reach diverse disability communities
+    - Budget not to exceed $2.8M for participant recruitment, compensation, research facilitation, and analysis over 18 months
+    - Must include both remote and in-person research options to accommodate participant needs and geographic distribution
+    - Results must be published in accessible formats and made available to all federal agencies within 6 months of study completion
+soo_review:
+  review_questions: |-
+    - Does the SOO clearly state what outcomes are required for people with disabilities using government web components?
+    - Are the objectives measurable and focused on user experience rather than technical compliance deliverables?
+    - Do the constraints appropriately balance research rigor with participant accessibility needs and federal requirements?
+    - Will vendors understand what success looks like for both research participants and government teams using the results?
+    - Are the objectives achievable within the budget and timeline while ensuring diverse disability representation?
+    - Does the SOO avoid prescribing specific research methodologies while clearly defining required outcomes?
+  review_checklist:
+    question_0:
+      text: >-
+        Does the SOO clearly state what outcomes are required for people with
+        disabilities using government web components?
+      reviewed: true
+    question_1:
+      text: >-
+        Are the objectives measurable and focused on user experience rather than
+        technical compliance deliverables?
+      reviewed: true
+    question_2:
+      text: >-
+        Do the constraints appropriately balance research rigor with participant
+        accessibility needs and federal requirements?
+      reviewed: true
+    question_3:
+      text: >-
+        Will vendors understand what success looks like for both research
+        participants and government teams using the results?
+      reviewed: true
+    question_4:
+      text: >-
+        Are the objectives achievable within the budget and timeline while
+        ensuring diverse disability representation?
+      reviewed: false
+    question_5:
+      text: >-
+        Does the SOO avoid prescribing specific research methodologies while
+        clearly defining required outcomes?
+      reviewed: true
+  total_questions: 6
+  questions_reviewed: 5
+soo_output:
+  soo_draft: |
+    # Statement of Objectives (SOO)
+    ## Federal Accessibility Research Initiative (FARI)
+    ### User Research on Web Component Accessibility
+
+    ### Problem Statement
+
+    Federal agencies struggle to create truly accessible digital services because current accessibility practices focus on technical compliance rather than user experience. Automated scanning tools catch only 20-30% of accessibility barriers, and generic WCAG guidelines don't provide specific guidance for complex interactive components. Government teams lack access to people with disabilities for testing, and when research is conducted, it often focuses on single disability types rather than the full spectrum of accessibility needs. This results in websites that technically comply with Section 508 but still present significant usability barriers for citizens with disabilities.
+
+    ### Objectives
+
+    The General Services Administration requires comprehensive user research that achieves the following outcomes for federal digital accessibility:
+
+    **User Experience Outcomes:**
+    - People with diverse disabilities can successfully complete tasks using 100+ common government web components within target timeframes
+    - Citizens with disabilities report improved satisfaction with federal digital services from baseline 2.8/5 to 4.2/5
+    - Research participants represent the full spectrum of disability types including cognitive, motor, sensory, and multiple disabilities
+
+    **Government Team Outcomes:**
+    - Federal development teams can access detailed usability findings and design recommendations for each tested component
+    - Government agencies can implement evidence-based accessibility design patterns that improve user success rates by 75%
+    - Federal accessibility specialists can validate that recommended design patterns work across multiple assistive technology combinations
+
+    **Program Impact Outcomes:**
+    - Study results demonstrate measurable improvements in task completion rates and user satisfaction for citizens with disabilities
+    - Research findings enable government-wide adoption of evidence-based accessibility practices
+    - Federal agencies achieve improved Section 508 compliance through user-centered design rather than checklist compliance
+
+    ### Constraints
+
+    **Research Ethics and Compliance:**
+    - Must comply with federal human subjects research requirements and IRB approval processes
+    - Must protect participant privacy and accommodate communication preferences and accessibility needs during research sessions
+
+    **Participant Representation Requirements:**
+    - Must recruit participants across cognitive disabilities (learning, attention, memory), motor disabilities (limited mobility, tremor, paralysis), sensory disabilities (blindness, low vision, deafness, hard of hearing), and multiple disabilities
+    - Must include both remote and in-person research options to accommodate participant needs and geographic distribution
+    - Research timeline must account for extended recruitment periods needed to reach diverse disability communities
+
+    **Technical and Accessibility Requirements:**
+    - Must test components with major assistive technologies including screen readers (JAWS, NVDA, VoiceOver), voice control software, switch navigation, and magnification tools
+    - Results must be published in accessible formats and made available to all federal agencies within 6 months of study completion
+
+    **Resource and Timeline Constraints:**
+    - Budget not to exceed $2.8M for participant recruitment, compensation, research facilitation, and analysis over 18 months
+
+    ### Success Criteria
+
+    Success will be measured by improved usability outcomes for people with disabilities interacting with government web components, the quality and actionability of research findings for federal teams, and the adoption of evidence-based accessibility practices across government agencies. Vendors should propose research approaches that prioritize participant accessibility needs while generating actionable insights for government digital service improvement.
+pws_vendor_pack:
+  pws_pack_preview: |
+    # Vendor Instruction Pack: Federal Accessibility Research Initiative (FARI)
+    ## User Research on Web Component Accessibility
+
+    ## Introduction
+
+    The General Services Administration has provided a Statement of Objectives (SOO) that defines the user experience outcomes we need to achieve through comprehensive accessibility research. The SOO does NOT prescribe specific research methodologies, recruitment strategies, or analysis techniques—these decisions are yours to make in your Performance Work Statement (PWS) proposal.
+
+    ## Government-Provided SOO
+
+    ### Problem Statement
+    Federal agencies struggle to create truly accessible digital services because current accessibility practices focus on technical compliance rather than user experience. Automated scanning tools catch only 20-30% of accessibility barriers, and generic WCAG guidelines don't provide specific guidance for complex interactive components. Government teams lack access to people with disabilities for testing, and when research is conducted, it often focuses on single disability types rather than the full spectrum of accessibility needs.
+
+    ### Objectives
+    - People with diverse disabilities can successfully complete tasks using 100+ common government web components within target timeframes
+    - Federal development teams can access detailed usability findings and design recommendations for each tested component
+    - Government agencies can implement evidence-based accessibility design patterns that improve user success rates by 75%
+    - Citizens with disabilities report improved satisfaction with federal digital services from baseline 2.8/5 to 4.2/5
+    - Federal accessibility specialists can validate that recommended design patterns work across multiple assistive technology combinations
+    - Research participants represent the full spectrum of disability types including cognitive, motor, sensory, and multiple disabilities
+    - Study results demonstrate measurable improvements in task completion rates and user satisfaction for citizens with disabilities
+
+    ### Constraints
+    - Must comply with federal human subjects research requirements and IRB approval processes
+    - Must recruit participants across cognitive, motor, sensory, and multiple disabilities
+    - Must test with major assistive technologies (screen readers, voice control, switch navigation, magnification)
+    - Must protect participant privacy and accommodate accessibility needs during research
+    - Must include remote and in-person research options
+    - Research timeline must account for extended recruitment periods for diverse disability communities
+    - Budget not to exceed $2.8M over 18 months
+    - Results published in accessible formats and available to all federal agencies within 6 months
+
+    ## Your PWS Proposal: What We Expect
+
+    ### 1. Research Design and Methodology
+
+    **Address these key areas:**
+    - How will you ensure representative participation across cognitive, motor, sensory, and multiple disability types?
+    - What research methods will you use to test 100+ web components effectively and efficiently?
+    - How will you accommodate diverse communication needs and assistive technology setups?
+    - What measures will you implement to ensure participant comfort and accessibility throughout the research process?
+
+    ### 2. Participant Recruitment and Engagement Strategy
+
+    **Propose approaches for:**
+    - Reaching diverse disability communities including those historically underrepresented in research
+    - Ensuring geographic distribution and balancing remote vs. in-person participation
+    - Accommodating various accessibility needs during recruitment and research sessions
+    - Providing appropriate compensation and support for participants
+    - Building ongoing relationships with disability community organizations
+
+    ### 3. Assistive Technology and Component Testing Plan
+
+    **Detail your approach to:**
+    - Testing components across major assistive technology platforms and versions
+    - Ensuring realistic testing scenarios that reflect actual government website usage
+    - Documenting both successful interactions and failure points with specific recommendations
+    - Validating that design recommendations work across multiple assistive technology combinations
+    - Measuring task completion rates, satisfaction, and usability barriers
+
+    ### 4. Data Analysis and Insight Generation
+
+    **Describe how you will:**
+    - Analyze qualitative and quantitative data to generate actionable insights for federal teams
+    - Identify patterns across different disability types and assistive technology combinations
+    - Translate research findings into specific design recommendations and implementation guidance
+    - Validate that recommended patterns improve user outcomes through follow-up testing
+
+    ### 5. Knowledge Transfer and Dissemination
+
+    **Propose methods to:**
+    - Present findings in formats accessible to people with disabilities and federal team members
+    - Provide training and support to help federal teams implement research-based recommendations
+    - Ensure research insights reach accessibility specialists, designers, developers, and procurement officers
+    - Create sustainable processes for ongoing accessibility research and validation
+
+    ### 6. Ethical Considerations and Participant Protection
+
+    **Address requirements for:**
+    - IRB approval processes and human subjects research compliance
+    - Protecting participant privacy while enabling meaningful research insights
+    - Accommodating diverse communication preferences and accessibility needs
+    - Ensuring informed consent processes are accessible to all participants
+    - Managing potential risks and providing appropriate support resources
+
+    ## Evaluation Considerations
+
+    Your PWS will be evaluated on:
+    - **Participant-centered approach**: How well your research design prioritizes accessibility needs and meaningful participation
+    - **Research rigor**: Quality of proposed methods for generating reliable, actionable insights across diverse disability types
+    - **Practical application**: Clear path from research findings to improved government digital services
+    - **Sustainability**: Approach to building lasting relationships and ongoing research capacity within government
+
+    ## Available Government Resources
+
+    - Access to federal accessibility specialists for consultation on government web component priorities
+    - Coordination with GSA's Government-wide IT Accessibility Program
+    - Potential collaboration with existing federal user research initiatives
+    - Connection to federal agencies interested in participating as research sites or implementation partners
+
+    ## Questions and Clarifications
+
+    For questions about federal accessibility requirements, contact [Accessibility POC].
+    For questions about human subjects research requirements, contact [Research Compliance POC].
+    For questions about government web components and current practices, contact [Technical POC].
+
+    **Proposal submission deadline:** [Date]
+    **Vendor questions deadline:** [Date - 2 weeks before submission]

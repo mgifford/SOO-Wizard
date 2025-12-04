@@ -238,15 +238,22 @@ function render() {
 
       <div class="margin-top-3 display-flex flex-justify">
         <button class="usa-button usa-button--outline" id="back" ${state.stepIndex === 0 ? "disabled" : ""}>Back</button>
-        <button class="usa-button" id="next" ${step.gateLint && lintStep(step).summary.hasErrors ? "disabled" : ""}>${step.id === "export_center" ? "Export" : step.id === "soo_output" ? "Accept & Continue" : "Next"}</button>
+        <button class="usa-button" id="next">Next</button>
       </div>
 
       <hr class="margin-top-4" />
       <div class="usa-accordion" id="exportAccordion">
         <button class="usa-accordion__button" id="exportAccordionBtn" aria-expanded="false" aria-controls="exportAccordionContent">
-          Export and reset <span id="accordionArrow">▼</span>
+          Import/Export/Reset <span id="accordionArrow">▼</span>
         </button>
         <div class="usa-accordion__content" id="exportAccordionContent" style="display:none;">
+          <div class="margin-bottom-2">
+            <strong>Import session:</strong>
+            <div class="margin-top-1">
+              <input type="file" id="importInputs" accept=".yml,.yaml" class="usa-file-input" style="max-width:400px;" />
+              <p class="usa-hint margin-top-1">Upload a previously exported inputs.yml to restore your session</p>
+            </div>
+          </div>
           <div class="margin-bottom-2">
             <strong>Export options:</strong>
             <ul class="usa-list">
@@ -263,6 +270,25 @@ function render() {
   `));
 
   const fields = app.querySelector("#fields");
+  
+  // Special handling for readiness step: add import option
+  if (step.id === "readiness") {
+    const importSection = document.createElement('div');
+    importSection.className = 'usa-alert usa-alert--info margin-bottom-3';
+    importSection.innerHTML = `
+      <div class="usa-alert__body">
+        <h3 class="usa-alert__heading">Starting a new SOO or restoring a previous session?</h3>
+        <p class="usa-alert__text">If you have a previously exported inputs.yml file, you can restore your session:</p>
+        <div class="margin-top-2">
+          <input type="file" id="importInputsStep1" accept=".yml,.yaml" class="usa-file-input" style="max-width:400px;" />
+          <p class="usa-hint margin-top-1">Upload inputs.yml to continue where you left off</p>
+        </div>
+      </div>
+    `;
+    fields.parentNode.insertBefore(importSection, fields);
+    
+    // Event listener will be added later in the event setup section
+  }
   
   // Special handling for readiness_results: auto-populate
   if (step.id === "readiness_results") {
@@ -456,12 +482,26 @@ INSTRUCTIONS:
 2. Identify potential gaps, ambiguities, or areas that need strengthening
 3. Generate 8-12 critical review questions that prompt deeper thinking
 4. Focus on: clarity, completeness, measurability, compliance, feasibility, and vendor understanding
-5. Format questions as a numbered list
+5. CRITICAL FORMAT REQUIREMENT: Each question must start with "- " (dash and space) for proper checkbox generation
+
+REQUIRED FORMAT EXAMPLE:
+- 1.a Question about objective clarity and measurability?
+- 1.b Question about success criteria definition?
+- 1.c Question about measurement methodology?
+- 2.a Question about technical feasibility and constraints?
+- 2.b Question about implementation approach?
+- 2.c Question about vendor capability requirements?
+
+FORMATTING RULES:
+- Every question must start with "- " (dash and space)
+- Use consistent numbering: 1.a, 1.b, 1.c, then 2.a, 2.b, 2.c, etc.
+- Generate 2-4 sub-questions (a, b, c, d) for each major topic area
+- Aim for 3-4 major topics with sub-questions for comprehensive coverage
 
 SOO DRAFT:
 ${draft}
 
-GENERATE CRITICAL REVIEW QUESTIONS:`;
+GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       };
       
       const reviewPrompt = buildReviewPrompt();
@@ -548,21 +588,40 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
             let checkboxesHtml = '';
             let questionIndex = 0;
             
+            // Clear all existing checkbox states when generating new questions
+            const existingCheckboxStates = {};
+            for (let i = 0; i < 20; i++) { // Clear up to 20 potential previous checkboxes
+              if (state.answers.soo_output && state.answers.soo_output[`review_q_${i}`] !== undefined) {
+                delete state.answers.soo_output[`review_q_${i}`];
+              }
+            }
+            
             lines.forEach((line, idx) => {
-              // Only match lines that start with - or * (bullet points), not numbered headers
-              if (line.match(/^\s*[-*]\s+/)) {
-                const checked = getAnswer("soo_output", `review_q_${questionIndex}`, false) ? 'checked' : '';
-                const lineText = line.replace(/^\s*[-*]\s+/, '').trim();
+              // Match lines that start with bullets (- or *), numbers (1., 2., etc.), or sub-numbers (1.a, 1.b, etc.)
+              if (line.match(/^\s*[-*]\s+/) || line.match(/^\s*\d+\.\s+/) || line.match(/^\s*\d+\.[a-z][\.\s]/)) {
+                // Always start with unchecked state for AI-generated questions
+                let lineText = line.replace(/^\s*[-*]\s+/, '').replace(/^\s*\d+\.\s+/, '').replace(/^\s*\d+\.[a-z][\.\s]\s*/, '').trim();
+                
+                // Strip markdown formatting for HTML display
+                lineText = lineText
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **bold** to <strong>
+                  .replace(/\*(.*?)\*/g, '<em>$1</em>')              // *italic* to <em>
+                  .replace(/`(.*?)`/g, '<code>$1</code>');           // `code` to <code>
+                
                 checkboxesHtml += `
                   <div class="usa-checkbox margin-bottom-1">
-                    <input class="usa-checkbox__input review-checkbox" type="checkbox" id="review_q_${questionIndex}" data-index="${questionIndex}" ${checked} />
-                    <label class="usa-checkbox__label" for="review_q_${questionIndex}" style="font-weight:normal;">${escapeHtml(lineText)}</label>
+                    <input class="usa-checkbox__input review-checkbox" type="checkbox" id="review_q_${questionIndex}" data-index="${questionIndex}" />
+                    <label class="usa-checkbox__label" for="review_q_${questionIndex}" style="font-weight:normal;">${lineText}</label>
                   </div>
                 `;
                 questionIndex++;
               } else if (line.trim()) {
-                // Section headers or other text - display as-is
-                checkboxesHtml += `<div style="margin-bottom:0.5rem;${line.match(/^\d+\./) ? 'font-weight:bold;margin-top:1rem;' : ''}">${escapeHtml(line)}</div>`;
+                // Section headers or other text - display as-is, also strip markdown
+                let displayText = line
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                  .replace(/`(.*?)`/g, '<code>$1</code>');
+                checkboxesHtml += `<div style="margin-bottom:0.5rem;${line.match(/^\d+\./) ? 'font-weight:bold;margin-top:1rem;' : ''}">${displayText}</div>`;
               }
             });
             
@@ -841,10 +900,50 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
     });
   }
 
+  // Update next button text and check lint after DOM is ready
   const nextBtn = app.querySelector("#next");
+  const messages = app.querySelector("#messages");
+  
   if (nextBtn) {
+    // Set button text
+    nextBtn.textContent = step.id === "export_center" ? "Export" : step.id === "soo_output" ? "Accept & Continue" : "Next";
+    
+    // Function to check lint and update UI
+    const checkLintAndUpdateUI = () => {
+      if (step.gateLint && step.id !== "generate") {
+        const lint = lintStep(step);
+        if (lint.summary.hasErrors) {
+          nextBtn.disabled = true;
+          if (messages) {
+            messages.innerHTML = "";
+            const alertElement = renderLintAlert(lint);
+            messages.appendChild(alertElement);
+          }
+        } else {
+          nextBtn.disabled = false;
+          if (messages) {
+            messages.innerHTML = "";
+          }
+        }
+      }
+    };
+    
+    // Initial lint check
+    checkLintAndUpdateUI();
+    
+    // Add real-time lint checking to all form fields
+    if (step.gateLint && step.id !== "generate") {
+      const fieldElements = app.querySelectorAll('#fields textarea, #fields input');
+      fieldElements.forEach(fieldElement => {
+        fieldElement.addEventListener('input', () => {
+          // Small delay to avoid excessive checking while typing
+          clearTimeout(fieldElement.lintTimeout);
+          fieldElement.lintTimeout = setTimeout(checkLintAndUpdateUI, 500);
+        });
+      });
+    }
+    
     nextBtn.addEventListener("click", async () => {
-      const messages = app.querySelector("#messages");
       if (!messages) return;
       messages.innerHTML = "";
 
@@ -891,7 +990,10 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
       };
       
       if (lint.summary.hasErrors) {
-        messages.appendChild(renderLintAlert(lint));
+        console.log("Lint errors found:", lint.findings);
+        const alertElement = renderLintAlert(lint);
+        console.log("Adding lint alert to messages div:", alertElement);
+        messages.appendChild(alertElement);
         return;
       }
     }
@@ -1581,6 +1683,75 @@ GENERATE CRITICAL REVIEW QUESTIONS:`;
       downloadText('prompts.txt', promptsTxt);
     });
   }
+  
+  // Import inputs.yml
+  const importInputsBtn = app.querySelector('#importInputs');
+  if (importInputsBtn) {
+    importInputsBtn.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const yamlText = event.target.result;
+        const result = importInputsYml(yamlText);
+        
+        // Show alert with result
+        const alertDiv = document.createElement('div');
+        alertDiv.className = result.success ? 'usa-alert usa-alert--success margin-top-2' : 'usa-alert usa-alert--error margin-top-2';
+        alertDiv.innerHTML = `
+          <div class="usa-alert__body">
+            <p class="usa-alert__text">${result.message}</p>
+          </div>
+        `;
+        
+        const accordion = app.querySelector('#exportAccordionContent');
+        if (accordion) {
+          accordion.insertBefore(alertDiv, accordion.firstChild);
+          setTimeout(() => alertDiv.remove(), 5000);
+        }
+        
+        // Reset the file input so the same file can be uploaded again
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    });
+  }
+  
+  // Import inputs.yml from Step 1
+  const importInputsStep1Btn = app.querySelector('#importInputsStep1');
+  if (importInputsStep1Btn) {
+    importInputsStep1Btn.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const yamlText = event.target.result;
+        const result = importInputsYml(yamlText);
+        
+        // Show alert with result
+        const alertDiv = document.createElement('div');
+        alertDiv.className = result.success ? 'usa-alert usa-alert--success margin-top-2' : 'usa-alert usa-alert--error margin-top-2';
+        alertDiv.innerHTML = `
+          <div class="usa-alert__body">
+            <p class="usa-alert__text">${result.message}</p>
+          </div>
+        `;
+        
+        // Find the import section and add alert
+        const importSection = app.querySelector('#importInputsStep1').closest('.usa-alert');
+        if (importSection) {
+          importSection.appendChild(alertDiv);
+          setTimeout(() => alertDiv.remove(), 5000);
+        }
+        
+        // Reset the file input
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    });
+  }
 
   // Export Center: add HTML to ZIP
   if (step.id === "export_center") {
@@ -1823,15 +1994,37 @@ function lintStep(step) {
     const v = getAnswer(step.id, f.id, "");
     parts.push(String(v || ""));
   }
-  return lintText(parts.join("\n"));
+  const textToLint = parts.join("\n");
+  const lintResult = lintText(textToLint);
+  console.log(`Linting step ${step.id}:`, textToLint);
+  console.log(`Lint result - hasErrors: ${lintResult.summary.hasErrors}, errorCount: ${lintResult.summary.errorCount}, findings:`, lintResult.findings);
+  return lintResult;
 }
 
 function renderLintAlert(lint) {
-  const items = lint.findings.map(f => `<li><strong>${f.severity.toUpperCase()}</strong> ${escapeHtml(f.message)} <span class="mono">${escapeHtml(f.match)}</span></li>`).join("");
+  const items = lint.findings.map(f => {
+    let suggestion = "";
+    const word = f.match.toLowerCase();
+    
+    // Provide specific suggestions based on the problematic word
+    if (word === "must" || word === "shall" || word === "required") {
+      suggestion = " → Try: 'will', 'can', or rephrase as an outcome";
+    } else if (word === "need" || word === "need to") {
+      suggestion = " → Try: 'will have', 'will receive', or describe the desired state";
+    } else if (word.includes("deliver") || word.includes("build") || word.includes("develop")) {
+      suggestion = " → Describe the outcome/result instead of the task";
+    } else if (word === "backlog" || word === "deliverable" || word === "milestone") {
+      suggestion = " → Use outcome-focused language instead of process terms";
+    }
+    
+    return `<li><strong>${f.severity.toUpperCase()}</strong> Found "<span class='mono'>${escapeHtml(f.match)}</span>" - ${escapeHtml(f.message)}<span style='color: #0066cc;'>${suggestion}</span></li>`;
+  }).join("");
+  
   return el(`
     <div class="usa-alert usa-alert--error">
       <div class="usa-alert__body">
         <h3 class="usa-alert__heading">Fix these issues before continuing</h3>
+        <p>SOO (Statement of Objectives) focuses on outcomes, not tasks or requirements. Please revise the highlighted words:</p>
         <ul class="usa-list">${items}</ul>
       </div>
     </div>
@@ -1900,10 +2093,91 @@ function buildInputsYml() {
       review_checklist: reviewChecklist,
       total_questions: Object.keys(reviewChecklist).length,
       questions_reviewed: Object.values(reviewChecklist).filter(q => q.reviewed).length
+    },
+    soo_output: {
+      soo_draft: getAnswer("soo_output", "soo_draft", "")
+    },
+    pws_vendor_pack: {
+      pws_pack_preview: getAnswer("pws_vendor_pack", "pws_pack_preview", "")
     }
   };
 
   return window.jsyaml.dump(inputs, { noRefs: true });
+}
+
+function importInputsYml(yamlText) {
+  try {
+    const data = window.jsyaml.load(yamlText);
+    
+    // Restore readiness
+    if (data.readiness) {
+      setAnswer("readiness", "has_po", data.readiness.has_po || "");
+      setAnswer("readiness", "end_user_access", data.readiness.end_user_access || "");
+      setAnswer("readiness", "approvals_cycle", data.readiness.approvals_cycle || "");
+    }
+    
+    // Restore product vision board
+    if (data.product_vision_board) {
+      setAnswer("vision", "vision", data.product_vision_board.vision || "");
+      setAnswer("vision", "target_group", data.product_vision_board.target_group || "");
+      setAnswer("vision", "needs", data.product_vision_board.needs || "");
+      setAnswer("vision", "product", data.product_vision_board.product || "");
+      setAnswer("vision", "business_goals", data.product_vision_board.business_goals || "");
+    }
+    
+    // Restore Moore template
+    if (data.product_vision_moore) {
+      setAnswer("vision_moore", "target_customer", data.product_vision_moore.target_customer || "");
+      setAnswer("vision_moore", "customer_need", data.product_vision_moore.customer_need || "");
+      setAnswer("vision_moore", "product_name", data.product_vision_moore.product_name || "");
+      setAnswer("vision_moore", "product_category", data.product_vision_moore.product_category || "");
+      setAnswer("vision_moore", "key_benefit", data.product_vision_moore.key_benefit || "");
+      setAnswer("vision_moore", "alternative", data.product_vision_moore.alternative || "");
+      setAnswer("vision_moore", "differentiation", data.product_vision_moore.differentiation || "");
+    }
+    
+    // Restore methodology
+    if (data.methodology) {
+      setAnswer("methodology", "context", data.methodology.context || "new_dev");
+    }
+    
+    // Restore SOO inputs
+    if (data.soo_inputs) {
+      setAnswer("soo_inputs", "problem_context", data.soo_inputs.problem_context || "");
+      setAnswer("soo_inputs", "objectives", data.soo_inputs.objectives || "");
+      setAnswer("soo_inputs", "constraints", data.soo_inputs.constraints || "");
+    }
+    
+    // Restore review questions and checklist
+    if (data.soo_review) {
+      if (data.soo_review.review_questions) {
+        setAnswer("soo_output", "review_questions", data.soo_review.review_questions);
+      }
+      if (data.soo_review.review_checklist) {
+        Object.keys(data.soo_review.review_checklist).forEach(key => {
+          const questionIndex = key.replace('question_', '');
+          const checked = data.soo_review.review_checklist[key].reviewed || false;
+          setAnswer("soo_output", `review_q_${questionIndex}`, checked);
+        });
+      }
+    }
+    
+    // Restore AI-generated content
+    if (data.soo_output && data.soo_output.soo_draft) {
+      setAnswer("soo_output", "soo_draft", data.soo_output.soo_draft);
+    }
+    
+    if (data.pws_vendor_pack && data.pws_vendor_pack.pws_pack_preview) {
+      setAnswer("pws_vendor_pack", "pws_pack_preview", data.pws_vendor_pack.pws_pack_preview);
+    }
+    
+    saveState();
+    render();
+    
+    return { success: true, message: "Session restored successfully!" };
+  } catch (error) {
+    return { success: false, message: "Error parsing inputs.yml: " + error.message };
+  }
 }
 
 function renderTemplate(tpl, vars) {

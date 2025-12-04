@@ -1,22 +1,25 @@
 # SOO Wizard v2 – Quick Reference Card
 
-## 📋 13-Step Flow
+**For complete setup instructions:** See [INSTALL.md](INSTALL.md)  
+**For feature overview:** See [README.md](README.md)
+
+## 📋 11-Step Workflow
 
 ```
-1. Settings              → Configure Ollama endpoint or run prompt-only
-2. Readiness            → PO? End-user access?
-3. Readiness Results    → Auto-generated guidance (STRONG/MEDIUM/LOW)
-4. Vision Board         → 3-5 year vision, target group, needs, product, goals
-5. Moore Template       → Structured differentiation sentence
-6. Methodology          → Contract type (new dev, maintenance, ops, discovery, migration)
-7. SOO Inputs           → Problem context, objectives, constraints [LINTED]
-8. SOO Review Gate      → 5 required checkboxes (no tasks/reqs, outcome-focused, etc.)
-9. Generate SOO         → Call Ollama or show prompt for copy/paste
-10. SOO Draft Review    → Edit SOO, then accept
-11. PWS Vendor Pack     → Auto-generated vendor instructions
-12. Export Center       → Download ZIP (inputs + SOO + PWS + audit + prompts)
-13. [Back to step 1]    → Reset or modify
+1. Readiness Assessment    → PO? End-user access? Approvals cycle?
+2. Readiness Results       → Auto-generated guidance (STRONG/MEDIUM/LOW)
+3. Product Vision Board    → 3-5 year vision, target group, needs, product, goals
+4. Product Vision (Moore)  → Structured differentiation sentence
+5. Methodology             → Contract type (new dev, maintenance, ops, discovery, migration)
+6. SOO Inputs              → Problem context, objectives, constraints [LINTED]
+7. SOO Review Gate         → 5 required checkboxes (no tasks/reqs, outcome-focused, etc.)
+8. Generate SOO            → AI generation with editable prompt OR manual workflow
+9. Critical Review         → AI-generated questions as checkboxes + edit draft
+10. PWS Vendor Pack        → Auto-generated vendor instructions (editable)
+11. Export Center          → Download ZIP bundle with all outputs + source files
 ```
+
+**Navigation:** Use step circles at top to jump between steps. All progress auto-saves.
 
 ---
 
@@ -45,34 +48,61 @@
 ## 💾 Export Bundle Contents
 
 ```
-your-soo-bundle.zip
-├── inputs.yml                    (all wizard answers + settings)
-├── outputs/
-│   ├── soo.md                    (generated SOO markdown)
-│   └── pws_request_pack.md       (vendor instruction pack)
-├── audit.json                    (event log: AI calls, lint results)
-└── prompts.txt                   (all LLM prompts used)
+ProductName-2025-12-04T15-30-00.zip
+├── soo.md / .html / .rtf         (Main deliverable: SOO in 3 formats)
+├── pws_request_pack.md / .html / .rtf  (Vendor instructions in 3 formats)
+└── source/
+    ├── inputs.yml                (All answers + review checklist)
+    ├── audit.json                (Readiness scores, lint results, step tracking)
+    └── prompts.txt               (Fully rendered prompts with your data)
 ```
+
+**Formats:**
+- **Markdown (.md)** - Plain text, GitHub-friendly
+- **HTML (.html)** - Open in browser, copy to Word
+- **RTF (.rtf)** - Native Word format, fully compatible
+
+### 🔄 Restore Previous Session
+
+1. Open Export accordion (bottom of wizard)
+2. Click "Import session" file input
+3. Select previously exported `inputs.yml`
+4. Wizard restores all answers + AI-generated content
+5. Continue where you left off
+
+**Use cases:**
+- Work across multiple devices
+- Share SOO projects with colleagues
+- Backup work externally
+- Resume after browser cache clear
 
 ---
 
-## 🤖 Ollama Integration
+## 🤖 AI Integration
 
-### Enable AI:
+### Option 1: Ollama (Local AI)
 ```bash
-ollama serve &
+ollama serve
 ollama pull llama3.1
-# In wizard: endpoint = http://localhost:11434, model = llama3.1
+```
+Edit `web/config.json`:
+```json
+{
+  "aiEndpoint": "http://localhost:11434",
+  "model": "llama3.1",
+  "timeout": 120
+}
 ```
 
-### Prompt-Only Mode (No AI):
-```
-1. Leave endpoint blank
-2. Wizard shows prompt in textarea
-3. Copy prompt → paste into Ollama CLI or web UI
+### Option 2: Google Gemini (Cloud AI)
+See [INSTALL.md](INSTALL.md) for proxy server setup.
+
+### Option 3: Manual Mode (No setup)
+1. Wizard always shows editable prompts
+2. Click "Copy Prompt" 
+3. Paste into any AI tool (ChatGPT, Claude, etc.)
 4. Paste response back into wizard
-5. Same flow continues
-```
+5. Continue workflow
 
 ---
 
@@ -170,71 +200,60 @@ Constraint:
 
 ---
 
-## 🚀 Deployment
+## 🚀 Quick Start
 
 ### Local Testing:
 ```bash
 cd web
-python -m http.server 8000
-# http://localhost:8000
+python3 -m http.server 8000
+# Visit http://localhost:8000
 ```
 
-### GitHub Pages:
+### GitHub Pages Deployment:
 ```bash
-git add -A
+git add .
 git commit -m "SOO Wizard v2"
 git push origin main
 # Settings → Pages → /web folder
 # https://username.github.io/soo-wizard/
 ```
 
-### CORS Note:
-- From GitHub Pages to localhost Ollama: **CORS blocked**
-- Workarounds: (1) local web server, (2) prompt-only mode
+**See [INSTALL.md](INSTALL.md) for complete deployment instructions including AI setup.**
 
 ---
 
-## 🐛 Troubleshooting
+## 🐛 Common Issues
 
-### Ollama not responding
-```
-→ Check: ollama serve is running
-→ Try: curl http://localhost:11434/api/generate
-→ Fallback: Use prompt-only mode (blank endpoint)
-```
+**Ollama not responding:**
+```bash
+# Check if running
+curl http://localhost:11434/api/generate
 
-### Lint errors blocking SOO generation
-```
-→ Find the violations in the error alert
-→ Edit SOO inputs to remove task verbs / modals / deliverables
-→ Reword as outcomes or constraints
-→ Try again
+# Enable CORS for GitHub Pages
+export OLLAMA_ORIGINS="https://yourusername.github.io"
+ollama serve
 ```
 
-### Export not downloading
-```
-→ Check: Browser allows pop-ups/downloads
-→ Check: Disk space available
-→ Try: Different browser
-```
+**YAML not loading:**
+- Hard refresh browser (Cmd+Shift+R / Ctrl+F5)
+- Check browser console for errors
 
-### Wizard not saving answers
-```
-→ Check: Browser localStorage not disabled
-→ Check: Private/incognito mode (doesn't save)
-→ Try: Normal browsing mode
-```
+**RTF files won't open:**
+- Try LibreOffice first, then save as .docx
+- Or use HTML version and open in Word
+
+**For full troubleshooting:** See [INSTALL.md](INSTALL.md#troubleshooting)
 
 ---
 
-## 📖 Documentation
+## 📖 Documentation Structure
 
-| Document | Purpose |
-|----------|---------|
-| `DELIVERABLES.md` | Complete implementation summary |
-| `ITERATION2_GUIDE.md` | Comprehensive feature reference |
-| `README.md` | Quick start guide |
-| This file | Quick reference card |
+| Document | Purpose | Read Time |
+|----------|---------|-----------|
+| `README.md` | Feature overview, quick start | 5 min |
+| `INSTALL.md` | Complete setup guide (AI, deployment, troubleshooting) | 15 min |
+| `QUICK_REFERENCE.md` (this file) | Cheat sheet for workflow & concepts | 3 min |
+| `DELIVERABLES.md` | Implementation checklist & technical details | 10 min |
 
 ---
 
@@ -244,18 +263,18 @@ git push origin main
 
 | Type | Example | Who Decides |
 |------|---------|------------|
-| **Objective** | "Reduce time-to-complete from 4 weeks to 2 hours" | Government (defines WHAT to achieve) |
-| **Constraint** | "Must comply with FedRAMP Moderate" | Government (defines boundaries) |
-| **Task** | "Build a REST API" | Vendor (defines HOW to achieve objective) |
+| **Objective** | "Reduce time-to-complete from 4 weeks to 2 hours" | Government (WHAT to achieve) |
+| **Constraint** | "Must comply with FedRAMP Moderate" | Government (boundaries) |
+| **Task** | "Build a REST API" | Vendor (HOW to achieve) |
+
+**Rule:** Government defines WHAT. Vendor proposes HOW.
 
 ### SOO vs. PWS
 
-| Document | Who Writes | Contains | Purpose |
-|----------|-----------|----------|---------|
-| **SOO** | Government | Objectives + Constraints | WHAT we need to achieve & WHAT limitations apply |
-| **PWS** | Vendor | Tasks + Deliverables + Schedule | HOW we will achieve your objectives |
-
-### Government defines WHAT. Vendor proposes HOW.
+| Document | Who Writes | Contains |
+|----------|-----------|----------|
+| **SOO** | Government | Objectives + Constraints |
+| **PWS** | Vendor | Tasks + Deliverables + Schedule |
 
 ---
 
@@ -263,15 +282,9 @@ git push origin main
 
 - **Ollama:** https://ollama.ai
 - **USWDS:** https://designsystem.digital.gov
-- **Federal Procurement:** https://www.fai.gov/
-- **Geoffrey Moore:** "Crossing the Chasm" book
-- **SOO Best Practices:** GSA / DoD guidance
-
----
-
-## 📞 Support
-
-1. Check `ITERATION2_GUIDE.md` for detailed feature docs
+- **FAR 37.6 (Performance-Based Acquisition):** https://www.acquisition.gov/far/subpart-37.6
+- **Geoffrey Moore's Product Vision:** "Crossing the Chasm" book
+- **Digital Services Playbook:** https://playbook.cio.gov
 2. Review lint rules in `web/content/lint/rules.yml`
 3. See examples in prompt files: `web/content/prompts/`
 4. Test locally before GitHub Pages deployment

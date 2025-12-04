@@ -1,0 +1,307 @@
+version: 1
+metadata:
+  createdAt: '2025-12-04T18:15:00.000Z'
+  wizardVersion: '2.0'
+readiness:
+  has_po: 'yes'
+  end_user_access: 'direct'
+  approvals_cycle: 'annual'
+product_vision_board:
+  vision: >-
+    UK government digital services demonstrate leadership in environmental
+    sustainability while maintaining accessibility and user experience standards
+    through evidence-based implementation of web sustainability guidelines
+  target_group: >-
+    UK government departments, digital service teams, policy makers, procurement
+    officers, and citizens concerned with environmental impact of digital
+    government services
+  needs: >-
+    Government departments lack clear guidance on implementing web sustainability
+    practices while maintaining compliance with existing accessibility, data
+    protection, and service delivery requirements. Current environmental
+    policies don't specifically address digital service carbon emissions, and
+    there's uncertainty about how sustainability guidelines interact with
+    established legislation and procurement frameworks.
+  product: >-
+    Comprehensive evaluation of Web Sustainability Guidelines implementation
+    across UK government, with policy recommendations for legislative alignment
+    and practical adoption frameworks
+  business_goals: >-
+    Reduce carbon footprint of UK government digital services by 30% within 2
+    years while maintaining 95%+ accessibility compliance and user satisfaction
+    above 4.0/5. Establish UK as international leader in sustainable digital
+    government practices. Create replicable framework for other nations.
+product_vision_moore:
+  target_customer: UK Government departments and digital service teams
+  customer_need: >-
+    evidence-based guidance for implementing web sustainability while
+    maintaining legal compliance
+  product_name: UK Digital Sustainability Policy Framework (UKDSPF)
+  product_category: government policy research and implementation framework
+  key_benefit: >-
+    clear implementation pathway that balances environmental goals with existing
+    legal and accessibility requirements
+  alternative: >-
+    generic sustainability guidelines without government-specific legal and
+    policy context
+  differentiation: >-
+    UK-specific legislative analysis with practical government service
+    implementation guidance
+  moore_statement: >-
+    For UK Government departments and digital service teams who need
+    evidence-based guidance for implementing web sustainability while
+    maintaining legal compliance, the UK Digital Sustainability Policy
+    Framework (UKDSPF) is a government policy research and implementation
+    framework that provides clear implementation pathway that balances
+    environmental goals with existing legal and accessibility requirements.
+    Unlike generic sustainability guidelines without government-specific legal
+    and policy context, our framework offers UK-specific legislative analysis
+    with practical government service implementation guidance.
+methodology:
+  context: new_dev
+soo_inputs:
+  problem_context: >-
+    The UK government has committed to net-zero carbon emissions by 2050, but
+    digital services—which consume increasing amounts of energy through data
+    centers, networks, and user devices—lack specific sustainability guidance.
+    Web Sustainability Guidelines exist but their implementation across
+    government services raises questions about compatibility with existing UK
+    legislation including the Equality Act 2010, Public Sector Bodies
+    Accessibility Regulations 2018, Data Protection Act 2018, and Government
+    Digital Service standards. Departments need clarity on how to implement
+    sustainable web practices without compromising accessibility, privacy,
+    security, or user experience obligations. Additionally, procurement
+    frameworks lack sustainability criteria for digital services, and there's
+    no coordinated approach across government for measuring and reporting
+    digital carbon emissions.
+  objectives: |-
+    - UK government departments can implement Web Sustainability Guidelines while maintaining full compliance with accessibility, data protection, and service delivery legislation
+    - Policy makers can access evidence-based recommendations for updating digital procurement frameworks to include sustainability criteria
+    - Government digital teams can measure and report carbon emissions from their services using standardized methodologies
+    - Citizens experience no reduction in digital service accessibility or usability when sustainability measures are implemented
+    - UK establishes international best practices for sustainable government digital services that other nations can adopt
+    - Government achieves measurable carbon footprint reduction across digital services while maintaining or improving user satisfaction scores
+    - Existing legislation (Equality Act 2010, PSBAR 2018, DPA 2018) compatibility is clearly established with sustainability practices
+  constraints: |-
+    - Must maintain full compliance with Public Sector Bodies Accessibility Regulations 2018 and WCAG 2.1 AA standards
+    - Must not compromise Data Protection Act 2018 requirements or user privacy rights
+    - Must align with Government Digital Service (GDS) standards and design system requirements
+    - Must work within existing government procurement frameworks and provide clear guidance for updating them
+    - Must consider impact on citizens with limited internet access, older devices, or constrained data allowances
+    - Must provide implementation pathways that don't require immediate large-scale infrastructure changes
+    - Budget not to exceed £1.8M for research, policy analysis, and framework development over 15 months
+    - Must engage with at least 12 government departments and 3 devolved administrations during evaluation phase
+    - Results must be published under Open Government License and made available to international partners
+soo_review:
+  review_questions: |-
+    - Does the SOO clearly state what outcomes are required for sustainable UK government digital services?
+    - Are the objectives measurable and focused on policy outcomes rather than technical deliverables?
+    - Do the constraints appropriately balance sustainability goals with existing UK legal obligations?
+    - Will vendors understand what success looks like for both government departments and citizens?
+    - Are the legislative compatibility requirements clearly specified without prescribing solutions?
+    - Does the SOO avoid dictating specific sustainability metrics while ensuring measurable outcomes?
+  review_checklist:
+    question_0:
+      text: >-
+        Does the SOO clearly state what outcomes are required for sustainable UK
+        government digital services?
+      reviewed: true
+    question_1:
+      text: >-
+        Are the objectives measurable and focused on policy outcomes rather than
+        technical deliverables?
+      reviewed: true
+    question_2:
+      text: >-
+        Do the constraints appropriately balance sustainability goals with
+        existing UK legal obligations?
+      reviewed: true
+    question_3:
+      text: >-
+        Will vendors understand what success looks like for both government
+        departments and citizens?
+      reviewed: false
+    question_4:
+      text: >-
+        Are the legislative compatibility requirements clearly specified without
+        prescribing solutions?
+      reviewed: true
+    question_5:
+      text: >-
+        Does the SOO avoid dictating specific sustainability metrics while
+        ensuring measurable outcomes?
+      reviewed: true
+  total_questions: 6
+  questions_reviewed: 5
+soo_output:
+  soo_draft: |
+    # Statement of Objectives (SOO)
+    ## UK Digital Sustainability Policy Framework (UKDSPF)
+    ### Evaluation and Legislative Alignment of Web Sustainability Guidelines
+
+    ### Problem Statement
+
+    The UK government has committed to net-zero carbon emissions by 2050, but digital services—which consume increasing amounts of energy through data centers, networks, and user devices—lack specific sustainability guidance. Web Sustainability Guidelines exist but their implementation across government services raises questions about compatibility with existing UK legislation including the Equality Act 2010, Public Sector Bodies Accessibility Regulations 2018, Data Protection Act 2018, and Government Digital Service standards. Departments need clarity on how to implement sustainable web practices without compromising accessibility, privacy, security, or user experience obligations. Additionally, procurement frameworks lack sustainability criteria for digital services, and there's no coordinated approach across government for measuring and reporting digital carbon emissions.
+
+    ### Objectives
+
+    The UK Government requires comprehensive policy research and framework development that achieves the following outcomes:
+
+    **Legislative Compatibility and Compliance:**
+    - UK government departments can implement Web Sustainability Guidelines while maintaining full compliance with accessibility, data protection, and service delivery legislation
+    - Existing legislation (Equality Act 2010, PSBAR 2018, DPA 2018) compatibility is clearly established with sustainability practices
+    - Citizens experience no reduction in digital service accessibility or usability when sustainability measures are implemented
+
+    **Policy and Procurement Framework Development:**
+    - Policy makers can access evidence-based recommendations for updating digital procurement frameworks to include sustainability criteria
+    - Government digital teams can measure and report carbon emissions from their services using standardized methodologies
+    - UK establishes international best practices for sustainable government digital services that other nations can adopt
+
+    **Measurable Environmental and Service Outcomes:**
+    - Government achieves measurable carbon footprint reduction across digital services while maintaining or improving user satisfaction scores
+    - Digital service sustainability improvements demonstrate compatibility with existing service performance standards
+    - Framework enables government to meet environmental commitments without compromising digital service delivery excellence
+
+    ### Constraints
+
+    **UK Legislative and Regulatory Compliance:**
+    - Must maintain full compliance with Public Sector Bodies Accessibility Regulations 2018 and WCAG 2.1 AA standards
+    - Must not compromise Data Protection Act 2018 requirements or user privacy rights
+    - Must align with Government Digital Service (GDS) standards and design system requirements
+
+    **Government System Integration Requirements:**
+    - Must work within existing government procurement frameworks and provide clear guidance for updating them
+    - Must provide implementation pathways that don't require immediate large-scale infrastructure changes
+    - Must engage with at least 12 government departments and 3 devolved administrations during evaluation phase
+
+    **Citizen Impact and Access Considerations:**
+    - Must consider impact on citizens with limited internet access, older devices, or constrained data allowances
+    - Must ensure no negative impact on digital inclusion or service accessibility
+
+    **Resource and Publication Constraints:**
+    - Budget not to exceed £1.8M for research, policy analysis, and framework development over 15 months
+    - Results must be published under Open Government License and made available to international partners
+
+    ### Success Criteria
+
+    Success will be measured by the creation of actionable policy recommendations that enable sustainable digital government services while maintaining full legal compliance and service quality. The framework must provide clear implementation guidance for government departments and demonstrate how sustainability goals align with existing UK digital government standards and legal obligations.
+pws_vendor_pack:
+  pws_pack_preview: |
+    # Vendor Instruction Pack: UK Digital Sustainability Policy Framework
+    ## Evaluation and Legislative Alignment of Web Sustainability Guidelines
+
+    ## Introduction
+
+    The UK Government has provided a Statement of Objectives (SOO) that defines the policy outcomes we need to achieve for sustainable digital government services. The SOO does NOT prescribe specific research methodologies, policy recommendations, or implementation approaches—these decisions are yours to make in your Performance Work Statement (PWS) proposal.
+
+    ## Government-Provided SOO
+
+    ### Problem Statement
+    The UK government has committed to net-zero carbon emissions by 2050, but digital services lack specific sustainability guidance. Web Sustainability Guidelines exist but their implementation raises questions about compatibility with existing UK legislation including the Equality Act 2010, Public Sector Bodies Accessibility Regulations 2018, Data Protection Act 2018, and Government Digital Service standards.
+
+    ### Objectives
+    - UK government departments can implement Web Sustainability Guidelines while maintaining full compliance with accessibility, data protection, and service delivery legislation
+    - Policy makers can access evidence-based recommendations for updating digital procurement frameworks to include sustainability criteria
+    - Government digital teams can measure and report carbon emissions from their services using standardized methodologies
+    - Citizens experience no reduction in digital service accessibility or usability when sustainability measures are implemented
+    - UK establishes international best practices for sustainable government digital services that other nations can adopt
+    - Government achieves measurable carbon footprint reduction across digital services while maintaining or improving user satisfaction scores
+    - Existing legislation (Equality Act 2010, PSBAR 2018, DPA 2018) compatibility is clearly established with sustainability practices
+
+    ### Constraints
+    - Must maintain full compliance with Public Sector Bodies Accessibility Regulations 2018 and WCAG 2.1 AA standards
+    - Must not compromise Data Protection Act 2018 requirements or user privacy rights
+    - Must align with Government Digital Service (GDS) standards and design system requirements
+    - Must work within existing government procurement frameworks and provide clear guidance for updating them
+    - Must consider impact on citizens with limited internet access, older devices, or constrained data allowances
+    - Must provide implementation pathways that don't require immediate large-scale infrastructure changes
+    - Budget not to exceed £1.8M over 15 months
+    - Must engage with at least 12 government departments and 3 devolved administrations
+    - Results must be published under Open Government License and made available to international partners
+
+    ## Your PWS Proposal: What We Expect
+
+    ### 1. Legislative Analysis and Compatibility Framework
+
+    **Address these key areas:**
+    - How will you analyze the compatibility between Web Sustainability Guidelines and existing UK legislation?
+    - What methodology will you use to identify potential conflicts or synergies between sustainability and accessibility requirements?
+    - How will you ensure your recommendations maintain full legal compliance across all relevant UK regulations?
+    - What process will you follow to validate legal compatibility with government legal teams?
+
+    ### 2. Multi-Departmental Engagement Strategy
+
+    **Propose approaches for:**
+    - Engaging with 12+ government departments and 3 devolved administrations effectively
+    - Gathering current sustainability practices and challenges across government digital services
+    - Building consensus around implementation priorities and approaches
+    - Accommodating different departmental maturity levels and technical capabilities
+    - Coordinating with existing government sustainability and digital transformation initiatives
+
+    ### 3. Policy Framework Development
+
+    **Detail your approach to:**
+    - Translating technical sustainability guidelines into actionable government policy
+    - Developing procurement criteria and evaluation frameworks for sustainable digital services
+    - Creating measurement and reporting standards for government digital carbon emissions
+    - Providing implementation guidance that works within existing government processes and constraints
+    - Ensuring international applicability and knowledge sharing opportunities
+
+    ### 4. Evidence Generation and Validation
+
+    **Describe how you will:**
+    - Conduct pilots or case studies to validate sustainability approaches with real government services
+    - Measure both environmental impact and service quality outcomes
+    - Demonstrate compatibility between sustainability measures and accessibility/usability requirements
+    - Generate evidence base for policy recommendations and implementation guidance
+
+    ### 5. Citizen Impact Assessment
+
+    **Propose methods to:**
+    - Assess how sustainability measures affect citizens with different access levels and device capabilities
+    - Ensure digital inclusion considerations are integrated throughout the framework
+    - Validate that sustainability improvements don't create new barriers for vulnerable populations
+    - Balance environmental goals with service accessibility and user experience requirements
+
+    ### 6. International Leadership and Knowledge Sharing
+
+    **Address requirements for:**
+    - Positioning UK government as international leader in sustainable digital services
+    - Creating frameworks that other nations can adapt and implement
+    - Contributing to international standards and best practice development
+    - Facilitating knowledge sharing through appropriate channels and forums
+
+    ## Evaluation Considerations
+
+    Your PWS will be evaluated on:
+    - **Legislative expertise**: Demonstrated understanding of UK digital government legal requirements and policy frameworks
+    - **Sustainability knowledge**: Deep understanding of web sustainability principles and their practical application
+    - **Government experience**: Experience working with UK government departments and understanding of government digital service delivery
+    - **Policy development skills**: Ability to translate technical guidelines into actionable government policy and procurement frameworks
+
+    ## Available Government Resources
+
+    - Access to government legal teams for legislative compatibility validation
+    - Coordination with existing government sustainability and net-zero initiatives
+    - Connection to Government Digital Service teams and standards development processes
+    - Potential collaboration with international government partners and sustainability organizations
+    - Access to government digital service data for baseline measurement and impact assessment
+
+    ## Key UK Legislative Framework References
+
+    - **Equality Act 2010**: Non-discrimination and reasonable adjustments
+    - **Public Sector Bodies (Websites and Mobile Applications) Accessibility Regulations 2018**: Digital accessibility requirements
+    - **Data Protection Act 2018**: Privacy and data processing requirements
+    - **Government Digital Service Standards**: Service design and delivery requirements
+    - **Climate Change Act 2008**: Carbon budgets and net-zero commitments
+    - **Public Contracts Regulations 2015**: Procurement requirements and processes
+
+    ## Questions and Clarifications
+
+    For questions about UK legislative requirements, contact [Legal Policy POC].
+    For questions about government digital service standards, contact [GDS POC].
+    For questions about sustainability policy context, contact [Environmental Policy POC].
+    For questions about departmental engagement, contact [Digital Transformation POC].
+
+    **Proposal submission deadline:** [Date]
+    **Vendor questions deadline:** [Date - 2 weeks before submission]

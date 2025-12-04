@@ -1,0 +1,79 @@
+version: 1
+metadata:
+  createdAt: '2024-01-15T10:30:00.000Z'
+  wizardVersion: '2.0'
+readiness:
+  has_po: 'yes'
+  end_user_access: 'direct'
+  approvals_cycle: 'quarterly'
+product_vision_board:
+  vision: Build a modern case management system for social services
+  target_group: Social workers and case managers
+  needs: Need streamlined workflows and better client tracking
+  product: Cloud-based case management platform
+  business_goals: Reduce paperwork by 50% and improve case outcomes
+product_vision_moore:
+  target_customer: County social services departments
+  customer_need: streamlined case management
+  product_name: CaseFlow
+  product_category: SaaS platform
+  key_benefit: integrated workflows with automated reporting
+  alternative: spreadsheets and paper files
+  differentiation: real-time collaboration and analytics
+  moore_statement: >-
+    For County social services departments who need streamlined case management,
+    CaseFlow is a SaaS platform that provides integrated workflows with
+    automated reporting. Unlike spreadsheets and paper files, our product offers
+    real-time collaboration and analytics.
+methodology:
+  context: new_dev
+soo_inputs:
+  problem_context: >-
+    Social services departments struggle with fragmented systems and manual
+    processes
+  objectives: |-
+    - Develop integrated case management system
+    - Reduce administrative burden
+    - Improve data quality and reporting
+  constraints: |-
+    - Must comply with state privacy regulations
+    - Budget cap of $2M
+    - 12-month implementation timeline
+soo_review:
+  review_questions: |-
+    - Does the SOO clearly state what outcomes are required?
+    - Are objectives measurable?
+    - Are constraints realistic?
+  review_checklist:
+    question_0:
+      text: Does the SOO clearly state what outcomes are required?
+      reviewed: true
+    question_1:
+      text: Are objectives measurable?
+      reviewed: true
+    question_2:
+      text: Are constraints realistic?
+      reviewed: false
+  total_questions: 3
+  questions_reviewed: 2
+soo_output:
+  soo_draft: |
+    # Statement of Objectives (SOO)
+
+    ## Problem Statement
+    Social services departments struggle with fragmented systems and manual processes.
+
+    ## Objectives
+    - Develop integrated case management system
+    - Reduce administrative burden
+    - Improve data quality and reporting
+
+    ## Constraints
+    - Must comply with state privacy regulations
+    - Budget cap of $2M
+    - 12-month implementation timeline
+pws_vendor_pack:
+  pws_pack_preview: |
+    # Vendor Instruction Pack
+
+    Please review the SOO and submit your PWS proposal.

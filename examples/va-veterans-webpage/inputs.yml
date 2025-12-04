@@ -1,0 +1,253 @@
+version: 1
+metadata:
+  createdAt: '2025-12-04T16:30:00.000Z'
+  wizardVersion: '2.0'
+readiness:
+  has_po: 'yes'
+  end_user_access: 'direct'
+  approvals_cycle: 'quarterly'
+product_vision_board:
+  vision: >-
+    Veterans can easily discover, understand, and access mental health benefits
+    and services through a user-friendly digital experience that reduces
+    barriers and stigma
+  target_group: >-
+    US military veterans seeking mental health support, their families, and
+    healthcare providers serving veterans
+  needs: >-
+    Veterans struggle to find clear information about available mental health
+    benefits, eligibility requirements, and how to access services. Many face
+    stigma and prefer private, self-service options to learn about resources
+    before committing to formal care.
+  product: >-
+    A comprehensive veterans mental health resource webpage that provides clear
+    benefit information, eligibility screening, service location tools, and
+    direct pathways to care
+  business_goals: >-
+    Increase veterans' mental health service utilization by 25% within 12
+    months. Reduce average time from benefit inquiry to first appointment from 4
+    weeks to 2 weeks. Improve veteran satisfaction scores for mental health
+    service discovery from 3.2/5 to 4.0/5.
+product_vision_moore:
+  target_customer: US military veterans and their families
+  customer_need: accessible mental health benefit information and services
+  product_name: VetMind Connect
+  product_category: government digital service portal
+  key_benefit: >-
+    immediate access to personalized mental health resources and eligibility
+    screening
+  alternative: calling multiple VA offices or visiting facilities in person
+  differentiation: >-
+    24/7 self-service access with personalized recommendations and stigma-free
+    exploration
+  moore_statement: >-
+    For US military veterans and their families who need accessible mental
+    health benefit information and services, VetMind Connect is a government
+    digital service portal that provides immediate access to personalized mental
+    health resources and eligibility screening. Unlike calling multiple VA
+    offices or visiting facilities in person, our product offers 24/7
+    self-service access with personalized recommendations and stigma-free
+    exploration.
+methodology:
+  context: new_dev
+soo_inputs:
+  problem_context: >-
+    Veterans face significant barriers accessing mental health services through
+    VA benefits. Current information is scattered across multiple websites,
+    phone systems, and physical locations. Veterans report confusion about
+    eligibility, available services, and how to begin the process. Many avoid
+    seeking help due to stigma and prefer to research options privately before
+    committing to care. The result is delayed or missed care opportunities for a
+    population with high mental health needs.
+  objectives: |-
+    - Veterans can determine their mental health benefit eligibility within 5 minutes of visiting the webpage
+    - Veterans can locate and contact appropriate mental health providers within their geographic area
+    - Veterans can schedule initial mental health consultations directly through the webpage
+    - Veterans can access crisis intervention resources 24/7 through the webpage
+    - Healthcare providers can access veteran-specific mental health resources and referral tools
+    - The webpage achieves WCAG 2.1 AA accessibility compliance for veterans with disabilities
+    - Veterans report improved satisfaction with mental health service discovery process
+  constraints: |-
+    - Must comply with VA web standards and Section 508 accessibility requirements
+    - Must integrate with existing VA identity and authentication systems
+    - Must protect veteran personal health information per HIPAA and VA privacy policies
+    - Must support veterans using assistive technologies and low-bandwidth connections
+    - Budget not to exceed $1.2M for development and first year operations
+    - Initial launch within 9 months of contract award
+    - Must support English and Spanish languages
+    - Must function on mobile devices used by 80% of veterans (iOS/Android, older browsers)
+soo_review:
+  review_questions: |-
+    - Does the SOO clearly state what outcomes are required for veterans' mental health service access?
+    - Are the objectives measurable and focused on veteran outcomes rather than technical deliverables?
+    - Do the constraints appropriately balance veteran needs with VA policy requirements?
+    - Will vendors understand what success looks like for veterans using this service?
+    - Are the objectives achievable within the budget and timeline constraints?
+  review_checklist:
+    question_0:
+      text: >-
+        Does the SOO clearly state what outcomes are required for veterans'
+        mental health service access?
+      reviewed: true
+    question_1:
+      text: >-
+        Are the objectives measurable and focused on veteran outcomes rather
+        than technical deliverables?
+      reviewed: true
+    question_2:
+      text: >-
+        Do the constraints appropriately balance veteran needs with VA policy
+        requirements?
+      reviewed: true
+    question_3:
+      text: >-
+        Will vendors understand what success looks like for veterans using this
+        service?
+      reviewed: true
+    question_4:
+      text: >-
+        Are the objectives achievable within the budget and timeline
+        constraints?
+      reviewed: false
+  total_questions: 5
+  questions_reviewed: 4
+soo_output:
+  soo_draft: |
+    # Statement of Objectives (SOO)
+    ## Veterans Mental Health Resource Webpage Development
+
+    ### Problem Statement
+
+    Veterans face significant barriers accessing mental health services through VA benefits. Current information is scattered across multiple websites, phone systems, and physical locations. Veterans report confusion about eligibility, available services, and how to begin the process. Many avoid seeking help due to stigma and prefer to research options privately before committing to care. The result is delayed or missed care opportunities for a population with high mental health needs.
+
+    ### Objectives
+
+    The Department of Veterans Affairs requires a comprehensive digital solution that achieves the following veteran-centered outcomes:
+
+    **Veteran Self-Service Capabilities:**
+    - Veterans can determine their mental health benefit eligibility within 5 minutes of visiting the webpage
+    - Veterans can locate and contact appropriate mental health providers within their geographic area
+    - Veterans can schedule initial mental health consultations directly through the webpage
+    - Veterans can access crisis intervention resources 24/7 through the webpage
+
+    **Provider and System Integration:**
+    - Healthcare providers can access veteran-specific mental health resources and referral tools
+    - The webpage achieves WCAG 2.1 AA accessibility compliance for veterans with disabilities
+    - Veterans report improved satisfaction with mental health service discovery process
+
+    **Performance Outcomes:**
+    - Increase veterans' mental health service utilization by 25% within 12 months of launch
+    - Reduce average time from benefit inquiry to first appointment from 4 weeks to 2 weeks
+    - Achieve veteran satisfaction scores of 4.0/5 or higher for mental health service discovery
+
+    ### Constraints
+
+    **Regulatory and Compliance Requirements:**
+    - Must comply with VA web standards and Section 508 accessibility requirements
+    - Must integrate with existing VA identity and authentication systems
+    - Must protect veteran personal health information per HIPAA and VA privacy policies
+    - Must support veterans using assistive technologies and low-bandwidth connections
+
+    **Technical and Operational Constraints:**
+    - Must support English and Spanish languages
+    - Must function on mobile devices used by 80% of veterans (iOS/Android, older browsers)
+    - Initial launch within 9 months of contract award
+
+    **Resource Constraints:**
+    - Budget not to exceed $1.2M for development and first year operations
+
+    ### Success Criteria
+
+    Success will be measured by improved veteran outcomes in accessing mental health services, reduced barriers to care, and increased satisfaction with the service discovery process. Vendors should propose approaches that prioritize veteran user experience while meeting all compliance and integration requirements.
+pws_vendor_pack:
+  pws_pack_preview: |
+    # Vendor Instruction Pack: Veterans Mental Health Resource Webpage Development
+
+    ## Introduction
+
+    The Department of Veterans Affairs has provided a Statement of Objectives (SOO) that defines the veteran-centered outcomes we need to achieve for mental health service access. The SOO does NOT prescribe specific technologies, architectures, or implementation approaches—these decisions are yours to make in your Performance Work Statement (PWS) proposal.
+
+    ## Government-Provided SOO
+
+    ### Problem Statement
+    Veterans face significant barriers accessing mental health services through VA benefits. Current information is scattered across multiple websites, phone systems, and physical locations. Veterans report confusion about eligibility, available services, and how to begin the process. Many avoid seeking help due to stigma and prefer to research options privately before committing to care. The result is delayed or missed care opportunities for a population with high mental health needs.
+
+    ### Objectives
+    - Veterans can determine their mental health benefit eligibility within 5 minutes of visiting the webpage
+    - Veterans can locate and contact appropriate mental health providers within their geographic area
+    - Veterans can schedule initial mental health consultations directly through the webpage
+    - Veterans can access crisis intervention resources 24/7 through the webpage
+    - Healthcare providers can access veteran-specific mental health resources and referral tools
+    - The webpage achieves WCAG 2.1 AA accessibility compliance for veterans with disabilities
+    - Veterans report improved satisfaction with mental health service discovery process
+
+    ### Constraints
+    - Must comply with VA web standards and Section 508 accessibility requirements
+    - Must integrate with existing VA identity and authentication systems
+    - Must protect veteran personal health information per HIPAA and VA privacy policies
+    - Must support veterans using assistive technologies and low-bandwidth connections
+    - Budget not to exceed $1.2M for development and first year operations
+    - Initial launch within 9 months of contract award
+    - Must support English and Spanish languages
+    - Must function on mobile devices used by 80% of veterans (iOS/Android, older browsers)
+
+    ## Your PWS Proposal: What We Expect
+
+    ### 1. Veteran-Centered Design Approach
+
+    **For each Government objective, describe:**
+    - How will your solution help veterans achieve these outcomes?
+    - What user research and veteran engagement will you conduct?
+    - How will you measure and validate that veterans can accomplish these tasks?
+    - What accessibility features will you implement beyond minimum compliance?
+
+    ### 2. Technical Approach and Architecture
+
+    **Address these areas:**
+    - Proposed technology stack and rationale for veteran user needs
+    - Integration approach with existing VA systems (identity, scheduling, provider data)
+    - Mobile-first design strategy for veteran device usage patterns
+    - Performance optimization for low-bandwidth scenarios
+    - Security and privacy protection methods
+
+    ### 3. Work Breakdown Structure and Timeline
+
+    **Break down the work into phases that:**
+    - Prioritize high-impact veteran outcomes first
+    - Include veteran usability testing throughout development
+    - Account for VA review and approval cycles
+    - Meet the 9-month launch constraint
+    - Include post-launch optimization and iteration
+
+    ### 4. Quality Assurance and Veteran Validation
+
+    **Propose methods to ensure:**
+    - Continuous veteran user testing and feedback integration
+    - Accessibility compliance testing with actual assistive technology users
+    - Performance testing under realistic veteran usage conditions
+    - Security testing appropriate for healthcare information systems
+
+    ### 5. Success Measurement and Reporting
+
+    **Define how you will:**
+    - Measure achievement of each Government objective
+    - Track veteran satisfaction and usage analytics
+    - Report progress against the performance outcomes
+    - Recommend improvements based on veteran feedback
+
+    ## Evaluation Considerations
+
+    Your PWS will be evaluated on:
+    - **Veteran-centered approach**: How well your solution prioritizes veteran user experience and outcomes
+    - **Technical feasibility**: Realistic approach to integration and compliance requirements
+    - **Risk management**: How you'll address potential challenges with VA systems and veteran adoption
+    - **Value delivery**: Clear path to achieving measurable improvements in veteran mental health service access
+
+    ## Questions and Clarifications
+
+    For technical questions about VA systems integration, contact [Technical POC].
+    For questions about veteran user research access, contact [User Research POC].
+    For policy and compliance questions, contact [Compliance POC].
+
+    **Proposal submission deadline:** [Date]
+    **Vendor questions deadline:** [Date - 2 weeks before submission]

@@ -266,6 +266,45 @@ https://yourusername.github.io/soo-wizard/
 
 ---
 
+## Session Import/Restore
+
+### Exporting Sessions
+
+Every time you export, the bundle includes `source/inputs.yml` containing:
+- All your answers from every step
+- AI-generated SOO draft and PWS pack
+- Review question checklist states
+- Session metadata
+
+### Importing Sessions
+
+To restore a previous session:
+
+1. Open the wizard in your browser
+2. Expand "Export and reset" accordion at bottom
+3. Click "Import session" file input
+4. Select previously exported `inputs.yml`
+5. Wizard restores all data and re-renders UI
+6. Success message confirms restoration
+
+**What gets restored:**
+- All form answers (vision, readiness, methodology, SOO inputs)
+- AI-generated content (SOO draft, PWS pack preview)
+- Review question checkboxes
+- Step progress (you can jump to any previously completed step)
+
+**What doesn't get restored:**
+- Audit trail (events, timestamps) - this is session-specific
+- AI configuration (model, endpoint) - uses current `config.json`
+
+**Use cases:**
+- **Cross-device work**: Export on laptop, import on desktop
+- **Collaboration**: Share inputs.yml with colleagues to review/edit
+- **Backup**: Keep inputs.yml files as external backups
+- **Templates**: Export a baseline SOO, import to create similar ones
+
+---
+
 ## Troubleshooting
 
 ### Issue: "Failed to load YAML"
@@ -276,6 +315,17 @@ https://yourusername.github.io/soo-wizard/
 ```bash
 # Clear browser cache (Cmd+Shift+R / Ctrl+Shift+F5)
 # Or update cache-busting version in app_v2.js
+```
+
+### Issue: Import fails with "Error parsing inputs.yml"
+
+**Cause:** YAML file is corrupted or not valid format
+
+**Solution:**
+1. Verify file is named `inputs.yml` and not edited
+2. Check file contains valid YAML syntax
+3. Re-download original export if corrupted
+4. If custom edits, validate YAML syntax at yamllint.com
 ```
 
 ### Issue: CORS error with Ollama

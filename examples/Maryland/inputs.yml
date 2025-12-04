@@ -1,0 +1,222 @@
+version: 1
+metadata:
+  createdAt: "2025-12-04"
+  wizardVersion: "2.0"
+
+readiness:
+  has_po: "yes" # Work is repeatedly described as product-led with a Product Owner/State staff shaping stories
+  end_user_access: "indirect" # Contractor may recruit test users "if requested" and works with State PO/staff
+  approvals_cycle: "quarterly" # State-level procurement and governance cadence typically quarterly; RFP indicates formal approvals
+
+product_vision_board:
+  vision: >
+    Over the next 3–5 years, Maryland residents and State staff can reliably complete high-value
+    government tasks online with minimal friction, using consistent patterns across agencies,
+    with measurable improvements in accessibility, usability, security, and operational reliability.
+  target_group: >
+    Primary: Maryland residents and businesses using State digital services.
+    Secondary: State agency content owners, program staff, and digital product teams.
+  needs: >
+    Users need State websites and applications that are easy to understand (plain language),
+    accessible to people with disabilities, mobile-friendly, and consistent across agencies.
+    The State needs repeatable delivery capability, measurable quality (test coverage, security),
+    and the ability to evolve platforms (including CMS options) without vendor lock-in.
+  product: >
+    Statewide digital service delivery and experience modernization capability
+    (human-centered design + software delivery + content + analytics + operational support).
+  business_goals: >
+    - Reduce time and effort for residents to complete priority digital tasks
+    - Standardize UI patterns and guidance across agencies (aligned with USWDS)
+    - Improve accessibility conformance and reduce remediation backlog
+    - Improve software quality and deployment reliability through automation
+    - Improve security posture via continuous verification and vulnerability reduction
+    - Enable informed platform decisions via CMS alternatives research and assessment
+
+product_vision_moore:
+  target_customer: "Maryland residents and businesses using State digital services"
+  customer_need: "Complete government tasks online quickly, clearly, and accessibly, across devices"
+  product_name: "Maryland Digital Experience Modernization Capability"
+  product_category: "Outcome-based digital service delivery (design, build, measure, operate)"
+  key_benefit: "Consistent, accessible, secure, reliable digital services that improve task completion"
+  alternative: "Fragmented agency-by-agency sites and apps with inconsistent patterns and uneven quality"
+  differentiation: >
+    Iterative delivery with a measurable Definition of Done (testing, accessibility, security),
+    human-centered research embedded throughout, and State-owned code/artifacts with low lock-in.
+  moore_statement: >
+    For Maryland residents and businesses using State digital services, the Maryland Digital Experience
+    Modernization Capability is an outcome-based digital service delivery approach that enables users
+    to complete priority tasks online clearly, accessibly, and reliably; unlike fragmented agency-by-agency
+    delivery, it standardizes patterns and quality measures while keeping artifacts and code in the
+    government domain.
+
+methodology:
+  context: "new_dev" # Contract is a vehicle for multiple work orders spanning discovery through build/operate
+
+soo_inputs:
+  problem_context: >
+    Maryland DoIT will have a scalable approach for delivering and improving digital services across agencies.
+    Current delivery is constrained by inconsistent design patterns, uneven accessibility and usability,
+    and variable software quality and security practices. The State will have a repeatable approach
+    to research-driven product development (including user research and usability testing), plain-language
+    content, and measurable operational reliability. In addition, the State will receive evidence-based
+    assessments of CMS alternatives to support future platform decisions.
+  objectives:
+    - >
+      Residents and businesses can complete priority online tasks with fewer errors and less time,
+      on mobile and desktop, using clear plain-language content and consistent interaction patterns.
+    - >
+      People with disabilities can access and use State digital services with verified conformance to
+      WCAG 2.1 AA and State non-visual access requirements, with documented remediation timelines.
+    - >
+      State product teams can continuously prioritize and deliver improvements using validated user research
+      and transparent priority management shaped with the Product Owner/State staff.
+    - >
+      The State can deploy improvements frequently without downtime, with build and deployment automation
+      and observable performance (monitoring, error tracking, analytics).
+    - >
+      The State can maintain a measurable software quality baseline (automated tests, code style checks,
+      vulnerability reduction) and retain State ownership over source code and key artifacts.
+    - >
+      DoIT receives actionable assessments of feasible CMS alternatives that support statewide standards,
+      accessibility, and long-term operational support.
+  constraints:
+    - "Contract vehicle is fixed price and/or IDIQ labor hours via Work Orders; deliverables and SLAs may be defined per Work Order." # SLA noted as work-order level
+    - "Iteration cadence is 2–5 weeks, with acceptance aligned to an agreed Definition of Done." # Iteration described
+    - "State data processing or storage outside the continental U.S. is prohibited." # No international processing
+    - "Hardware and software costs procured as part of the RFP cannot exceed 30% of total contract value; material costs will be passed through with no markup." # cost cap / pass-through
+    - "Offerors may propose open-source software and will provide operational support for it." # OSS allowed with support requirement
+    - "Contractor will comply with applicable State and federal policies and standards (Digital Services Playbook, Maryland SDLC, IT Security Policy, Digital Accessibility Policy, etc.)."
+    - "Accessibility obligations include conformance evidence and audit/reporting prior to production/go-live, plus remediation and validation testing deliverables; retention may be held back for performance." # accessibility clause
+    - "Code and core artifacts will remain in the government domain via version-controlled repository." # deliverable table
+
+soo_review:
+  review_questions:
+    - "Do the objectives describe user and organizational outcomes rather than vendor tasks and deliverables?"
+    - "Are accessibility requirements expressed as verifiable outcomes (audit evidence, remediation, validation) rather than vague compliance statements?"
+    - "Are security and quality requirements measurable (test coverage, vulnerability thresholds) and tied to acceptance?"
+    - "Do constraints avoid prescribing specific technologies while still enforcing non-negotiables (data residency, policies, cost caps)?"
+    - "Does the SOO encourage vendor innovation on approach, staffing, and tools while keeping State ownership of artifacts?"
+    - "Are analytics and monitoring requirements framed as outcomes that enable decision-making and accountability?"
+    - "Is there a clear approach for Work Order-level tailoring (SLAs, specific tech, user recruitment) without weakening baseline outcomes?"
+  review_checklist:
+    question_0:
+      text: "Do the objectives describe user and organizational outcomes rather than vendor tasks and deliverables?"
+      reviewed: false
+    question_1:
+      text: "Are accessibility requirements expressed as verifiable outcomes (audit evidence, remediation, validation) rather than vague compliance statements?"
+      reviewed: false
+    question_2:
+      text: "Are security and quality requirements measurable (test coverage, vulnerability thresholds) and tied to acceptance?"
+      reviewed: false
+    question_3:
+      text: "Do constraints avoid prescribing specific technologies while still enforcing non-negotiables (data residency, policies, cost caps)?"
+      reviewed: false
+    question_4:
+      text: "Does the SOO encourage vendor innovation on approach, staffing, and tools while keeping State ownership of artifacts?"
+      reviewed: false
+    question_5:
+      text: "Are analytics and monitoring requirements framed as outcomes that enable decision-making and accountability?"
+      reviewed: false
+    question_6:
+      text: "Is there a clear approach for Work Order-level tailoring (SLAs, specific tech, user recruitment) without weakening baseline outcomes?"
+      reviewed: false
+  total_questions: 7
+  questions_reviewed: 0
+
+soo_output:
+  soo_draft: |
+    # Statement of Objectives (SOO)
+    ## Program: Agile Digital Experience Product Transformation (ADEPT)
+
+    ### 1. Problem Statement
+    Maryland DoIT must improve how the State delivers and evolves digital services across agencies.
+    The State needs consistent user experiences (aligned to statewide patterns), accessible services,
+    clearer content, and stronger quality and security practices that can scale across many work orders.
+    The State also requires measurable delivery in short iterations and the ability to assess platform
+    options (including CMS alternatives) without creating technology lock-in.
+
+    ### 2. Objectives (Outcome-Focused)
+    1. **Task completion and clarity**
+       - Residents and businesses can complete priority online tasks on mobile and desktop with reduced errors,
+         fewer dead ends, and content that is demonstrably understandable (plain language validated with users).
+
+    2. **Accessibility as a shipped property**
+       - Delivered services demonstrate conformance to WCAG 2.1 AA and Maryland non-visual access requirements.
+       - Prior to production/go-live, DoIT receives an accessibility audit report (automated + manual),
+         a remediation timeline for issues, and validation evidence for fixes.
+
+    3. **Consistent statewide experience**
+       - State digital products use reusable patterns and guidance (leveraging USWDS) so cross-agency services feel
+         consistent and maintainable.
+
+    4. **High-quality, low-defect delivery**
+       - Each accepted iteration meets a measurable Definition of Done including:
+         - automated testing sufficient to maintain at least 90% test coverage for delivered code,
+         - zero linting errors and warnings for front-end code style checks,
+         - successful build and deployment to staging via a repeatable automated process,
+         - documented dependencies and licenses, and system-level documentation suitable for handoff.
+
+    5. **Security outcomes**
+       - Delivered software is free of medium and high severity static/dynamic vulnerabilities as verified by
+         agreed tools and approaches, with transparent handling of false positives.
+
+    6. **Evidence-driven product decisions**
+       - At a cadence agreed per work order, the State receives usable research artifacts and analytics on product
+         usage (users/transactions/errors) to guide backlog prioritization and measure impact.
+
+    7. **Platform decision support**
+       - DoIT receives a comparative assessment of feasible CMS alternatives, focused on accessibility, usability,
+         operational support, and alignment with statewide patterns, enabling informed decisions.
+
+    ### 3. Constraints (Non-Negotiables and Boundaries)
+    - **Work order delivery model**: Scope, specific technologies (if known), and any SLAs may be defined at the
+      Work Order level; the base contract supports iterative delivery in 2–5 week increments.
+    - **Data residency**: No processing or storage of State data outside the continental U.S.
+    - **Cost boundaries**: Hardware and software costs must not exceed 30% of the total contract value; material
+      costs are pass-through with no markup.
+    - **Policy compliance**: Contractor must comply with applicable laws, regulations, and State policies/standards
+      including Digital Services Playbook, Maryland SDLC, IT Security Policy, and Digital Accessibility Policy.
+    - **Ownership and reuse**: Source code and core artifacts must remain in a State-controlled, version-controlled
+      repository in the government domain.
+    - **Open source**: Open-source solutions may be proposed, but operational support is required.
+    - **Transition**: At the end of each work order, the State must be able to transition knowledge, documentation,
+      and operating procedures to State staff or a follow-on vendor with minimal disruption.
+
+pws_vendor_pack:
+  pws_pack_preview: |
+    # Vendor Response Instructions (SOO-Based)
+
+    ## What you are responding to
+    This solicitation is outcome-based. DoIT is not buying a fixed task list.
+    DoIT is buying measurable improvements in task completion, accessibility, quality, security,
+    consistency, and operational reliability delivered iteratively via work orders.
+
+    ## What your proposal must include
+    1. **Outcome delivery approach**
+       - How you will achieve the SOO objectives using short iterations (2–5 weeks) and a measurable Definition of Done.
+       - How you will validate outcomes with users (research, usability testing) and show evidence of impact.
+
+    2. **How you measure success**
+       - Your proposed metrics for task success, usability, accessibility conformance, reliability, and delivery performance.
+       - How analytics, monitoring, and error tracking will be instrumented and used for decision-making.
+
+    3. **Quality, accessibility, and security controls**
+       - How you will meet or exceed baseline acceptance thresholds (e.g., 90% test coverage, zero linting issues,
+         signage of vulnerabilities, WCAG 2.1 AA conformance evidence).
+       - Your approach to accessibility audits, remediation timelines, validation testing, and reporting.
+
+    4. **Team and operating model**
+       - Proposed roles, responsibilities, and collaboration model with DoIT Product Owner/State staff.
+       - How you will support transition-out and knowledge transfer at the end of each work order.
+
+    5. **Constraints acknowledgement**
+       - Explicit confirmation of compliance with:
+         - data residency (continental U.S. only),
+         - cost boundaries (30% cap on hardware/software; no material markup),
+         - applicable State policies and standards.
+
+    ## What DoIT will evaluate
+    - Credibility of your plan to achieve outcomes (not word count)
+    - Evidence that your approach produces accessible, secure, low-defect software
+    - Ability to adapt across work orders without lock-in
+    - Strength of measurement, transparency, and knowledge transfer

@@ -11,6 +11,7 @@ A guided wizard for creating compliant, outcome-focused Statements of Objectives
 - **📦 Multiple export formats**: Markdown, HTML, and RTF (Word-compatible)
 - **📊 Complete audit trail** tracking readiness scores, lint results, and workflow progress
 - **💾 Auto-save & offline support** with localStorage persistence
+- **🔄 Session import/restore** from previously exported inputs.yml files
 - **🔒 Privacy-first**: All data stays in your browser (unless using cloud AI)
 
 ## 🚀 Quick Start
@@ -41,7 +42,7 @@ When you export your SOO, you receive a timestamped ZIP file containing:
 - `pws_request_pack.md` / `pws_request_pack.html` / `pws_request_pack.rtf` - Vendor instruction pack
 
 **Source materials (`source/` folder):**
-- `inputs.yml` - All your answers and settings
+- `inputs.yml` - All your answers, settings, and AI-generated content (can be re-imported to restore sessions)
 - `audit.json` - Readiness assessment, lint results, step completions, AI usage
 - `prompts.txt` - Fully rendered AI prompts with your data (for reproducibility)
 
@@ -57,11 +58,23 @@ Federal procurement requires SOOs that focus on **outcomes** (what success looks
 
 ## 🤝 Contributing
 
+## 🔄 Converting Existing RFPs to SOO Examples
+
+Have an existing RFP you want to convert to an outcome-focused SOO? Use our conversion prompt:
+
+**See [RFP_TO_SOO_CONVERSION_PROMPT.md](RFP_TO_SOO_CONVERSION_PROMPT.md)** for a complete AI prompt that analyzes traditional RFPs and generates:
+- Complete `inputs.yml` file for SOO Wizard import
+- `README.md` documentation explaining the transformation
+- Key insights on moving from task-based to outcome-focused procurement
+
+This lets you quickly create new examples by analyzing real-world RFPs and demonstrating how they could be improved with the SOO approach.
+
 Contributions welcome! Key areas:
 - Additional lint rules for SOO compliance
 - New AI provider integrations
 - Export format improvements
 - Accessibility enhancements
+- New example scenarios (use the RFP conversion prompt!)
 
 ## 📄 License
 

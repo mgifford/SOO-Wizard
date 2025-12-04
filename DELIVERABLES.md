@@ -9,15 +9,16 @@
 
 You now have a complete **Iteration 2 SOO Wizard** implementation with:
 
-✅ **6 new workflow screens** – Readiness results, Moore template, SOO review gate, draft editing, vendor PWS pack, export center  
+✅ **11 workflow steps** – Streamlined from readiness through export  
 ✅ **25+ linting rules** – Strict enforcement of "no tasks/requirements/deliverables" in SOO phase  
-✅ **Ollama integration** – Local LLM support with timeout, error handling, and prompt-copy/paste fallback  
+✅ **AI integration** – Ollama (local) or Gemini (cloud) with timeout, error handling, and manual fallback  
 ✅ **Readiness assessment** – Auto-generates guidance on Product Owner and end-user access readiness  
 ✅ **Vendor PWS request pack** – Auto-generates vendor-facing instructions  
-✅ **Complete audit trail** – Logs all major actions, lint results, AI calls  
-✅ **One-click export** – ZIP bundle with inputs, SOO, PWS pack, audit, and prompts  
+✅ **Complete audit trail** – Logs readiness scores, lint results, step completions, and AI usage  
+✅ **Session import/restore** – Upload previously exported inputs.yml to restore sessions  
+✅ **Multiple export formats** – ZIP bundle with MD/HTML/RTF outputs + source files  
 
-**Everything is static, GitHub Pages-compatible, and works in prompt-only mode if no Ollama is available.**
+**Everything is static, GitHub Pages-compatible, and works in prompt-only mode if no AI endpoint is available.**
 
 ---
 
