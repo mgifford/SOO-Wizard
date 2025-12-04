@@ -399,6 +399,12 @@ Click "Download bundle.zip" below to get everything.
       
       // Render existing questions as checkboxes if available
       const renderQuestions = (questions) => {
+        // Ensure questions is a string
+        if (!questions || typeof questions !== 'string') {
+          console.log("renderQuestions called with invalid questions:", questions);
+          return;
+        }
+        
         const lines = questions.split('\n');
         let checkboxesHtml = '';
         let questionIndex = 0;
@@ -456,7 +462,7 @@ Click "Download bundle.zip" below to get everything.
       };
       
       // Initialize with existing questions or show prompt
-      if (reviewQuestions) {
+      if (reviewQuestions && typeof reviewQuestions === 'string' && reviewQuestions.trim()) {
         renderQuestions(reviewQuestions);
       } else {
         reviewQuestionsSection.innerHTML = `
