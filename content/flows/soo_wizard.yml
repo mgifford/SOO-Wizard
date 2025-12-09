@@ -42,7 +42,7 @@ steps:
 
   - id: vision
     title: "Product Vision Board (3–5 year true north)"
-    help: "Focus on outcomes and user experience. Do not describe tasks or solutions."
+    help: 'Focus on outcomes and user experience. Do not describe tasks or solutions. For more information see the US Government <a href="https://techfarhub.usds.gov/resources/learning-center/field-guides/create-inspiring-product-vision/">TechFar</a>'
     fields:
       - id: vision
         type: textarea
