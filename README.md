@@ -85,3 +85,9 @@ Public domain / CC0
 - [USWDS Design System](https://designsystem.digital.gov/)
 - [FAR Part 37.6 - Performance-Based Acquisition](https://www.acquisition.gov/far/subpart-37.6)
 - [Digital Services Playbook](https://playbook.cio.gov/)
+
+## AI Disclosure
+
+Yes. AI was used in creating this tool. There be dragons! 
+
+
