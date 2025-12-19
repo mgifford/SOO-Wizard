@@ -510,11 +510,21 @@ Click "Download bundle.zip" below to get everything.
         fields.innerHTML = `
           <div class="usa-alert usa-alert--warning">
             <div class="usa-alert__body">
-              <p>No SOO draft found. Please go back to Step 8 and generate a draft first.</p>
+              <p>This step requires a draft from Step 8 (Generate SOO draft). Redirecting you now…</p>
             </div>
           </div>
         `;
       }
+      // Redirect back to generate step to collect draft
+      setTimeout(() => {
+        const targetIdx = state.flow.steps.findIndex(s => s.id === "generate");
+        if (targetIdx >= 0) {
+          state.stepIndex = targetIdx;
+          render();
+        } else {
+          window.location.hash = "#generate";
+        }
+      }, 5000);
       return;
     }
     
@@ -546,6 +556,17 @@ Click "Download bundle.zip" below to get everything.
       const generateReviewBtn = fields.querySelector('#generateReviewBtn');
       const copyReviewPromptBtn = fields.querySelector('#copyReviewPromptBtn');
       const reviewQuestionsSection = fields.querySelector('#reviewQuestionsSection');
+
+      if (!isAiEnabled()) {
+        generateReviewBtn.style.display = 'none';
+        reviewStatus.innerHTML = `
+          <div class="usa-alert usa-alert--info">
+            <div class="usa-alert__body">
+              <p>AI endpoint is not configured. Use "Copy Review Prompt" with your own AI tool, then paste the questions here.</p>
+            </div>
+          </div>
+        `;
+      }
       
       // Render existing questions as checkboxes if available
       const renderQuestions = (questions) => {
@@ -939,6 +960,18 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
     const copyBtn = fields.querySelector('#copyPrompt');
     const generateBtn = fields.querySelector('#generateBtn');
     const regenerateBtn = fields.querySelector('#regenerateBtn');
+
+    if (!isAiEnabled()) {
+      generateBtn.style.display = 'none';
+      regenerateBtn.style.display = 'none';
+      aiStatus.innerHTML = `
+        <div class="usa-alert usa-alert--info">
+          <div class="usa-alert__body">
+            <p>AI endpoint is not configured. This session is running as a Prompt Wizard. Copy the prompt and use your own AI tool.</p>
+          </div>
+        </div>
+      `;
+    }
     
     // Save draft changes
     draftField.addEventListener('input', e => {
@@ -2765,6 +2798,9 @@ function renderStageNav() {
 
 // Global AI config
 let aiConfig = { aiEndpoint: '', model: '', timeout: 120 };
+function isAiEnabled() {
+  return Boolean(aiConfig.aiEndpoint && aiConfig.aiEndpoint.trim());
+}
 async function loadAiConfig() {
   try {
     const r = await fetch('./config.json');
@@ -2796,6 +2832,11 @@ async function boot() {
     state.prompts.rewrite = await fetchYml(PROMPT_REWRITE_URL);
     console.log('[BOOT] ✅ Rewrite prompt loaded');
     if (!navigator.onLine) showOfflineIndicator(true);
+    // Set page/title mode based on AI availability
+    const modeLabel = isAiEnabled() ? 'AI Wizard' : 'Prompt Wizard';
+    document.title = `SOO Wizard (${modeLabel})`;
+    const logoLink = document.querySelector('.usa-logo__text a');
+    if (logoLink) logoLink.textContent = `Statement of Objectives (SOO) ${modeLabel}`;
     console.log('[BOOT] ✅ All files loaded successfully. Rendering wizard...');
     // After loading config, set stepIndex from hash or URL if present
     let initialStepId = null;
