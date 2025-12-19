@@ -1,53 +1,47 @@
-
 steps:
-
-  - id: methodology
-    title: "Contracting Context & Budget Range"
-    help: "Select the primary contracting context and provide a rough budget range for this project. This helps with planning and vendor expectations. The budget range is for context only, not a binding commitment."
+  - id: readiness_assessment
+    step: 1
+    title: "Readiness Assessment"
+    help: |
+      Step 1 of 11. If you lack a Product Owner or access to end users, the tool will advise against a full agile contract and suggest a pilot or training first.
     fields:
-      - id: context
-        type: select
-        label: "Primary contracting context"
-        options:
-          - value: "new_dev"
-            label: "New development"
-          - value: "legacy_maint"
-            label: "Maintenance of legacy system"
-          - value: "ops_support"
-            label: "Operations and support"
-          - value: "discovery"
-            label: "Discovery or research"
-          - value: "migration"
-            label: "Migration"
-        default: "new_dev"
-      - id: budget_range
-        type: text
-        label: "Estimated budget range"
-        hint: "E.g., '$100k–$250k', '$1M–$2M', 'Unknown, but likely under $500k'. This is for context only, not a binding commitment."
+      - id: restore_inputs
+        type: file
+        label: "Starting a new SOO or restoring a previous session?"
+        hint: "Upload inputs.yml to continue where you left off (optional; previously exported inputs.yml)."
+        accept: ".yml,.yaml"
+      - id: po_agile_training
+        type: textarea
+        label: "Is your team trained in Agile and do you already have a dedicated Product Owner for this contract?"
+        hint: "Yes/No and brief explanation. A Product Owner has authority to prioritize features and make trade-offs."
+        rows: 4
+      - id: end_user_access
+        type: textarea
+        label: "Do you have access to end users for research during SOO development AND ongoing feedback after contract award?"
+        hint: "Yes/No and explain timing. Best case: access now for discovery and later for validation."
+        rows: 4
+      - id: approvals_cycle
+        type: textarea
+        label: "Describe approvals and release constraints (what slows iteration and when releases can happen)."
+        hint: "E.g., quarterly release windows, security gates take 6 weeks, requires 3 levels of approval. Be specific about timing."
+        rows: 4
+
+  - id: readiness_results
+    step: 2
+    title: "Readiness Results"
+    help: "Auto-generated guidance based on your answers above. STRONG = ready for agile, MEDIUM = consider phased approach, LOW = start with discovery."
+    fields:
+      - id: readiness_summary
+        type: textarea
+        label: "Readiness Summary"
+        readonly: true
+      - id: readiness_confirm
+        type: checkbox
+        label: "I have reviewed and understand my readiness assessment."
         required: true
 
-  - id: soo_inputs
-    title: "SOO inputs (Objectives and Constraints only)"
-    help: "Tasks and requirements are blocked here. Objectives are outcomes. Constraints are boundaries."
-    gateLint: true
-    fields:
-      - id: problem_context
-        type: textarea
-        label: "Problem context (current state only)"
-        hint: "No solutioning. Describe impacts and gaps. Example: 'Citizens cannot renew licenses online, requiring 4-6 week wait in-person.'"
-        rows: 7
-      - id: objectives
-        type: textarea
-        label: "Objectives (one per line)"
-        hint: "Outcomes only. Example: 'Reduce time-to-complete license renewal from 4–6 weeks to under 2 hours'."
-        rows: 8
-      - id: constraints
-        type: textarea
-        label: "Constraints (one per line)"
-        hint: "Compliance, schedule, environment, data handling, standards. Example: 'Comply with FedRAMP Moderate' or 'Deploy by Q4 2025' or 'Operate within existing Azure environment'."
-        rows: 8
-
   - id: vision
+    step: 3
     title: "Product Vision Board (3–5 year true north)"
     help: 'Focus on outcomes and user experience. Do not describe tasks or solutions. For more information on how to build a product reference, see the <a href="https://techfarhub.cio.gov/" target="_blank" rel="noopener noreferrer">US Government TechFar Hub</a>.'
     fields:
@@ -77,11 +71,11 @@ steps:
         rows: 4
 
   - id: positioning_statement
+    step: 4
     title: "Product Positioning Statement"
     help: |
       <div class="usa-prose margin-bottom-1" style="font-size:1.1em;">Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).</div>
       This step compresses your Product Vision Board into a single, defensible positioning statement. Do not introduce new users, needs, or outcomes here. If you change them here, go back and update the Product Vision Board.
-      
       <div class="usa-prose margin-top-2" style="font-weight:600;">Mode: Synthesis, not discovery</div>
     fields:
       - id: target_customer
@@ -118,28 +112,10 @@ steps:
         hint: "Use: Product outcomes + Business goals (from your Product Vision Board)."
         rows: 3
 
-  - id: methodology
-    title: "Methodology selector"
-    help: "This does not create requirements. It changes language and suggestions later."
-    fields:
-      - id: context
-        type: select
-        label: "Primary contracting context"
-        options:
-          - value: "new_dev"
-            label: "New development"
-          - value: "legacy_maint"
-            label: "Maintenance of legacy system"
-          - value: "ops_support"
-            label: "Operations and support"
-          - value: "discovery"
-            label: "Discovery or research"
-          - value: "migration"
-            label: "Migration"
-        default: "new_dev"
 
   - id: soo_inputs
-    title: "SOO inputs (Objectives and Constraints only)"
+    step: 5
+    title: "SOO Inputs (Objectives and Constraints only)"
     help: "Tasks and requirements are blocked here. Objectives are outcomes. Constraints are boundaries."
     gateLint: true
     fields:
@@ -159,7 +135,34 @@ steps:
         hint: "Compliance, schedule, environment, data handling, standards. Example: 'Comply with FedRAMP Moderate' or 'Deploy by Q4 2025' or 'Operate within existing Azure environment'."
         rows: 8
 
+  - id: methodology
+    step: 6
+    title: "Methodology (Contract type: new dev, maintenance, ops, discovery, migration)"
+    help: "Select the primary contracting context and provide a rough budget range for this project. This helps with planning and vendor expectations. The budget range is for context only, not a binding commitment."
+    fields:
+      - id: context
+        type: select
+        label: "Primary contracting context"
+        options:
+          - value: "new_dev"
+            label: "New development"
+          - value: "legacy_maint"
+            label: "Maintenance of legacy system"
+          - value: "ops_support"
+            label: "Operations and support"
+          - value: "discovery"
+            label: "Discovery or research"
+          - value: "migration"
+            label: "Migration"
+        default: "new_dev"
+      - id: budget_range
+        type: text
+        label: "Estimated budget range"
+        hint: "E.g., '$100k–$250k', '$1M–$2M', 'Unknown, but likely under $500k'. This is for context only, not a binding commitment."
+        required: true
+
   - id: soo_review_gate
+    step: 7
     title: "SOO Review Gate"
     help: "Before generating the draft, review your SOO for compliance. Check each box to confirm."
     gateLint: false
@@ -186,11 +189,13 @@ steps:
         required: true
 
   - id: generate
+    step: 8
     title: "Generate SOO draft"
     help: "The tool will call your local AI to draft the SOO, linted for tasks/requirements. You can edit the output and regenerate."
     fields: []
 
   - id: soo_output
+    step: 9
     title: "SOO Draft Review and Edit"
     help: "Review the generated SOO. You can edit it here. If you make changes, regenerate to re-lint."
     fields:
@@ -201,6 +206,7 @@ steps:
         rows: 15
 
   - id: pws_vendor_pack
+    step: 10
     title: "Vendor PWS Request Pack"
     help: "Generate a vendor-facing instruction pack that asks them to propose a PWS responding to your SOO."
     fields:
@@ -212,6 +218,7 @@ steps:
         readonly: true
 
   - id: export_center
+    step: 11
     title: "Export Center"
     help: "Download your complete SOO Wizard bundle: inputs, SOO, PWS request pack, audit log, and prompts used."
     fields:
@@ -229,8 +236,3 @@ steps:
         type: checkbox
         label: "Include prompts.txt (all AI prompts used for transparency)"
         default: true
-
-meta_lint:
-  description: "Lint is applied to the soo_inputs step to block tasks/requirements/deliverables."
-  description_2: "Lint is also applied to generated SOO output before the user sees it."
-  description_3: "The soo_review_gate step is manual but required; it cannot be auto-passed."

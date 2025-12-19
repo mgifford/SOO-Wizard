@@ -120,8 +120,8 @@ function setAnswer(stepId, fieldId, value) {
 
 // Readiness assessment analyzer
 function analyzeReadiness() {
-  const has_po = getAnswer("readiness", "has_po", "").toLowerCase();
-  const end_user = getAnswer("readiness", "end_user_access", "").toLowerCase();
+  const has_po = getAnswer("readiness_assessment", "has_po", "").toLowerCase();
+  const end_user = getAnswer("readiness_assessment", "end_user_access", "").toLowerCase();
   
   const hasPo = has_po.includes("yes");
   const hasUsers = end_user.includes("yes");
@@ -341,33 +341,14 @@ function render() {
 
   const fields = app.querySelector("#fields");
   
-  // Special handling for readiness step: add import option
-  if (step.id === "readiness") {
-    const importSection = document.createElement('div');
-    importSection.className = 'usa-alert usa-alert--info margin-bottom-3';
-    importSection.innerHTML = `
-      <div class="usa-alert__body">
-        <h3 class="usa-alert__heading">Starting a new SOO or restoring a previous session?</h3>
-        <p class="usa-alert__text">If you have a previously exported inputs.yml file, you can restore your session:</p>
-        <div class="margin-top-2">
-          <input type="file" id="importInputsStep1" accept=".yml,.yaml" class="usa-file-input" style="max-width:400px;" />
-          <p class="usa-hint margin-top-1">Upload inputs.yml to continue where you left off</p>
-        </div>
-      </div>
-    `;
-    fields.parentNode.insertBefore(importSection, fields);
-    
-    // Event listener will be added later in the event setup section
-  }
-  
   // Special handling for readiness_results: auto-populate
   if (step.id === "readiness_results") {
     const summary = analyzeReadiness();
     setAnswer("readiness_results", "readiness_summary", summary);
     
     // Capture readiness assessment in audit
-    const has_po = getAnswer("readiness", "has_po", "").toLowerCase();
-    const end_user = getAnswer("readiness", "end_user_access", "").toLowerCase();
+    const has_po = getAnswer("readiness_assessment", "has_po", "").toLowerCase();
+    const end_user = getAnswer("readiness_assessment", "end_user_access", "").toLowerCase();
     const hasPo = has_po.includes("yes");
     const hasUsers = end_user.includes("yes");
     
@@ -804,9 +785,9 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
       alternative: getAnswer("positioning_statement", "alternative", ""),
       differentiation: getAnswer("positioning_statement", "differentiation", ""),
-      has_po: getAnswer("readiness", "has_po", ""),
-      end_user_access: getAnswer("readiness", "end_user_access", ""),
-      approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+      has_po: getAnswer("readiness_assessment", "has_po", ""),
+      end_user_access: getAnswer("readiness_assessment", "end_user_access", ""),
+      approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", ""),
       context: getAnswer("methodology", "context", "new_dev"),
       problem_context: getAnswer("soo_inputs", "problem_context", ""),
       objectives: getAnswer("soo_inputs", "objectives", ""),
@@ -1166,9 +1147,9 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
           key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
           alternative: getAnswer("positioning_statement", "alternative", ""),
           differentiation: getAnswer("positioning_statement", "differentiation", ""),
-          has_po: getAnswer("readiness", "has_po", ""),
-          end_user_access: getAnswer("readiness", "end_user_access", ""),
-          approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+          has_po: getAnswer("readiness_assessment", "has_po", ""),
+          end_user_access: getAnswer("readiness_assessment", "end_user_access", ""),
+          approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", ""),
           context: getAnswer("methodology", "context", "new_dev"),
           problem_context: getAnswer("soo_inputs", "problem_context", ""),
           objectives: getAnswer("soo_inputs", "objectives", ""),
@@ -1687,9 +1668,9 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
           key_benefit: getAnswer("vision_moore", "key_benefit", ""),
           alternative: getAnswer("vision_moore", "alternative", ""),
           differentiation: getAnswer("vision_moore", "differentiation", ""),
-          has_po: getAnswer("readiness", "has_po", ""),
-          end_user_access: getAnswer("readiness", "end_user_access", ""),
-          approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+          has_po: getAnswer("readiness_assessment", "has_po", ""),
+          end_user_access: getAnswer("readiness_assessment", "end_user_access", ""),
+          approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", ""),
           context: getAnswer("methodology", "context", "new_dev"),
           problem_context: getAnswer("soo_inputs", "problem_context", ""),
           objectives: getAnswer("soo_inputs", "objectives", ""),
@@ -1754,9 +1735,9 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
         key_benefit: getAnswer("vision_moore", "key_benefit", ""),
         alternative: getAnswer("vision_moore", "alternative", ""),
         differentiation: getAnswer("vision_moore", "differentiation", ""),
-        has_po: getAnswer("readiness", "has_po", ""),
-        end_user_access: getAnswer("readiness", "end_user_access", ""),
-        approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
+        has_po: getAnswer("readiness_assessment", "has_po", ""),
+        end_user_access: getAnswer("readiness_assessment", "end_user_access", ""),
+        approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", ""),
         context: getAnswer("methodology", "context", "new_dev"),
         problem_context: getAnswer("soo_inputs", "problem_context", ""),
         objectives: getAnswer("soo_inputs", "objectives", ""),
@@ -2042,6 +2023,40 @@ function renderField(stepId, f) {
     return node;
   }
 
+  if (f.type === "file") {
+    const node = el(`
+      <div class="margin-bottom-2">
+        <label class="usa-label" for="${stepId}.${f.id}">${f.label}</label>
+        ${f.hint ? `<div class="usa-hint">${f.hint}</div>` : ""}
+        <input class="usa-file-input" type="file" id="${stepId}.${f.id}" ${f.accept ? `accept="${f.accept}"` : ""} style="max-width:400px;" />
+        <div class="usa-hint margin-top-1" id="${stepId}.${f.id}__msg"></div>
+      </div>
+    `);
+    const input = node.querySelector("input");
+    const msg = node.querySelector(`#${CSS.escape(`${stepId}.${f.id}__msg`)}`);
+    input.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = event => {
+        const yamlText = event.target.result;
+        const result = importInputsYml(yamlText);
+        if (msg) {
+          msg.innerHTML = `
+            <div class="usa-alert usa-alert--${result.success ? "success" : "error"} margin-top-1">
+              <div class="usa-alert__body">
+                <p class="usa-alert__text">${result.message}</p>
+              </div>
+            </div>`;
+          setTimeout(() => { msg.innerHTML = ""; }, 5000);
+        }
+        e.target.value = ""; // reset to allow re-upload
+      };
+      reader.readAsText(file);
+    });
+    return node;
+  }
+
   const node = el(`
     <div class="margin-bottom-2">
       <label class="usa-label" for="${stepId}.${f.id}">${f.label}</label>
@@ -2158,9 +2173,9 @@ function buildInputsYml() {
       wizardVersion: "2.0"
     },
     readiness: {
-      has_po: getAnswer("readiness", "has_po", ""),
-      end_user_access: getAnswer("readiness", "end_user_access", ""),
-      approvals_cycle: getAnswer("readiness", "approvals_cycle", "")
+      has_po: getAnswer("readiness_assessment", "po_agile_training", ""),
+      end_user_access: getAnswer("readiness_assessment", "end_user_access", ""),
+      approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", "")
     },
     product_vision_board: {
       vision: getAnswer("vision", "vision", ""),
@@ -2208,11 +2223,11 @@ function importInputsYml(yamlText) {
   try {
     const data = window.jsyaml.load(yamlText);
     
-    // Restore readiness
+    // Restore readiness (map legacy keys to new free-text fields)
     if (data.readiness) {
-      setAnswer("readiness", "has_po", data.readiness.has_po || "");
-      setAnswer("readiness", "end_user_access", data.readiness.end_user_access || "");
-      setAnswer("readiness", "approvals_cycle", data.readiness.approvals_cycle || "");
+      setAnswer("readiness_assessment", "po_agile_training", data.readiness.has_po || data.readiness.po_agile_training || "");
+      setAnswer("readiness_assessment", "end_user_access", data.readiness.end_user_access || "");
+      setAnswer("readiness_assessment", "approvals_cycle", data.readiness.approvals_cycle || "");
     }
     
     // Restore product vision board
