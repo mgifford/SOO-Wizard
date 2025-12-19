@@ -182,6 +182,7 @@ steps:
     step: 7
     title: "Methodology (Contract type: new dev, maintenance, ops, discovery, migration)"
     help: "Select the primary contracting context and provide a rough budget range for this project. This helps with planning and vendor expectations. The budget range is for context only, not a binding commitment."
+    gateLint: true
     fields:
       - id: context
         type: select
@@ -203,6 +204,26 @@ steps:
         label: "Estimated budget range"
         hint: "E.g., '$100k–$250k', '$1M–$2M', 'Unknown, but likely under $500k'. This is for context only, not a binding commitment."
         required: true
+      - id: background
+        type: textarea
+        label: "Background (technical landscape, users, technologies)"
+        hint: "Agency-provided context: technical landscape, end user needs, technologies in place. Auto-filled from regulations + tech stack if available; edit as needed."
+        rows: 6
+      - id: outcome_definition
+        type: textarea
+        label: "Outcome(s) to be achieved (plain language)"
+        hint: "Describe the mission/user outcome(s) the vendor must achieve. Avoid tasks, deliverables, or naming a solution. Example: 'Eligible residents can complete renewal end-to-end online with minimal support.'"
+        rows: 6
+      - id: outcome_evidence
+        type: textarea
+        label: "How outcomes will be evidenced (signals and data sources)"
+        hint: "List the evidence you will use to judge outcomes (signals + where data comes from). Avoid vendor activity metrics. Example: 'completion rate from analytics', 'call center volume', 'time-to-complete from logs', 'user-reported success from surveys'."
+        rows: 6
+      - id: outcome_governance
+        type: textarea
+        label: "Outcome governance (review cadence, change triggers, incentives)"
+        hint: "How will you review outcomes, adapt priorities, and handle change? Include review cadence, what triggers re-planning, and whether incentives/withholds apply. Keep it high-level."
+        rows: 6
 
   - id: soo_review_gate
     step: 8

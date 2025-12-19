@@ -367,6 +367,56 @@ function render() {
     }, 0);
   }
 
+  // Step 6: Auto-fill methodology background and add refresh link
+  if (step.id === "methodology") {
+    setTimeout(() => {
+      const bgField = document.getElementById("methodology.background");
+      if (!bgField) return;
+
+      const buildDraftBackground = () => {
+        const regs = getAnswer("soo_inputs", "regulations", "");
+        const stack = getAnswer("soo_inputs", "tech_stack", "");
+        return [regs, stack].filter(Boolean).join("\n\n");
+      };
+
+      const combined = buildDraftBackground();
+      if (!bgField.value && combined) {
+        bgField.value = combined;
+        bgField.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+
+      const labelNode = bgField.parentNode.querySelector("label");
+      if (labelNode && !labelNode.parentNode.querySelector(".copy-background-from-previous")) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = "Draft background from previous";
+        btn.className = "usa-button usa-button--unstyled margin-left-1 copy-background-from-previous";
+        btn.style.fontSize = "0.95em";
+
+        const updateDisabled = () => {
+          const draft = buildDraftBackground();
+          btn.disabled = !draft;
+          btn.title = draft ? "Copy from Regulations + Tech stack" : "Nothing to copy yet";
+        };
+
+        btn.addEventListener("click", () => {
+          const draft = buildDraftBackground();
+          if (!draft) return;
+          if (bgField.value && bgField.value !== draft) {
+            const ok = confirm("This will replace the current value with draft background from Regulations + Tech stack. Continue?");
+            if (!ok) return;
+          }
+          bgField.value = draft;
+          bgField.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+
+        updateDisabled();
+        labelNode.appendChild(btn);
+        window.addEventListener("focus", () => updateDisabled(), { once: true });
+      }
+    }, 0);
+  }
+
   // Update URL hash to reflect current step
   if (step && step.id) {
     const hash = `#${step.id}`;
@@ -952,6 +1002,10 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", ""),
       context: getAnswer("methodology", "context", "new_dev"),
       budget_range: getAnswer("methodology", "budget_range", ""),
+      background: getAnswer("methodology", "background", ""),
+      outcome_definition: getAnswer("methodology", "outcome_definition", ""),
+      outcome_evidence: getAnswer("methodology", "outcome_evidence", ""),
+      outcome_governance: getAnswer("methodology", "outcome_governance", ""),
       problem_context: getAnswer("soo_inputs", "problem_context", ""),
       objectives: getAnswer("soo_inputs", "objectives", ""),
       constraints: getAnswer("soo_inputs", "constraints", ""),

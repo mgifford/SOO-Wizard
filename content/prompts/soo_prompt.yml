@@ -37,6 +37,9 @@ template: |
   Contract context:
   - Primary contracting context: {{context_label}}
   - Estimated budget range: {{budget_range}}
+  - Outcome(s) to be achieved (plain language): {{outcome_definition}}
+  - How outcomes will be evidenced (signals and data sources): {{outcome_evidence}}
+  - Outcome governance (review cadence, change triggers, incentives): {{outcome_governance}}
 
   OUTPUTS
   The resulting contract will be considered successful when the following outputs have been delivered. Keep the bullets; only tailor with provided inputs:
@@ -48,9 +51,13 @@ template: |
   - Regulation / policy considerations: {{regulations}}
   - Current technology stack: {{tech_stack}}
   - Success metrics: {{success}}
+  - Outcome(s) to be achieved: {{outcome_definition}}
+  - Evidence for outcomes: {{outcome_evidence}}
+  - Outcome governance (reviews, triggers, incentives): {{outcome_governance}}
 
   BACKGROUND
-  If the user provided background, summarize it from the inputs above; otherwise leave a brief placeholder.
+  {{background}}
+
 
   SCOPE
   Limit the scope to the activities below. Keep headings and bullet lists; do not add new tasks beyond what is stated. You may weave in user inputs for clarity (vision, needs, constraints, success metrics, tech stack).

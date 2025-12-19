@@ -7,6 +7,7 @@ A guided wizard for creating compliant, outcome-focused Statements of Objectives
 - **📝 Step-by-step guidance** through Product Vision, Readiness Assessment, Moore's Product Vision Statement, and SOO development
 - **🤖 AI-powered generation** with Ollama (local) or Google Gemini (cloud) integration
 - **✅ Built-in compliance checking** with lint rules to prevent task-based language
+- **🛡️ Lint gates where it matters** on SOO Inputs and Methodology to block tasky/requirement language before generation
 - **🔍 Critical review phase** with AI-generated questions to improve draft quality
 - **📦 Multiple export formats**: Markdown, HTML, and RTF (Word-compatible)
 - **📊 Complete audit trail** tracking readiness scores, lint results, and workflow progress
@@ -45,6 +46,10 @@ When you export your SOO, you receive a timestamped ZIP file containing:
 - `inputs.yml` - All your answers, settings, and AI-generated content (can be re-imported to restore sessions)
 - `audit.json` - Readiness assessment, lint results, step completions, AI usage
 - `prompts.txt` - Fully rendered AI prompts with your data (for reproducibility)
+
+**Methodology data carried into prompts and outputs:**
+- Background (auto-fills from Regulations + Tech stack; refresh link on Methodology step)
+- Outcome(s) definition, evidence signals/data sources, and governance (review cadence, triggers, incentives)
 
 ## 🎯 Why Use This Wizard?
 

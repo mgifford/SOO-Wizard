@@ -3,20 +3,21 @@
 **For complete setup instructions:** See [INSTALL.md](INSTALL.md)  
 **For feature overview:** See [README.md](README.md)
 
-## 📋 11-Step Workflow
+## 📋 12-Step Workflow
 
 ```
-1. Readiness Assessment    → PO? End-user access? Approvals cycle?
-2. Readiness Results       → Auto-generated guidance (STRONG/MEDIUM/LOW)
-3. Product Vision Board    → 3-5 year vision, target group, needs, product, goals
-4. Product Vision (Moore)  → Structured differentiation sentence
-5. Methodology             → Contract type (new dev, maintenance, ops, discovery, migration)
+1. Introduction            → How to use the wizard
+2. Readiness Assessment    → PO? End-user access? Approvals cycle?
+3. Readiness Results       → Auto-generated guidance (STRONG/MEDIUM/LOW)
+4. Product Vision Board    → 3-5 year vision, target group, needs, product, goals
+5. Product Positioning     → Geoffrey Moore positioning sentence
 6. SOO Inputs              → Problem context, objectives, constraints [LINTED]
-7. SOO Review Gate         → 5 required checkboxes (no tasks/reqs, outcome-focused, etc.)
-8. Generate SOO            → AI generation with editable prompt OR manual workflow
-9. Critical Review         → AI-generated questions as checkboxes + edit draft
-10. PWS Vendor Pack        → Auto-generated vendor instructions (editable)
-11. Export Center          → Download ZIP bundle with all outputs + source files
+7. Methodology             → Contract context, budget, background (auto-fill/refresh), outcomes/evidence/governance [LINTED]
+8. SOO Review Gate         → 5 required checkboxes (no tasks/reqs, outcome-focused, etc.)
+9. Generate SOO            → AI generation with editable prompt OR manual workflow
+10. Critical Review        → AI-generated questions as checkboxes + edit draft
+11. PWS Vendor Pack        → Auto-generated vendor instructions (editable)
+12. Export Center          → Download ZIP bundle with all outputs + source files
 ```
 
 **Navigation:** Use step circles at top to jump between steps. All progress auto-saves.
@@ -24,6 +25,8 @@
 ---
 
 ## 🔒 Lint Rules (Quick Reference)
+
+**Gates:** SOO Inputs and Methodology steps enforce lint checks before generation.
 
 ### ❌ ERRORS (Strict Blocks)
 
