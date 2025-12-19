@@ -164,6 +164,68 @@ function render() {
   app.innerHTML = "";
   const step = state.flow.steps[state.stepIndex];
 
+  // Step 4: Product Positioning Statement - add Vision Board context panel
+  if (step.id === "vision_moore") {
+    const fields = app.querySelector("#fields");
+    // Build the context panel HTML
+    const visionKeys = [
+      { key: "target_group", label: "Target group" },
+      { key: "needs", label: "Needs (current state pain points)" },
+      { key: "vision", label: "Vision (3–5 year outcome statement)" },
+      { key: "product", label: "Product (key capabilities framed as outcomes)" },
+      { key: "business_goals", label: "Business goals" }
+    ];
+    const visionAnswers = visionKeys.map(({ key, label }) => {
+      const val = getAnswer("vision", key, "");
+      return `<div class='margin-bottom-05'><strong>${label}:</strong> <span class='mono'>${val ? escapeHtml(val) : '<span style=\'color:#888\'>Not provided yet</span>'}</span></div>`;
+    }).join("");
+    const panel = document.createElement("div");
+    panel.className = "usa-alert usa-alert--info margin-bottom-3";
+    panel.innerHTML = `<div class='usa-alert__body'><h4 class='usa-alert__heading' style='margin-bottom:0.5em;'>From your Product Vision Board</h4>${visionAnswers}</div>`;
+    if (fields) fields.parentNode.insertBefore(panel, fields);
+  }
+
+  // Auto-fill mapped Moore fields from Vision Board if blank, and update copy button UX
+  if (step.id === "vision_moore") {
+    setTimeout(() => {
+      const copyMap = [
+        { moore: "target_customer", vision: "target_group", label: "Target group" },
+        { moore: "customer_need", vision: "needs", label: "Needs / pain points" },
+        { moore: "key_benefit", vision: "vision", label: "Vision (3–5 year outcome)" }
+      ];
+      copyMap.forEach(({ moore, vision, label }) => {
+        const field = document.getElementById(`vision_moore.${moore}`);
+        const visionVal = getAnswer("vision", vision, "");
+        // Auto-fill if blank
+        if (field && !field.value && visionVal) {
+          field.value = visionVal;
+          field.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        // Add copy button
+        if (field) {
+          let btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = `Copy ${label}`;
+          btn.className = "usa-button usa-button--unstyled margin-left-1";
+          btn.style.fontSize = "0.95em";
+          btn.addEventListener("click", () => {
+            if (field.value && field.value !== visionVal) {
+              if (!confirm(`This will replace the current value with the Vision Board's \"${label}\". Continue?`)) return;
+            }
+            if (visionVal) field.value = visionVal;
+            field.dispatchEvent(new Event("input", { bubbles: true }));
+          });
+          // Insert after label
+          const labelNode = field.parentNode.querySelector("label");
+          if (labelNode && !labelNode.parentNode.querySelector(".copy-from-vision")) {
+            btn.classList.add("copy-from-vision");
+            labelNode.appendChild(btn);
+          }
+        }
+      });
+    }, 0);
+  }
+
   // Update URL hash to reflect current step
   if (step && step.id) {
     const hash = `#${step.id}`;
@@ -2607,10 +2669,18 @@ async function boot() {
     console.log('[BOOT] ✅ Rewrite prompt loaded');
     if (!navigator.onLine) showOfflineIndicator(true);
     console.log('[BOOT] ✅ All files loaded successfully. Rendering wizard...');
-    // After loading config, set stepIndex from URL if present
-    const urlStep = getStepIdFromUrl();
-    if (urlStep) {
-      const idx = state.flow.steps.findIndex(s => s.id === urlStep);
+    // After loading config, set stepIndex from hash or URL if present
+    let initialStepId = null;
+    // Prefer hash if present
+    const hash = window.location.hash.replace(/^#/, '');
+    if (hash) {
+      initialStepId = hash;
+    } else {
+      // Fallback to ?step= param
+      initialStepId = getStepIdFromUrl();
+    }
+    if (initialStepId) {
+      const idx = state.flow.steps.findIndex(s => s.id === initialStepId);
       if (idx >= 0) state.stepIndex = idx;
     }
     render();

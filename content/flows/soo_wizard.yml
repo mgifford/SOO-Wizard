@@ -70,18 +70,22 @@ steps:
         rows: 4
 
   - id: vision_moore
-    title: "Product Vision: Moore Template"
-    help: "Use Geoffrey Moore's sentence structure to refine your vision into a focused, differentiated product statement."
+    title: "Product Positioning Statement"
+    help: |
+      <div class="usa-prose margin-bottom-1" style="font-size:1.1em;">Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).</div>
+      This step compresses your Product Vision Board into a single, defensible positioning statement. Do not introduce new users, needs, or outcomes here. If you change them here, go back and update the Product Vision Board.
+      
+      <div class="usa-prose margin-top-2" style="font-weight:600;">Mode: Synthesis, not discovery</div>
     fields:
       - id: target_customer
         type: textarea
         label: "For [target customer]"
-        hint: "Who is the target customer segment?"
+        hint: "Use: Target group (from your Product Vision Board)."
         rows: 3
       - id: customer_need
         type: textarea
         label: "who [need/problem]"
-        hint: "What is their critical need or problem?"
+        hint: "Use: Needs / pain points (from your Product Vision Board)."
         rows: 3
       - id: product_name
         type: text
@@ -94,17 +98,17 @@ steps:
       - id: key_benefit
         type: textarea
         label: "Key benefit"
-        hint: "What is the primary outcome for the customer?"
+        hint: "Use: Vision (3–5 year outcome) (from your Product Vision Board)."
         rows: 3
       - id: alternative
         type: textarea
         label: "Unlike [alternative]"
-        hint: "What is the status quo or competitor you're replacing?"
+        hint: "Name the status quo you are replacing (what users do today if you do nothing)."
         rows: 3
       - id: differentiation
         type: textarea
         label: "Our product [primary differentiation]"
-        hint: "What makes your solution unique?"
+        hint: "Use: Product outcomes + Business goals (from your Product Vision Board)."
         rows: 3
 
   - id: methodology
