@@ -2814,6 +2814,34 @@ async function loadAiConfig() {
   }
 }
 
+// Validate that an AI endpoint is reachable; otherwise, fall back to prompt-only mode
+async function validateAiAvailability() {
+  const endpoint = aiConfig.aiEndpoint?.trim();
+  if (!endpoint) return false;
+
+  // Block localhost endpoints when served from github.io (cannot reach local Ollama)
+  const isGithubPages = window.location.hostname.endsWith('github.io');
+  if (isGithubPages && endpoint.includes('localhost')) {
+    console.warn('AI disabled: localhost endpoint not reachable from github.io. Falling back to prompt mode.');
+    aiConfig.aiEndpoint = '';
+    return false;
+  }
+
+  try {
+    const base = endpoint.replace(/\/$/, '');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const r = await fetch(`${base}/api/health`, { method: 'GET', signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (!r.ok) throw new Error(`Health check failed with status ${r.status}`);
+    return true;
+  } catch (e) {
+    console.warn('AI endpoint not reachable; falling back to prompt mode:', e);
+    aiConfig.aiEndpoint = '';
+    return false;
+  }
+}
+
 async function boot() {
   console.log('[BOOT] Starting wizard boot sequence...');
   const app = document.querySelector("#app");
@@ -2821,6 +2849,7 @@ async function boot() {
   try {
     loadLocalAnswers();
     await loadAiConfig(); // Ensure aiConfig is loaded before rendering
+    await validateAiAvailability();
     state.flow = await fetchYml(FLOW_URL);
     console.log('[BOOT] ✅ Flow loaded');
     state.rules = await fetchYml(LINT_RULES_URL);
