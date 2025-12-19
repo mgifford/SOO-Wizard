@@ -1,9 +1,37 @@
 steps:
-  - id: readiness_assessment
+  - id: introduction
     step: 1
+    title: "Introduction"
+    help: |
+      ## Welcome
+      The SOO Wizard keeps you outcome-focused and avoids slipping into task/requirement language. Work step-by-step; each step builds traceability from problem to objectives to constraints.
+
+      ## Why start from scratch (don’t paste old scopes)
+      - Legacy SOOs often hide tasks and solutions; you need outcomes and constraints, not “shall build X.”
+      - Copy/paste bloats scope and creates hidden commitments; start with your current users, needs, and constraints.
+      - Clean inputs here improve compliance, competition, and vendor understanding.
+
+      ## Procurement context (8(a) digital services, plain-English)
+      - 8(a) can move faster with qualified small businesses, but you still need a clear SOO: outcomes, constraints, and success measures.
+      - A well-formed SOO reduces rework later in acquisition planning, market research, and evaluations.
+      - Read the short guide: https://techfarhub.usds.gov/get-started/8a/ (how 8(a) fits into the broader process, transparency, and timing).
+
+      ## What you’ll produce
+      - A clean SOO draft grounded in your vision, needs, constraints, and readiness.
+      - A vendor-facing PWS request pack to solicit thoughtful responses.
+      - An export bundle (audit, prompts, inputs) for traceability and reuse.
+
+      ## How to use this wizard
+      - Be specific about current-state problems and constraints; avoid naming solutions.
+      - Keep user outcomes front and center; let vendors propose “how.”
+      - If you don’t have a PO or end-user access, expect guidance to pause or pilot first.
+
+      Tip: Proceed in order; skipping ahead weakens the downstream SOO.
+  - id: readiness_assessment
+    step: 2
     title: "Readiness Assessment"
     help: |
-      Step 1 of 11. If you lack a Product Owner or access to end users, the tool will advise against a full agile contract and suggest a pilot or training first.
+      If you lack a Product Owner or access to end users, the tool will advise against a full agile contract and suggest a pilot or training first.
     fields:
       - id: restore_inputs
         type: file
@@ -27,7 +55,7 @@ steps:
         rows: 4
 
   - id: readiness_results
-    step: 2
+    step: 3
     title: "Readiness Results"
     help: "Auto-generated guidance based on your answers above. STRONG = ready for agile, MEDIUM = consider phased approach, LOW = start with discovery."
     fields:
@@ -41,7 +69,7 @@ steps:
         required: true
 
   - id: vision
-    step: 3
+    step: 4
     title: "Product Vision Board (3–5 year true north)"
     help: 'Focus on outcomes and user experience. Do not describe tasks or solutions. For more information on how to build a product reference, see the <a href="https://techfarhub.cio.gov/" target="_blank" rel="noopener noreferrer">US Government TechFar Hub</a>.'
     fields:
@@ -71,7 +99,7 @@ steps:
         rows: 4
 
   - id: positioning_statement
-    step: 4
+    step: 5
     title: "Product Positioning Statement"
     help: |
       <div class="usa-prose margin-bottom-1" style="font-size:1.1em;">Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).</div>
@@ -114,7 +142,7 @@ steps:
 
 
   - id: soo_inputs
-    step: 5
+    step: 6
     title: "SOO Inputs (Objectives and Constraints only)"
     help: "Tasks and requirements are blocked here. Objectives are outcomes. Constraints are boundaries."
     gateLint: true
@@ -151,7 +179,7 @@ steps:
         rows: 7
 
   - id: methodology
-    step: 6
+    step: 7
     title: "Methodology (Contract type: new dev, maintenance, ops, discovery, migration)"
     help: "Select the primary contracting context and provide a rough budget range for this project. This helps with planning and vendor expectations. The budget range is for context only, not a binding commitment."
     fields:
@@ -177,7 +205,7 @@ steps:
         required: true
 
   - id: soo_review_gate
-    step: 7
+    step: 8
     title: "SOO Review Gate"
     help: "Before generating the draft, review your SOO for compliance. Check each box to confirm."
     gateLint: false
@@ -204,13 +232,13 @@ steps:
         required: true
 
   - id: generate
-    step: 8
+    step: 9
     title: "Generate SOO draft"
     help: "The tool will call your local AI to draft the SOO, linted for tasks/requirements. You can edit the output and regenerate."
     fields: []
 
   - id: soo_output
-    step: 9
+    step: 10
     title: "SOO Draft Review and Edit"
     help: "Review the generated SOO. You can edit it here. If you make changes, regenerate to re-lint."
     fields:
@@ -221,7 +249,7 @@ steps:
         rows: 15
 
   - id: pws_vendor_pack
-    step: 10
+    step: 11
     title: "Vendor PWS Request Pack"
     help: "Generate a vendor-facing instruction pack that asks them to propose a PWS responding to your SOO."
     fields:
@@ -233,7 +261,7 @@ steps:
         readonly: true
 
   - id: export_center
-    step: 11
+    step: 12
     title: "Export Center"
     help: "Download your complete SOO Wizard bundle: inputs, SOO, PWS request pack, audit log, and prompts used."
     fields:
