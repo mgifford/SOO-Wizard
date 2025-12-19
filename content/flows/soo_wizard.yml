@@ -21,8 +21,8 @@
         rows: 8
 
   - id: methodology
-    title: "Methodology selector"
-    help: "This does not create requirements. It changes language and suggestions later."
+    title: "Contracting Context & Budget Range"
+    help: "Select the primary contracting context and provide a rough budget range for this project. This helps with planning and vendor expectations. The budget range is for context only, not a binding commitment."
     fields:
       - id: context
         type: select
@@ -39,6 +39,10 @@
           - value: "migration"
             label: "Migration"
         default: "new_dev"
+      - id: budget_range
+        type: text
+        label: "Estimated budget range"
+        hint: "E.g., '$100k–$250k', '$1M–$2M', 'Unknown, but likely under $500k'. This is for context only, not a binding commitment."
         required: true
 
   - id: vision
