@@ -4,9 +4,16 @@ version: 1.1
 description: Generates a compliant Federal SOO
 
 template: |
-  Generate a Federal Statement of Objectives using all of the following context.
+  Generate a Federal Statement of Objectives (SOO) using ONLY the provided inputs. Follow this exact structure and keep task/requirement language out of the SOO unless already provided.
 
-  Readiness and delivery constraints:
+  STATEMENT OF OBJECTIVES
+  SELECT YOUR TECHNOLOGY
+  Read the Guide on How to Use an 8(a) for Your Digital Service Needs
+
+  OBJECTIVE
+  Use this objective; do not invent new ones: {{problem_context}}
+
+  Readiness and delivery constraints (do not expand beyond inputs):
   - Team training / PO in place: {{po_agile_training}}
   - End-user research access: {{end_user_access}}
   - Approvals and release constraints: {{approvals_cycle}}
@@ -31,12 +38,71 @@ template: |
   - Primary contracting context: {{context_label}}
   - Estimated budget range: {{budget_range}}
 
-  SOO inputs (must drive the objectives):
-  - Problem context (current state only): {{problem_context}}
-  - Objectives (one per line): {{objectives}}
+  OUTPUTS
+  The resulting contract will be considered successful when the following outputs have been delivered. Keep the bullets; only tailor with provided inputs:
+  - Alternatives Analysis of several modern technology platforms
+  - Guided functional demos of top alternatives to determine viability
+  - Retrospective to compare Alternatives Analysis to demonstration results
+  - User-stated objectives (one per line): {{objectives}}
   - Constraints (one per line): {{constraints}}
   - Regulation / policy considerations: {{regulations}}
   - Current technology stack: {{tech_stack}}
   - Success metrics: {{success}}
 
-  Using this information, draft a compliant Federal Statement of Objectives in Markdown. Keep tasks and requirements out of the SOO; focus on outcomes and constraints. Preserve the intent of the inputs; do not invent new objectives or constraints.
+  BACKGROUND
+  If the user provided background, summarize it from the inputs above; otherwise leave a brief placeholder.
+
+  SCOPE
+  Limit the scope to the activities below. Keep headings and bullet lists; do not add new tasks beyond what is stated. You may weave in user inputs for clarity (vision, needs, constraints, success metrics, tech stack).
+
+  Functional Area 1: Alternatives Analysis: Assisting (AGENCY/PROGRAM) to determine which modern technologies are feasible to implement in (AGENCY/PROGRAM) environment.
+  Objective: Coach through tradeoffs for alternative platform solutions; align with Federal Source Code Policy.
+  Tasks (retain; clarify only with provided inputs):
+  - Clearly identify an appropriate (AGENCY/PROGRAM) problem that can be solved with a modern technology platform.
+  - Analysis of opportunities, constraints, and assumptions for each technology
+  - Implications of software language options (commonality and adoption in the market place)
+  - Open architecture availability
+  - Deployment strategies (Analyze platform constraints and support)
+  - Likelihood of continuous integration
+  - Availability of pre-existing Open Source Software that meets or can be modified to meet (AGENCY/PROGRAM) needs
+  - Availability of custom-developed source code to be Open Source Software and available to the public, as referenced in the Federal Source Code Policy
+  - Impact on (AGENCY/PROGRAM) IT environment
+  - Ease to fix when technology solution is not performing
+  - Cost models: investment, operating, support, ROI, life-cycle
+  - Security considerations
+  - Design and user experience (UX) considerations
+  - 508 compliance considerations
+  - Records and legal constraints
+  - Support constraints
+  - Other customers’ satisfaction with the technology
+  - Industry best practice suggestions from technology leaders
+  - Implementation time frame implications
+  - Market Intelligence Around Providers
+  - Pricing structures
+  - Vendor based considerations
+  - Adequate competition considerations
+  - Vendors’ implementation capabilities
+  - Risk of potential vendor lock-in
+  - Small business vendor opportunities
+  - Constraints of funding availability
+
+  Functional Area 2: Practical Application: Determine viability
+  Objective: Facilitate live hands-on demonstrations of the highest rated alternatives with end users in (AGENCY/PROGRAM) or vendor-provided environments.
+  Tasks (retain; clarify only with provided inputs):
+  - Obtain or establish a method to demonstrate in real time the highest rated results from the Alternatives Analysis, in order to use those technologies on a non-production or low risk version of the (AGENCY/PROGRAM) environment
+  - Verify the utility of the platform by testing with end users (users, admins, managers)
+  - Evaluate and document how the solutions met end user goals and strategic business objectives
+  - Evaluate performance of platform/solution against criteria identified in the Alternatives Analysis
+
+  Functional Area 3: Retrospective: What worked, what didn’t, what to do next
+  Objective: After prototypes/demos, develop conclusions and next steps.
+  Tasks (retain; clarify only with provided inputs):
+  - Conduct a retrospective on demo data (goals, timeline, budget, events, success/failures)
+  - Evaluate factors/constraints found during demos that were not anticipated
+  - Determine mitigated vs. remaining roadblocks
+  - Provide a plan for scaling the most viable platform(s)/solution(s) via MVP using continuous design and agile processes
+
+  Formatting rules:
+  - Keep headings exactly as above.
+  - Do not invent new objectives, constraints, or tasks beyond the lists; only clarify with provided inputs.
+  - Keep outcomes/constraints; avoid prescriptive requirements language beyond what is listed.

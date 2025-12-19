@@ -2827,19 +2827,9 @@ async function validateAiAvailability() {
     return false;
   }
 
-  try {
-    const base = endpoint.replace(/\/$/, '');
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
-    const r = await fetch(`${base}/api/health`, { method: 'GET', signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (!r.ok) throw new Error(`Health check failed with status ${r.status}`);
-    return true;
-  } catch (e) {
-    console.warn('AI endpoint not reachable; falling back to prompt mode:', e);
-    aiConfig.aiEndpoint = '';
-    return false;
-  }
+  // For localhost or non-github.io origins, assume AI available; do not disable on failed health
+  // (some local endpoints may not expose /api/health). Downstream buttons still guard on aiEndpoint presence.
+  return true;
 }
 
 async function boot() {
