@@ -140,13 +140,13 @@ function analyzeReadiness() {
 
 // Moore template builder
 function buildMooreStatement() {
-  const target = getAnswer("vision_moore", "target_customer", "");
-  const need = getAnswer("vision_moore", "customer_need", "");
-  const product = getAnswer("vision_moore", "product_name", "");
-  const category = getAnswer("vision_moore", "product_category", "");
-  const benefit = getAnswer("vision_moore", "key_benefit", "");
-  const alt = getAnswer("vision_moore", "alternative", "");
-  const diff = getAnswer("vision_moore", "differentiation", "");
+  const target = getAnswer("positioning_statement", "target_customer", "");
+  const need = getAnswer("positioning_statement", "customer_need", "");
+  const product = getAnswer("positioning_statement", "product_name", "");
+  const category = getAnswer("positioning_statement", "product_category", "");
+  const benefit = getAnswer("positioning_statement", "key_benefit", "");
+  const alt = getAnswer("positioning_statement", "alternative", "");
+  const diff = getAnswer("positioning_statement", "differentiation", "");
   
   return `For ${target} who ${need}, the ${product} is a ${category} that ${benefit}. Unlike ${alt}, our product ${diff}.`;
 }
@@ -165,7 +165,7 @@ function render() {
   const step = state.flow.steps[state.stepIndex];
 
   // Step 4: Product Positioning Statement - add Vision Board context panel
-  if (step.id === "vision_moore") {
+  if (step.id === "positioning_statement") {
     const fields = app.querySelector("#fields");
     // Build the context panel HTML
     const visionKeys = [
@@ -186,7 +186,7 @@ function render() {
   }
 
   // Auto-fill mapped Moore fields from Vision Board if blank, and update copy button UX
-  if (step.id === "vision_moore") {
+  if (step.id === "positioning_statement") {
     setTimeout(() => {
       const copyMap = [
         { moore: "target_customer", vision: "target_group", label: "Target group" },
@@ -194,7 +194,7 @@ function render() {
         { moore: "key_benefit", vision: "vision", label: "Vision (3–5 year outcome)" }
       ];
       copyMap.forEach(({ moore, vision, label }) => {
-        const field = document.getElementById(`vision_moore.${moore}`);
+        const field = document.getElementById(`positioning_statement.${moore}`);
         const visionVal = getAnswer("vision", vision, "");
         // Auto-fill if blank
         if (field && !field.value && visionVal) {
@@ -797,13 +797,13 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       needs: getAnswer("vision", "needs", ""),
       product: getAnswer("vision", "product", ""),
       business_goals: getAnswer("vision", "business_goals", ""),
-      target_customer: getAnswer("vision_moore", "target_customer", ""),
-      customer_need: getAnswer("vision_moore", "customer_need", ""),
-      product_name: getAnswer("vision_moore", "product_name", ""),
-      product_category: getAnswer("vision_moore", "product_category", ""),
-      key_benefit: getAnswer("vision_moore", "key_benefit", ""),
-      alternative: getAnswer("vision_moore", "alternative", ""),
-      differentiation: getAnswer("vision_moore", "differentiation", ""),
+      target_customer: getAnswer("positioning_statement", "target_customer", ""),
+      customer_need: getAnswer("positioning_statement", "customer_need", ""),
+      product_name: getAnswer("positioning_statement", "product_name", ""),
+      product_category: getAnswer("positioning_statement", "product_category", ""),
+      key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
+      alternative: getAnswer("positioning_statement", "alternative", ""),
+      differentiation: getAnswer("positioning_statement", "differentiation", ""),
       has_po: getAnswer("readiness", "has_po", ""),
       end_user_access: getAnswer("readiness", "end_user_access", ""),
       approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
@@ -1159,13 +1159,13 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
           needs: getAnswer("vision", "needs", ""),
           product: getAnswer("vision", "product", ""),
           business_goals: getAnswer("vision", "business_goals", ""),
-          target_customer: getAnswer("vision_moore", "target_customer", ""),
-          customer_need: getAnswer("vision_moore", "customer_need", ""),
-          product_name: getAnswer("vision_moore", "product_name", ""),
-          product_category: getAnswer("vision_moore", "product_category", ""),
-          key_benefit: getAnswer("vision_moore", "key_benefit", ""),
-          alternative: getAnswer("vision_moore", "alternative", ""),
-          differentiation: getAnswer("vision_moore", "differentiation", ""),
+          target_customer: getAnswer("positioning_statement", "target_customer", ""),
+          customer_need: getAnswer("positioning_statement", "customer_need", ""),
+          product_name: getAnswer("positioning_statement", "product_name", ""),
+          product_category: getAnswer("positioning_statement", "product_category", ""),
+          key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
+          alternative: getAnswer("positioning_statement", "alternative", ""),
+          differentiation: getAnswer("positioning_statement", "differentiation", ""),
           has_po: getAnswer("readiness", "has_po", ""),
           end_user_access: getAnswer("readiness", "end_user_access", ""),
           approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),
@@ -1397,7 +1397,7 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
         "source/prompts.txt": promptsTxt
       };
       // Generate filename with product name and timestamp
-      const productName = getAnswer("vision_moore", "product_name", "") || getAnswer("vision", "product", "") || "SOO";
+      const productName = getAnswer("positioning_statement", "product_name", "") || getAnswer("vision", "product", "") || "SOO";
       const sanitizedName = productName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').substring(0, 50);
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
       const filename = `${sanitizedName}-${timestamp}.zip`;
@@ -2169,14 +2169,14 @@ function buildInputsYml() {
       product: getAnswer("vision", "product", ""),
       business_goals: getAnswer("vision", "business_goals", "")
     },
-    product_vision_moore: {
-      target_customer: getAnswer("vision_moore", "target_customer", ""),
-      customer_need: getAnswer("vision_moore", "customer_need", ""),
-      product_name: getAnswer("vision_moore", "product_name", ""),
-      product_category: getAnswer("vision_moore", "product_category", ""),
-      key_benefit: getAnswer("vision_moore", "key_benefit", ""),
-      alternative: getAnswer("vision_moore", "alternative", ""),
-      differentiation: getAnswer("vision_moore", "differentiation", ""),
+    product_positioning_statement: {
+      target_customer: getAnswer("positioning_statement", "target_customer", ""),
+      customer_need: getAnswer("positioning_statement", "customer_need", ""),
+      product_name: getAnswer("positioning_statement", "product_name", ""),
+      product_category: getAnswer("positioning_statement", "product_category", ""),
+      key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
+      alternative: getAnswer("positioning_statement", "alternative", ""),
+      differentiation: getAnswer("positioning_statement", "differentiation", ""),
       moore_statement: buildMooreStatement()
     },
     methodology: {
@@ -2225,14 +2225,14 @@ function importInputsYml(yamlText) {
     }
     
     // Restore Moore template
-    if (data.product_vision_moore) {
-      setAnswer("vision_moore", "target_customer", data.product_vision_moore.target_customer || "");
-      setAnswer("vision_moore", "customer_need", data.product_vision_moore.customer_need || "");
-      setAnswer("vision_moore", "product_name", data.product_vision_moore.product_name || "");
-      setAnswer("vision_moore", "product_category", data.product_vision_moore.product_category || "");
-      setAnswer("vision_moore", "key_benefit", data.product_vision_moore.key_benefit || "");
-      setAnswer("vision_moore", "alternative", data.product_vision_moore.alternative || "");
-      setAnswer("vision_moore", "differentiation", data.product_vision_moore.differentiation || "");
+    if (data.product_positioning_statement) {
+      setAnswer("positioning_statement", "target_customer", data.product_positioning_statement.target_customer || "");
+      setAnswer("positioning_statement", "customer_need", data.product_positioning_statement.customer_need || "");
+      setAnswer("positioning_statement", "product_name", data.product_positioning_statement.product_name || "");
+      setAnswer("positioning_statement", "product_category", data.product_positioning_statement.product_category || "");
+      setAnswer("positioning_statement", "key_benefit", data.product_positioning_statement.key_benefit || "");
+      setAnswer("positioning_statement", "alternative", data.product_positioning_statement.alternative || "");
+      setAnswer("positioning_statement", "differentiation", data.product_positioning_statement.differentiation || "");
     }
     
     // Restore methodology
@@ -2452,13 +2452,13 @@ async function runGeneration(app) {
     needs: getAnswer("vision", "needs", ""),
     product: getAnswer("vision", "product", ""),
     business_goals: getAnswer("vision", "business_goals", ""),
-    target_customer: getAnswer("vision_moore", "target_customer", ""),
-    customer_need: getAnswer("vision_moore", "customer_need", ""),
-    product_name: getAnswer("vision_moore", "product_name", ""),
-    product_category: getAnswer("vision_moore", "product_category", ""),
-    key_benefit: getAnswer("vision_moore", "key_benefit", ""),
-    alternative: getAnswer("vision_moore", "alternative", ""),
-    differentiation: getAnswer("vision_moore", "differentiation", ""),
+    target_customer: getAnswer("positioning_statement", "target_customer", ""),
+    customer_need: getAnswer("positioning_statement", "customer_need", ""),
+    product_name: getAnswer("positioning_statement", "product_name", ""),
+    product_category: getAnswer("positioning_statement", "product_category", ""),
+    key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
+    alternative: getAnswer("positioning_statement", "alternative", ""),
+    differentiation: getAnswer("positioning_statement", "differentiation", ""),
     has_po: getAnswer("readiness", "has_po", ""),
     end_user_access: getAnswer("readiness", "end_user_access", ""),
     approvals_cycle: getAnswer("readiness", "approvals_cycle", ""),

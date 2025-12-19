@@ -69,7 +69,7 @@ steps:
         hint: "Strategic outcomes you expect from this product"
         rows: 4
 
-  - id: vision_moore
+  - id: positioning_statement
     title: "Product Positioning Statement"
     help: |
       <div class="usa-prose margin-bottom-1" style="font-size:1.1em;">Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).</div>
