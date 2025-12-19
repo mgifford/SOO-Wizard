@@ -226,6 +226,47 @@ function render() {
     }, 0);
   }
 
+  // Step 5: Add copy-forward link for Problem context from Vision Board "Needs"
+  if (step.id === "soo_inputs") {
+    setTimeout(() => {
+      const field = document.getElementById("soo_inputs.problem_context");
+      if (!field) return;
+      const labelNode = field.parentNode.querySelector("label");
+      if (!labelNode || labelNode.parentNode.querySelector(".copy-from-vision")) return;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Copy Needs / pain points";
+      btn.className = "usa-button usa-button--unstyled margin-left-1 copy-from-vision";
+      btn.style.fontSize = "0.95em";
+
+      const updateDisabled = () => {
+        const visionNeeds = getAnswer("vision", "needs", "");
+        btn.disabled = !visionNeeds;
+        btn.title = visionNeeds ? "Copy from Product Vision Board" : "Nothing to copy yet";
+      };
+
+      updateDisabled();
+
+      btn.addEventListener("click", () => {
+        const visionNeeds = getAnswer("vision", "needs", "");
+        if (!visionNeeds) return;
+        if (field.value && field.value !== visionNeeds) {
+          const ok = confirm("This will replace the current value with the Vision Board's \"Needs / pain points\". Continue?");
+          if (!ok) return;
+        }
+        field.value = visionNeeds;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      labelNode.appendChild(btn);
+
+      // If user navigates back and forth, re-enable when data appears
+      const visionListener = () => updateDisabled();
+      window.addEventListener("focus", visionListener, { once: true });
+    }, 0);
+  }
+
   // Update URL hash to reflect current step
   if (step && step.id) {
     const hash = `#${step.id}`;
