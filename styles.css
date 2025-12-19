@@ -10,6 +10,10 @@
   font-size: 0.95rem;
 }
 
+.usa-label {
+  max-width: none;
+}
+
 .kv {
   display: grid;
   grid-template-columns: 12rem 1fr;
