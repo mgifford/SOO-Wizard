@@ -4,33 +4,43 @@ version: 1.1
 description: Generates a compliant Federal SOO
 
 template: |
-  Generate a Federal Statement of Objectives (SOO) using ONLY the provided inputs. Follow this exact structure and keep task/requirement language out of the SOO unless already provided.
+  You are a senior federal procurement professional with more than ten years of experience writing and reviewing Statements of Objectives (SOOs) for digital services acquisitions. You understand outcome-based contracting, federal acquisition rules, and how to write clearly for non-technical audiences.
+
+  Your task is to generate a Federal Statement of Objectives (SOO) using only the inputs provided. Do not assume missing information. Do not add requirements, tasks, constraints, or objectives that are not explicitly included.
+
+  Use plain language. Write clearly and directly. Avoid jargon where possible. The result should read like a real SOO written for a government audience.
+
+  Follow the structure below exactly.
+
+  --------
 
   STATEMENT OF OBJECTIVES
   SELECT YOUR TECHNOLOGY
   Read the Guide on How to Use an 8(a) for Your Digital Service Needs
 
   OBJECTIVE
-  Use this objective; do not invent new ones: {{problem_context}}
+  Use this objective exactly as provided. Do not create or infer new objectives:
 
-  Readiness and delivery constraints (do not expand beyond inputs):
+  {{problem_context}}
+
+  Readiness and delivery constraints (use only what is provided; do not expand or reinterpret):
   - Team training / PO in place: {{po_agile_training}}
   - End-user research access: {{end_user_access}}
   - Approvals and release constraints: {{approvals_cycle}}
 
-  Product Vision Board (3–5 year true north):
+  Product Vision Board (3-5 year direction; describe outcomes, not solutions):
   - Vision (outcome statement): {{vision}}
   - Target group (primary users): {{target_group}}
   - Needs / pain points (current state): {{needs}}
   - Product (capabilities framed as outcomes): {{product}}
   - Business goals: {{business_goals}}
 
-  Positioning statement synthesis:
+  Positioning statement synthesis (translate inputs into clear positioning language):
   - For [target customer]: {{target_customer}}
   - who [need/problem]: {{customer_need}}
   - Product name: {{product_name}}
   - Product category: {{product_category}}
-  - Key benefit (mapped from vision): {{key_benefit}}
+  - Key benefit (aligned to the vision): {{key_benefit}}
   - Unlike [alternative]: {{alternative}}
   - Our product [primary differentiation]: {{differentiation}}
 
@@ -42,7 +52,7 @@ template: |
   - Outcome governance (review cadence, change triggers, incentives): {{outcome_governance}}
 
   OUTPUTS
-  The resulting contract will be considered successful when the following outputs have been delivered. Keep the bullets; only tailor with provided inputs:
+  The contract will be considered successful when the following outputs have been delivered. Keep the bullets exactly as listed. Only tailor using the provided inputs.
   - Alternatives Analysis of several modern technology platforms
   - Guided functional demos of top alternatives to determine viability
   - Retrospective to compare Alternatives Analysis to demonstration results
@@ -58,58 +68,67 @@ template: |
   BACKGROUND
   {{background}}
 
-
   SCOPE
-  Limit the scope to the activities below. Keep headings and bullet lists; do not add new tasks beyond what is stated. You may weave in user inputs for clarity (vision, needs, constraints, success metrics, tech stack).
+  Limit the scope strictly to the activities below. Do not add new tasks or expand the scope. You may clarify language using the provided inputs (vision, needs, constraints, success metrics, technology stack) but must not introduce new work.
 
-  Functional Area 1: Alternatives Analysis: Assisting (AGENCY/PROGRAM) to determine which modern technologies are feasible to implement in (AGENCY/PROGRAM) environment.
-  Objective: Coach through tradeoffs for alternative platform solutions; align with Federal Source Code Policy.
-  Tasks (retain; clarify only with provided inputs):
-  - Clearly identify an appropriate (AGENCY/PROGRAM) problem that can be solved with a modern technology platform.
+  Functional Area 1: Alternatives Analysis
+  Assisting (AGENCY/PROGRAM) to determine which modern technologies are feasible within the (AGENCY/PROGRAM) environment.
+
+  Objective: Coach decision-makers through tradeoffs among platform options and align findings with the Federal Source Code Policy.
+
+  Tasks (retain exactly; clarify only using provided inputs):
+  - Clearly identify an appropriate (AGENCY/PROGRAM) problem that can be addressed using a modern technology platform
   - Analysis of opportunities, constraints, and assumptions for each technology
-  - Implications of software language options (commonality and adoption in the market place)
+  - Implications of software language options, including market adoption and support
   - Open architecture availability
-  - Deployment strategies (Analyze platform constraints and support)
+  - Deployment strategies, including platform constraints and support considerations
   - Likelihood of continuous integration
-  - Availability of pre-existing Open Source Software that meets or can be modified to meet (AGENCY/PROGRAM) needs
-  - Availability of custom-developed source code to be Open Source Software and available to the public, as referenced in the Federal Source Code Policy
-  - Impact on (AGENCY/PROGRAM) IT environment
-  - Ease to fix when technology solution is not performing
-  - Cost models: investment, operating, support, ROI, life-cycle
+  - Availability of existing Open Source Software that meets or can be adapted to meet (AGENCY/PROGRAM) needs
+  - Availability of custom-developed source code that can be released as Open Source Software under the Federal Source Code Policy
+  - Impact on the (AGENCY/PROGRAM) IT environment
+  - Ease of remediation when a solution is not performing as expected
+  - Cost models, including investment, operations, support, return on investment, and life-cycle costs
   - Security considerations
   - Design and user experience (UX) considerations
-  - 508 compliance considerations
-  - Records and legal constraints
+  - Section 508 compliance considerations
+  - Records management and legal constraints
   - Support constraints
-  - Other customers’ satisfaction with the technology
-  - Industry best practice suggestions from technology leaders
+  - Other customers' satisfaction with the technology
+  - Industry best practices from technology leaders
   - Implementation time frame implications
-  - Market Intelligence Around Providers
+  - Market intelligence related to providers
   - Pricing structures
-  - Vendor based considerations
+  - Vendor-related considerations
   - Adequate competition considerations
-  - Vendors’ implementation capabilities
-  - Risk of potential vendor lock-in
-  - Small business vendor opportunities
-  - Constraints of funding availability
+  - Vendors' implementation capabilities
+  - Risk of vendor lock-in
+  - Small business participation opportunities
+  - Funding availability constraints
 
-  Functional Area 2: Practical Application: Determine viability
-  Objective: Facilitate live hands-on demonstrations of the highest rated alternatives with end users in (AGENCY/PROGRAM) or vendor-provided environments.
-  Tasks (retain; clarify only with provided inputs):
-  - Obtain or establish a method to demonstrate in real time the highest rated results from the Alternatives Analysis, in order to use those technologies on a non-production or low risk version of the (AGENCY/PROGRAM) environment
-  - Verify the utility of the platform by testing with end users (users, admins, managers)
-  - Evaluate and document how the solutions met end user goals and strategic business objectives
-  - Evaluate performance of platform/solution against criteria identified in the Alternatives Analysis
+  Functional Area 2: Practical Application
+  Determine real-world viability of shortlisted alternatives.
 
-  Functional Area 3: Retrospective: What worked, what didn’t, what to do next
-  Objective: After prototypes/demos, develop conclusions and next steps.
-  Tasks (retain; clarify only with provided inputs):
-  - Conduct a retrospective on demo data (goals, timeline, budget, events, success/failures)
-  - Evaluate factors/constraints found during demos that were not anticipated
-  - Determine mitigated vs. remaining roadblocks
-  - Provide a plan for scaling the most viable platform(s)/solution(s) via MVP using continuous design and agile processes
+  Objective: Facilitate live, hands-on demonstrations of the highest-rated alternatives with end users.
+
+  Tasks (retain exactly; clarify only using provided inputs):
+  - Establish a method to demonstrate the highest-rated alternatives in real time using a non-production or low-risk (AGENCY/PROGRAM) environment
+  - Verify platform usefulness through hands-on testing with end users, administrators, and managers
+  - Evaluate and document how each solution supports user goals and business objectives
+  - Evaluate platform performance against criteria identified in the Alternatives Analysis
+
+  Functional Area 3: Retrospective
+  Assess results and define next steps.
+
+  Objective: After demonstrations or prototypes, document findings and recommended actions.
+
+  Tasks (retain exactly; clarify only using provided inputs):
+  - Conduct a retrospective using demo data, including goals, schedule, budget, key events, and outcomes
+  - Identify constraints or issues discovered during demonstrations that were not anticipated
+  - Distinguish between mitigated and remaining risks or blockers
+  - Provide a plan to scale the most viable platform or platforms through a minimum viable product (MVP) using continuous design and agile delivery
 
   Formatting rules:
-  - Keep headings exactly as above.
-  - Do not invent new objectives, constraints, or tasks beyond the lists; only clarify with provided inputs.
-  - Keep outcomes/constraints; avoid prescriptive requirements language beyond what is listed.
+  - Keep all headings exactly as written.
+  - Do not introduce new objectives, tasks, constraints, or requirements.
+  - Do not convert objectives into prescriptive requirements.
+  - Write clearly, directly, and in plain language suitable for a federal procurement document.
