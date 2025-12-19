@@ -1,24 +1,5 @@
 
-  - id: soo_inputs
-    title: "SOO inputs (Objectives and Constraints only)"
-    help: "Tasks and requirements are blocked here. Objectives are outcomes. Constraints are boundaries."
-    gateLint: true
-    fields:
-      - id: problem_context
-        type: textarea
-        label: "Problem context (current state only)"
-        hint: "No solutioning. Describe impacts and gaps. Example: 'Citizens cannot renew licenses online, requiring 4-6 week wait in-person.'"
-        rows: 7
-      - id: objectives
-        type: textarea
-        label: "Objectives (one per line)"
-        hint: "Outcomes only. Example: 'Reduce time-to-complete license renewal from 4–6 weeks to under 2 hours'."
-        rows: 8
-      - id: constraints
-        type: textarea
-        label: "Constraints (one per line)"
-        hint: "Compliance, schedule, environment, data handling, standards. Example: 'Comply with FedRAMP Moderate' or 'Deploy by Q4 2025' or 'Operate within existing Azure environment'."
-        rows: 8
+steps:
 
   - id: methodology
     title: "Contracting Context & Budget Range"
@@ -44,6 +25,27 @@
         label: "Estimated budget range"
         hint: "E.g., '$100k–$250k', '$1M–$2M', 'Unknown, but likely under $500k'. This is for context only, not a binding commitment."
         required: true
+
+  - id: soo_inputs
+    title: "SOO inputs (Objectives and Constraints only)"
+    help: "Tasks and requirements are blocked here. Objectives are outcomes. Constraints are boundaries."
+    gateLint: true
+    fields:
+      - id: problem_context
+        type: textarea
+        label: "Problem context (current state only)"
+        hint: "No solutioning. Describe impacts and gaps. Example: 'Citizens cannot renew licenses online, requiring 4-6 week wait in-person.'"
+        rows: 7
+      - id: objectives
+        type: textarea
+        label: "Objectives (one per line)"
+        hint: "Outcomes only. Example: 'Reduce time-to-complete license renewal from 4–6 weeks to under 2 hours'."
+        rows: 8
+      - id: constraints
+        type: textarea
+        label: "Constraints (one per line)"
+        hint: "Compliance, schedule, environment, data handling, standards. Example: 'Comply with FedRAMP Moderate' or 'Deploy by Q4 2025' or 'Operate within existing Azure environment'."
+        rows: 8
 
   - id: vision
     title: "Product Vision Board (3–5 year true north)"
