@@ -31,7 +31,15 @@ steps:
     step: 2
     title: "Readiness Assessment"
     help: |
-      If you lack a Product Owner or access to end users, the tool will advise against a full agile contract and suggest a pilot or training first.
+      This step is scored automatically (not AI). The wizard looks for plain "yes"/"no" signals to gauge readiness for agile delivery.
+
+      **How scoring works (simple rules):**
+      - STRONG/GOOD: You have BOTH a dedicated Product Owner AND access to end users.
+      - MEDIUM: You have only one of those (PO or end-user access).
+      - LOW: You have neither a Product Owner nor end-user access.
+      - Approvals/release cycle text is shown for context but does not change the score.
+
+      Be explicit: start answers with "Yes" or "No" so the checker can interpret them.
     fields:
       - id: restore_inputs
         type: file

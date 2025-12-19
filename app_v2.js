@@ -432,9 +432,9 @@ function render() {
     const circles = steps.map((s, i) => {
       const isActive = i === state.stepIndex;
       const isPast = i < state.stepIndex;
-      const circleColor = isActive ? '#005ea2' : isPast ? '#71767a' : '#dfe1e2';
-      const textColor = isActive || isPast ? '#ffffff' : '#71767a';
-      const borderColor = isActive ? '#005ea2' : '#dfe1e2';
+      const circleColor = isActive ? '#005ea2' : isPast ? '#3b3f46' : '#dfe1e2';
+      const textColor = isActive ? '#ffffff' : isPast ? '#ffffff' : '#1b1b1b';
+      const borderColor = isActive ? '#005ea2' : isPast ? '#3b3f46' : '#d0d4d9';
       const titleText = escapeHtml(s.title || s.id);
       return `<span style="position:relative;display:inline-block;">
         <button 

@@ -1,8 +1,89 @@
+.theme-surface {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+:root {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --border: #dfe1e2;
+  --text: #1b1b1b;
+  --muted: #565c65;
+  --link: #005ea2;
+  --header-bg: #e7f0ff;
+  --header-text: #0f2a4d;
+  --header-link: #0b3d91;
+  --header-link-hover: #06275f;
+}
+
+.light-mode {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --border: #dfe1e2;
+  --text: #1b1b1b;
+  --muted: #565c65;
+  --link: #005ea2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --card: #1b1d22;
+    --border: #32343b;
+    --text: #e5e7eb;
+    --muted: #a0a5b1;
+    --link: #8fb5ff;
+    --header-bg: #0b2b55;
+    --header-text: #e7f0ff;
+    --header-link: #b7d3ff;
+    --header-link-hover: #d9e8ff;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+  }
+
+  a { color: var(--link); }
+  a:hover { color: #b6ceff; }
+
+  .usa-header,
+  .usa-footer {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    position: relative;
+  }
+
+  .usa-logo__text a,
+  .usa-footer__return-to-top a {
+    color: var(--header-link);
+  }
+
+  .usa-logo__text a:hover,
+  .usa-footer__return-to-top a:hover {
+    color: var(--header-link-hover);
+  }
+}
+
+.dark-mode {
+  --bg: #0f1115;
+  --card: #1b1d22;
+  --border: #32343b;
+  --text: #e5e7eb;
+  --muted: #a0a5b1;
+  --link: #8fb5ff;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
 .card {
-  border: 1px solid #dfe1e2;
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
   padding: 1rem;
-  background: #fff;
+  background: var(--card);
 }
 
 .mono {
@@ -21,7 +102,59 @@
 }
 
 .kv > div:nth-child(odd) {
-  color: #565c65;
+  color: var(--muted);
+}
+
+.text-ink,
+.text-base {
+  color: var(--text) !important;
+}
+
+.usa-hint {
+  color: var(--muted) !important;
+}
+
+.usa-button--outline {
+  color: var(--text) !important;
+  border-color: var(--text) !important;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-toggle-abs {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* theme-toggle is now inline in header; no fixed positioning */
+
+.theme-toggle:hover {
+  border-color: var(--link);
+}
+
+.theme-toggle .icon {
+  font-size: 1rem;
 }
 
 .usa-textarea { /* the element was textarea#soo_draft */

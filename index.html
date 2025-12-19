@@ -7,16 +7,22 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uswds/uswds@3.8.0/dist/css/uswds.min.css">
   <link rel="stylesheet" href="./styles.css" />
 </head>
-<body class="usa-prose">
+<body class="usa-prose theme-surface">
   <a class="usa-skipnav" href="#main-content">Skip to main content</a>
 
   <header class="usa-header usa-header--basic">
     <div class="usa-nav-container">
-      <div class="usa-navbar">
+      <div class="usa-navbar" style="display:flex;align-items:center;">
         <div class="usa-logo">
           <em class="usa-logo__text"><a href="./index.html">Statement of Objectives (SOO) Wizard</a></em>
         </div>
       </div>
+    </div>
+    <div class="theme-toggle-abs">
+      <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme">
+        <span class="icon" aria-hidden="true">☀️</span>
+        <span class="label">Light</span>
+      </button>
     </div>
   </header>
 
@@ -34,6 +40,50 @@
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@uswds/uswds@3.8.0/dist/js/uswds.min.js"></script>
+
+  <script>
+    (() => {
+      const body = document.body;
+      const btn = () => document.getElementById('themeToggle');
+      let userOverride = null; // session-only override; no persistence
+
+      const apply = (mode) => {
+        body.classList.remove('light-mode', 'dark-mode');
+        if (mode === 'light') body.classList.add('light-mode');
+        if (mode === 'dark') body.classList.add('dark-mode');
+        const control = btn();
+        if (control) {
+          const nextMode = mode === 'dark' ? 'light' : 'dark';
+          control.querySelector('.icon').textContent = nextMode === 'dark' ? '🌙' : '☀️';
+          control.querySelector('.label').textContent = nextMode === 'dark' ? 'Dark mode' : 'Light mode';
+          control.setAttribute('aria-label', `Switch to ${nextMode} mode`);
+        }
+      };
+
+      const getPreferred = () => {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+
+      const current = getPreferred();
+      apply(current);
+
+      const control = btn();
+      if (control) {
+        control.addEventListener('click', () => {
+          const next = body.classList.contains('dark-mode') ? 'light' : 'dark';
+          userOverride = next;
+          apply(next);
+        });
+      }
+
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          if (userOverride) return; // respect manual choice during this session
+          apply(e.matches ? 'dark' : 'light');
+        });
+      }
+    })();
+  </script>
 
   <script type="module" src="./app_v2.js?v=235900"></script>
   <footer class="usa-footer usa-footer--slim margin-top-4">
