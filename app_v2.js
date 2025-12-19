@@ -891,7 +891,10 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       budget_range: getAnswer("methodology", "budget_range", ""),
       problem_context: getAnswer("soo_inputs", "problem_context", ""),
       objectives: getAnswer("soo_inputs", "objectives", ""),
-      constraints: getAnswer("soo_inputs", "constraints", "")
+      constraints: getAnswer("soo_inputs", "constraints", ""),
+      regulations: getAnswer("soo_inputs", "regulations", ""),
+      tech_stack: getAnswer("soo_inputs", "tech_stack", ""),
+      success: getAnswer("soo_inputs", "success", "")
     };
 
     const contextLabelMap = {

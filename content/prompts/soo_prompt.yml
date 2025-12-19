@@ -35,5 +35,8 @@ template: |
   - Problem context (current state only): {{problem_context}}
   - Objectives (one per line): {{objectives}}
   - Constraints (one per line): {{constraints}}
+  - Regulation / policy considerations: {{regulations}}
+  - Current technology stack: {{tech_stack}}
+  - Success metrics: {{success}}
 
   Using this information, draft a compliant Federal Statement of Objectives in Markdown. Keep tasks and requirements out of the SOO; focus on outcomes and constraints. Preserve the intent of the inputs; do not invent new objectives or constraints.
