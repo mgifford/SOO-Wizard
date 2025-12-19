@@ -107,6 +107,48 @@ function escapeHtml(s) {
   return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
+// Minimal markdown renderer for headings, paragraphs, and bullet lists
+function renderMarkdown(md) {
+  if (!md) return '';
+  const lines = md.split('\n');
+  let html = '';
+  let inList = false;
+
+  const closeList = () => {
+    if (inList) {
+      html += '</ul>';
+      inList = false;
+    }
+  };
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      closeList();
+      return; // blank line -> break lists/paragraphs
+    }
+    if (trimmed.startsWith('## ')) {
+      closeList();
+      html += `<h3>${escapeHtml(trimmed.slice(3))}</h3>`;
+    } else if (trimmed.startsWith('# ')) {
+      closeList();
+      html += `<h2>${escapeHtml(trimmed.slice(2))}</h2>`;
+    } else if (trimmed.startsWith('- ')) {
+      if (!inList) {
+        html += '<ul>';
+        inList = true;
+      }
+      html += `<li>${escapeHtml(trimmed.slice(2))}</li>`;
+    } else {
+      closeList();
+      html += `<p>${escapeHtml(trimmed)}</p>`;
+    }
+  });
+
+  closeList();
+  return html;
+}
+
 function getAnswer(stepId, fieldId, fallback = "") {
   const key = `${stepId}.${fieldId}`;
   return state.answers[key] ?? fallback;
@@ -400,7 +442,7 @@ function render() {
         <h2 class="margin-y-0">${step.title}</h2>
         <div class="text-base text-ink">Step ${state.stepIndex + 1} of ${state.flow.steps.length}</div>
       </div>
-      <p class="margin-top-2">${step.help || ""}</p>
+      <div class="margin-top-2 usa-prose">${renderMarkdown(step.help || "")}</div>
 
       <div id="fields" class="margin-top-2"></div>
       <div id="messages" class="margin-top-2"></div>
