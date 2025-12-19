@@ -4,11 +4,36 @@ version: 1.1
 description: Generates a compliant Federal SOO
 
 template: |
-  Generate a Federal Statement of Objectives based on these inputs:
-  
-  Vision: {{vision}}
-  Problem: {{problem_context}}
-  Objectives: {{objectives}}
-  Constraints: {{constraints}}
-  
-  Output a compliant SOO in Markdown format.
+  Generate a Federal Statement of Objectives using all of the following context.
+
+  Readiness and delivery constraints:
+  - Team training / PO in place: {{po_agile_training}}
+  - End-user research access: {{end_user_access}}
+  - Approvals and release constraints: {{approvals_cycle}}
+
+  Product Vision Board (3–5 year true north):
+  - Vision (outcome statement): {{vision}}
+  - Target group (primary users): {{target_group}}
+  - Needs / pain points (current state): {{needs}}
+  - Product (capabilities framed as outcomes): {{product}}
+  - Business goals: {{business_goals}}
+
+  Positioning statement synthesis:
+  - For [target customer]: {{target_customer}}
+  - who [need/problem]: {{customer_need}}
+  - Product name: {{product_name}}
+  - Product category: {{product_category}}
+  - Key benefit (mapped from vision): {{key_benefit}}
+  - Unlike [alternative]: {{alternative}}
+  - Our product [primary differentiation]: {{differentiation}}
+
+  Contract context:
+  - Primary contracting context: {{context_label}}
+  - Estimated budget range: {{budget_range}}
+
+  SOO inputs (must drive the objectives):
+  - Problem context (current state only): {{problem_context}}
+  - Objectives (one per line): {{objectives}}
+  - Constraints (one per line): {{constraints}}
+
+  Using this information, draft a compliant Federal Statement of Objectives in Markdown. Keep tasks and requirements out of the SOO; focus on outcomes and constraints. Preserve the intent of the inputs; do not invent new objectives or constraints.

@@ -246,6 +246,13 @@ function render() {
         btn.title = visionNeeds ? "Copy from Product Vision Board" : "Nothing to copy yet";
       };
 
+      // Auto-fill on load if blank
+      const visionNeedsInitial = getAnswer("vision", "needs", "");
+      if (!field.value && visionNeedsInitial) {
+        field.value = visionNeedsInitial;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+
       updateDisabled();
 
       btn.addEventListener("click", () => {
@@ -264,6 +271,57 @@ function render() {
       // If user navigates back and forth, re-enable when data appears
       const visionListener = () => updateDisabled();
       window.addEventListener("focus", visionListener, { once: true });
+
+      // Draft objectives from prior steps (Vision + Positioning)
+      const objField = document.getElementById("soo_inputs.objectives");
+      const objLabel = objField?.parentNode.querySelector("label");
+      if (objField && objLabel && !objLabel.parentNode.querySelector(".copy-from-vision-objectives")) {
+        const objBtn = document.createElement("button");
+        objBtn.type = "button";
+        objBtn.textContent = "Draft objectives from vision";
+        objBtn.className = "usa-button usa-button--unstyled margin-left-1 copy-from-vision-objectives";
+        objBtn.style.fontSize = "0.95em";
+
+        const buildDraft = () => {
+          const parts = [
+            getAnswer("positioning_statement", "key_benefit", ""),
+            getAnswer("positioning_statement", "differentiation", ""),
+            getAnswer("vision", "vision", ""),
+            getAnswer("vision", "product", ""),
+            getAnswer("vision", "business_goals", "")
+          ].filter(Boolean);
+          return parts.join("\n");
+        };
+
+        const updateObjDisabled = () => {
+          const draft = buildDraft();
+          objBtn.disabled = !draft;
+          objBtn.title = draft ? "Copy drafted objectives" : "Nothing to copy yet";
+        };
+
+        // Auto-fill on load if blank
+        const initialDraft = buildDraft();
+        if (!objField.value && initialDraft) {
+          objField.value = initialDraft;
+          objField.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+
+        updateObjDisabled();
+
+        objBtn.addEventListener("click", () => {
+          const draft = buildDraft();
+          if (!draft) return;
+          if (objField.value && objField.value !== draft) {
+            const ok = confirm("This will replace the current value with drafted objectives from earlier steps. Continue?");
+            if (!ok) return;
+          }
+          objField.value = draft;
+          objField.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+
+        objLabel.appendChild(objBtn);
+        window.addEventListener("focus", () => updateObjDisabled(), { once: true });
+      }
     }, 0);
   }
 
@@ -819,6 +877,7 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       needs: getAnswer("vision", "needs", ""),
       product: getAnswer("vision", "product", ""),
       business_goals: getAnswer("vision", "business_goals", ""),
+      po_agile_training: getAnswer("readiness_assessment", "po_agile_training", ""),
       target_customer: getAnswer("positioning_statement", "target_customer", ""),
       customer_need: getAnswer("positioning_statement", "customer_need", ""),
       product_name: getAnswer("positioning_statement", "product_name", ""),
@@ -826,14 +885,24 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       key_benefit: getAnswer("positioning_statement", "key_benefit", ""),
       alternative: getAnswer("positioning_statement", "alternative", ""),
       differentiation: getAnswer("positioning_statement", "differentiation", ""),
-      has_po: getAnswer("readiness_assessment", "has_po", ""),
       end_user_access: getAnswer("readiness_assessment", "end_user_access", ""),
       approvals_cycle: getAnswer("readiness_assessment", "approvals_cycle", ""),
       context: getAnswer("methodology", "context", "new_dev"),
+      budget_range: getAnswer("methodology", "budget_range", ""),
       problem_context: getAnswer("soo_inputs", "problem_context", ""),
       objectives: getAnswer("soo_inputs", "objectives", ""),
       constraints: getAnswer("soo_inputs", "constraints", "")
     };
+
+    const contextLabelMap = {
+      new_dev: "New development",
+      legacy_maint: "Maintenance of legacy system",
+      ops_support: "Operations and support",
+      discovery: "Discovery or research",
+      migration: "Migration"
+    };
+    inputs.context_label = contextLabelMap[inputs.context] || inputs.context;
+
     const promptDoc = state.prompts.soo;
     const prompt = renderTemplate(promptDoc.template, inputs);
     const draft = getAnswer("soo_output", "soo_draft", "");
