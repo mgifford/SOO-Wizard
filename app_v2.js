@@ -164,6 +164,14 @@ function render() {
   app.innerHTML = "";
   const step = state.flow.steps[state.stepIndex];
 
+  // Update URL hash to reflect current step
+  if (step && step.id) {
+    const hash = `#${step.id}`;
+    if (window.location.hash !== hash) {
+      history.replaceState(null, '', hash);
+    }
+  }
+
   // Breadcrumb navigation - visual step indicator
   function renderBreadcrumb() {
     if (!state.flow || !state.flow.steps) return "";
@@ -904,6 +912,29 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
         }
       });
     });
+  // Listen for hash changes to support direct navigation to steps
+  window.addEventListener('hashchange', () => {
+    if (!state.flow || !state.flow.steps) return;
+    const hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return;
+    const idx = state.flow.steps.findIndex(s => s.id === hash);
+    if (idx >= 0 && idx !== state.stepIndex) {
+      state.stepIndex = idx;
+      render();
+    }
+  });
+
+  // On initial load, jump to step if hash is present
+  window.addEventListener('DOMContentLoaded', () => {
+    if (!state.flow || !state.flow.steps) return;
+    const hash = window.location.hash.replace(/^#/, '');
+    if (!hash) return;
+    const idx = state.flow.steps.findIndex(s => s.id === hash);
+    if (idx >= 0 && idx !== state.stepIndex) {
+      state.stepIndex = idx;
+      render();
+    }
+  });
   }
 
   // Update next button text and check lint after DOM is ready

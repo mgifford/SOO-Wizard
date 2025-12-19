@@ -16,7 +16,9 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Expires', '0')
         super().end_headers()
 
-os.chdir('/Users/mgifford/soo-wizard/web')
+# Serve files from the repository root (directory containing this script)
+repo_root = os.path.dirname(os.path.abspath(__file__))
+os.chdir(repo_root)
 
 with socketserver.TCPServer(("", PORT), NoCacheHTTPRequestHandler) as httpd:
     print(f"Server running at http://localhost:{PORT}")
