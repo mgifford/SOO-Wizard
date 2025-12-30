@@ -65,12 +65,30 @@ steps:
   - id: readiness_results
     step: 3
     title: "Readiness Results"
-    help: "Auto-generated guidance based on your answers above. STRONG = ready for agile, MEDIUM = consider phased approach, LOW = start with discovery."
+    help: |
+      ## How This Is Scored
+
+      The wizard checks your Step 2 answers for "Yes" (no AI, simple pattern matching):
+
+      - **STRONG** (✓) = Both Product Owner AND end-user access
+      - **MEDIUM** (⚠) = Only one of the two
+      - **LOW** (✗) = Neither
+
+      ## Next Steps
+
+      - **STRONG:** Proceed with full agile development contract
+      - **MEDIUM:** Consider discovery/pilot before full development
+      - **LOW:** Start with discovery or training contract first
+
+      ## Self-Assessment
+
+      This is a self-administered tool. If you believe your readiness is different, **you can edit the summary below** to reflect your actual situation. You can also return to Step 2 to update your answers.
     fields:
       - id: readiness_summary
         type: textarea
-        label: "Readiness Summary"
-        readonly: true
+        label: "Readiness Summary (editable)"
+        hint: "Auto-generated based on Step 2. Edit if you believe your readiness level is different."
+        rows: 4
       - id: readiness_confirm
         type: checkbox
         label: "I have reviewed and understand my readiness assessment."

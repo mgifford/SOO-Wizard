@@ -162,7 +162,7 @@ function setAnswer(stepId, fieldId, value) {
 
 // Readiness assessment analyzer
 function analyzeReadiness() {
-  const has_po = getAnswer("readiness_assessment", "has_po", "").toLowerCase();
+  const has_po = getAnswer("readiness_assessment", "po_agile_training", "").toLowerCase();
   const end_user = getAnswer("readiness_assessment", "end_user_access", "").toLowerCase();
   
   const hasPo = has_po.includes("yes");
