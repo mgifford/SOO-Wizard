@@ -1,7 +1,7 @@
 // SOO Wizard v2.0 - Updated 2025-12-02T23:15:00Z
 // Force cache invalidation with timestamp
 // Cache-busting with static version to force fresh YAML loads
-const CACHE_BUST = "?v=20251202-235900";
+const CACHE_BUST = "?v=20251230-150000";
 const FLOW_URL = "./content/flows/soo_wizard.yml" + CACHE_BUST;
 const LINT_RULES_URL = "./content/lint/rules_v2.yml" + CACHE_BUST;
 const PROMPT_SOO_URL = "./content/prompts/soo_prompt.yml" + CACHE_BUST;
@@ -534,11 +534,14 @@ function render() {
   
   // Special handling for readiness_results: auto-populate
   if (step.id === "readiness_results") {
-    const summary = analyzeReadiness();
-    setAnswer("readiness_results", "readiness_summary", summary);
+    // Compute auto summary but don't overwrite user edits
+    const autoSummary = analyzeReadiness();
+    const existingSummary = getAnswer("readiness_results", "readiness_summary", "");
+    const summaryToUse = existingSummary && existingSummary.trim().length > 0 ? existingSummary : autoSummary;
+    setAnswer("readiness_results", "readiness_summary", summaryToUse);
     
     // Capture readiness assessment in audit
-    const has_po = getAnswer("readiness_assessment", "has_po", "").toLowerCase();
+    const has_po = getAnswer("readiness_assessment", "po_agile_training", "").toLowerCase();
     const end_user = getAnswer("readiness_assessment", "end_user_access", "").toLowerCase();
     const hasPo = has_po.includes("yes");
     const hasUsers = end_user.includes("yes");
@@ -552,7 +555,7 @@ function render() {
       level: readinessLevel,
       has_product_owner: hasPo,
       has_end_user_access: hasUsers,
-      summary: summary
+      summary: summaryToUse
     };
   }
 
