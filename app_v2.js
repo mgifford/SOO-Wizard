@@ -1272,6 +1272,34 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       if (!messages) return;
       messages.innerHTML = "";
 
+      // Gate: Readiness confirmation (Step 3)
+      if (step.id === "readiness_results") {
+        const summaryVal = (getAnswer("readiness_results", "readiness_summary", "") || "").trim();
+        const confirmed = !!getAnswer("readiness_results", "readiness_confirm", false);
+        if (!confirmed) {
+          messages.appendChild(el(`
+            <div class="usa-alert usa-alert--error">
+              <div class="usa-alert__body">
+                <h3 class="usa-alert__heading">Please confirm your readiness review</h3>
+                <p>Check "I have reviewed and understand my readiness assessment" to continue.</p>
+              </div>
+            </div>
+          `));
+          return;
+        }
+        if (!summaryVal) {
+          messages.appendChild(el(`
+            <div class="usa-alert usa-alert--error">
+              <div class="usa-alert__body">
+                <h3 class="usa-alert__heading">Add a readiness summary</h3>
+                <p>Please provide or accept the readiness summary before continuing.</p>
+              </div>
+            </div>
+          `));
+          return;
+        }
+      }
+
     // Gate: Check required checkboxes
     if (step.id === "soo_review_gate") {
       const allChecked = 
