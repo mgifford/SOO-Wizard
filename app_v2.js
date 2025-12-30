@@ -1,7 +1,7 @@
 // SOO Wizard v2.0 - Updated 2025-12-02T23:15:00Z
 // Force cache invalidation with timestamp
 // Cache-busting with static version to force fresh YAML loads
-const CACHE_BUST = "?v=20251230-150000";
+const CACHE_BUST = "?v=20251230-160500";
 const FLOW_URL = "./content/flows/soo_wizard.yml" + CACHE_BUST;
 const LINT_RULES_URL = "./content/lint/rules_v2.yml" + CACHE_BUST;
 const PROMPT_SOO_URL = "./content/prompts/soo_prompt.yml" + CACHE_BUST;
@@ -1241,8 +1241,9 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
           nextBtn.disabled = true;
           if (messages) {
             messages.innerHTML = "";
-            const alertElement = renderLintAlert(lint);
+            const alertElement = renderLintAlert(lint, step.id);
             messages.appendChild(alertElement);
+            attachLintRewriteHandler(alertElement, step, nextBtn, messages, checkLintAndUpdateUI);
           }
         } else {
           nextBtn.disabled = false;
@@ -1344,9 +1345,19 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       
       if (lint.summary.hasErrors) {
         console.log("Lint errors found:", lint.findings);
-        const alertElement = renderLintAlert(lint);
+        const alertElement = renderLintAlert(lint, step.id);
         console.log("Adding lint alert to messages div:", alertElement);
         messages.appendChild(alertElement);
+        attachLintRewriteHandler(alertElement, step, nextBtn, messages, () => {
+          // re-run lint and update button state after rewrite
+          const newLint = lintStep(step);
+          if (newLint.summary.hasErrors) {
+            nextBtn.disabled = true;
+          } else {
+            nextBtn.disabled = false;
+            messages.innerHTML = "";
+          }
+        });
         return;
       }
     }
@@ -2388,7 +2399,7 @@ function lintStep(step) {
   return lintResult;
 }
 
-function renderLintAlert(lint) {
+function renderLintAlert(lint, stepId) {
   const items = lint.findings.map(f => {
     let suggestion = "";
     const word = f.match.toLowerCase();
@@ -2413,9 +2424,79 @@ function renderLintAlert(lint) {
         <h3 class="usa-alert__heading">Fix these issues before continuing</h3>
         <p>SOO (Statement of Objectives) focuses on outcomes, not tasks or requirements. Please revise the highlighted words:</p>
         <ul class="usa-list">${items}</ul>
+        <div class="margin-top-2">
+          <button class="usa-button usa-button--outline lint-rewrite" data-step-id="${stepId || ''}">Rewrite to outcome language</button>
+          <p class="usa-hint margin-top-05">This quick rewrite replaces requirement words (must/shall/required/need to) with outcome phrasing. Review the changes before continuing.</p>
+        </div>
       </div>
     </div>
   `);
+}
+
+function attachLintRewriteHandler(alertElement, step, nextBtn, messages, onFinish) {
+  const btn = alertElement?.querySelector(".lint-rewrite");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const changes = rewriteStepToOutcomes(step);
+    const success = changes > 0;
+    const lintAfter = lintStep(step);
+
+    if (messages) {
+      messages.innerHTML = "";
+      if (lintAfter.summary.hasErrors) {
+        const newAlert = renderLintAlert(lintAfter, step.id);
+        messages.appendChild(newAlert);
+        attachLintRewriteHandler(newAlert, step, nextBtn, messages, onFinish);
+      } else {
+        messages.appendChild(el(`
+          <div class="usa-alert usa-alert--success">
+            <div class="usa-alert__body">
+              <h3 class="usa-alert__heading">Rewritten to outcomes</h3>
+              <p>${success ? "Requirement words were replaced with outcome phrasing. Please review and adjust for accuracy." : "No changes were needed."}</p>
+            </div>
+          </div>
+        `));
+      }
+    }
+
+    if (nextBtn) nextBtn.disabled = lintAfter.summary.hasErrors;
+    if (typeof onFinish === "function") onFinish();
+  });
+}
+
+function rewriteStepToOutcomes(step) {
+  const replacements = [
+    { re: /\bmust not\b/gi, replace: "will not" },
+    { re: /\bshall not\b/gi, replace: "will not" },
+    { re: /\bmust\b/gi, replace: "will" },
+    { re: /\bshall\b/gi, replace: "will" },
+    { re: /\brequired to\b/gi, replace: "needed to" },
+    { re: /\brequired\b/gi, replace: "needed" },
+    { re: /\bneed to\b/gi, replace: "should" }
+  ];
+
+  let changes = 0;
+  (step.fields || []).forEach(f => {
+    if (!f.id) return;
+    if (f.type && !["textarea", "input", undefined].includes(f.type)) return;
+    const domId = `${step.id}.${f.id}`;
+    const elField = document.getElementById(domId);
+    const current = elField?.value ?? getAnswer(step.id, f.id, "");
+    if (!current) return;
+    let updated = current;
+    replacements.forEach(r => {
+      const next = updated.replace(r.re, r.replace);
+      if (next !== updated) {
+        changes++;
+        updated = next;
+      }
+    });
+    if (updated !== current) {
+      setAnswer(step.id, f.id, updated);
+      if (elField) elField.value = updated;
+    }
+  });
+  return changes;
 }
 
 function buildInputsYml() {
