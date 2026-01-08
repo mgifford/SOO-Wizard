@@ -284,6 +284,15 @@ Pull requests should include:
 - Notes on any accessibility impact (positive or negative)
 - Documentation of known limitations or trade-offs introduced
 
+### Content Style (Orwell's 6 Rules)
+When writing help text, hints, labels, or documentation:
+- Never use a metaphor, simile, or figure of speech you see often in print.
+- Never use a long word where a short one will do.
+- If you can cut a word out, always cut it out.
+- Never use the passive where you can use the active.
+- Never use a foreign phrase, scientific term, or jargon if an everyday equivalent exists.
+- Break any of these rules sooner than say anything outright barbarous.
+
 ## Definition of Done
 A change is complete only when:
 - The wizard functions correctly from start to finish

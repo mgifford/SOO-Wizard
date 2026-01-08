@@ -63,13 +63,14 @@ Federal procurement requires SOOs that focus on **outcomes** (what success looks
 
 ## 🤝 Contributing
 
-### Content Style (Orwell’s 6 Rules)
-- Never use a metaphor, simile, or figure of speech you see often in print.
-- Never use a long word where a short one will do.
-- If you can cut a word out, always cut it out.
-- Never use the passive where you can use the active.
-- Never use a foreign phrase, scientific term, or jargon if an everyday equivalent exists.
-- Break any of these rules sooner than say anything outright barbarous.
+Contributions welcome! Key areas:
+- Additional lint rules for SOO compliance
+- New AI provider integrations
+- Export format improvements
+- Accessibility enhancements
+- New example scenarios (use the RFP conversion prompt!)
+
+See [AGENTS.md](AGENTS.md) for detailed contribution guidelines and content style standards.
 
 ## 🔄 Converting Existing RFPs to SOO Examples
 
@@ -81,13 +82,6 @@ Have an existing RFP you want to convert to an outcome-focused SOO? Use our conv
 - Key insights on moving from task-based to outcome-focused procurement
 
 This lets you quickly create new examples by analyzing real-world RFPs and demonstrating how they could be improved with the SOO approach.
-
-Contributions welcome! Key areas:
-- Additional lint rules for SOO compliance
-- New AI provider integrations
-- Export format improvements
-- Accessibility enhancements
-- New example scenarios (use the RFP conversion prompt!)
 
 ## 📄 License
 
