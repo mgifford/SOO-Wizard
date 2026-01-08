@@ -1,7 +1,7 @@
 // SOO Wizard v2.0 - Updated 2025-12-02T23:15:00Z
 // Force cache invalidation with timestamp
 // Cache-busting with static version to force fresh YAML loads
-const CACHE_BUST = "?v=20260108-073000";
+const CACHE_BUST = "?v=20260108-074500";
 const FLOW_URL = "./content/flows/soo_wizard.yml" + CACHE_BUST;
 const LINT_RULES_URL = "./content/lint/rules_v2.yml" + CACHE_BUST;
 const PROMPT_SOO_URL = "./content/prompts/soo_prompt.yml" + CACHE_BUST;
@@ -131,6 +131,11 @@ function renderInlineWithAnchors(text) {
     const safeAnchor = `<a href="${escapeHtml(safeHref)}" target="${escapeHtml(targetVal)}" rel="${escapeHtml(relVal)}">${safeInner}</a>`;
     escaped = escaped.replace(placeholder(i), safeAnchor);
   });
+  // Apply inline Markdown formatting: **bold**, *italic*, __bold__, _italic_
+  escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  escaped = escaped.replace(/__(.*?)__/g, '<strong>$1</strong>');
+  escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  escaped = escaped.replace(/_(.*?)_/g, '<em>$1</em>');
   return escaped;
 }
 

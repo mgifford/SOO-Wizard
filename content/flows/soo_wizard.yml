@@ -132,7 +132,7 @@ steps:
 
       This step compresses your Product Vision Board into a single, defensible positioning statement. Do not introduce new users, needs, or outcomes here. If you change them here, go back and update the Product Vision Board.
 
-      Mode: Synthesis, not discovery
+      **Mode:** Synthesis, not discovery
     fields:
       - id: target_customer
         type: textarea
