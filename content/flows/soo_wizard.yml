@@ -97,22 +97,22 @@ steps:
   - id: vision
     step: 4
     title: "Product Vision Board (3–5 year true north)"
-    help: 'Focus on outcomes and user experience. Do not describe tasks or solutions. For more information on how to build a product reference, see the <a href="https://techfarhub.cio.gov/" target="_blank" rel="noopener noreferrer">US Government TechFar Hub</a>.'
+    help: 'Focus on outcomes and user experience. Don’t describe tasks or solutions. See the <a href="https://techfarhub.cio.gov/" target="_blank" rel="noopener noreferrer">US Government TechFar Hub</a>.'
     fields:
       - id: vision
         type: textarea
         label: "Vision"
-        hint: "3–5 years. A clear outcome statement."
+        hint: "State the outcome in 3–5 years."
         rows: 4
       - id: target_group
         type: textarea
         label: "Target group"
-        hint: "Who are the primary users?"
+        hint: "Name the primary users."
         rows: 3
       - id: needs
         type: textarea
         label: "Needs (current state pain points)"
-        hint: "Describe what is broken today and why it matters."
+        hint: "Describe today’s pain points and why they matter."
         rows: 6
       - id: product
         type: textarea
@@ -121,28 +121,28 @@ steps:
       - id: business_goals
         type: textarea
         label: "Business goals"
-        hint: "Strategic outcomes you expect from this product"
+        hint: "Strategic outcomes expected."
         rows: 4
 
   - id: positioning_statement
     step: 5
     title: "Product Positioning Statement"
     help: |
-      Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).
+      Use Geoffrey Moore’s positioning template (Crossing the Chasm).
 
-      This step compresses your Product Vision Board into a single, defensible positioning statement. Do not introduce new users, needs, or outcomes here. If you change them here, go back and update the Product Vision Board.
+      Summarize your Vision Board into one positioning statement. Don’t add new users, needs, or outcomes. If something changes, update the Vision Board.
 
       **Mode:** Synthesis, not discovery
     fields:
       - id: target_customer
         type: textarea
         label: "For [target customer]"
-        hint: "Use: Target group (from your Product Vision Board)."
+        hint: "Use your Vision Board: Target group."
         rows: 3
       - id: customer_need
         type: textarea
         label: "who [need/problem]"
-        hint: "Use: Needs / pain points (from your Product Vision Board)."
+        hint: "Use your Vision Board: Needs/pain points."
         rows: 3
       - id: product_name
         type: text
@@ -155,17 +155,17 @@ steps:
       - id: key_benefit
         type: textarea
         label: "Key benefit"
-        hint: "Use: Vision (3–5 year outcome) (from your Product Vision Board)."
+        hint: "Use your Vision Board’s 3–5 year outcome."
         rows: 3
       - id: alternative
         type: textarea
         label: "Unlike [alternative]"
-        hint: "Name the status quo you are replacing (what users do today if you do nothing)."
+        hint: "Name the status quo (what users do today if you do nothing)."
         rows: 3
       - id: differentiation
         type: textarea
         label: "Our product [primary differentiation]"
-        hint: "Use: Product outcomes + Business goals (from your Product Vision Board)."
+        hint: "Use your Vision Board: Product outcomes + Business goals."
         rows: 3
 
 
@@ -193,23 +193,23 @@ steps:
       - id: regulations
         type: textarea
         label: "Regulation/policy considerations"
-        hint: "What regulations, policies, or standards must be followed? E.g., FISMA, ADA, Section 508, Privacy Act, etc."
+        hint: "List required regulations, policies, and standards. E.g., FISMA, ADA, Section 508, Privacy Act."
         rows: 7
       - id: tech_stack
         type: textarea
         label: "What is today's technology stack?"
-        hint: "Describe the current technology environment, platforms, and tools in use."
+        hint: "Describe today’s technology environment: platforms and tools."
         rows: 7
       - id: success
         type: textarea
         label: "Describe success metrics for this project"
-        hint: "How will you measure success? E.g., user satisfaction, adoption rates, performance improvements."
+        hint: "Define success measures. E.g., user satisfaction, adoption rates, performance improvements."
         rows: 7
 
   - id: methodology
     step: 7
     title: "Methodology (Contract type: new dev, maintenance, ops, discovery, migration)"
-    help: "Select the primary contracting context and provide a rough budget range for this project. This helps with planning and vendor expectations. The budget range is for context only, not a binding commitment."
+    help: "Select the contracting context and a rough budget range. It sets expectations; not a binding commitment."
     gateLint: true
     fields:
       - id: context
@@ -230,27 +230,27 @@ steps:
       - id: budget_range
         type: text
         label: "Estimated budget range"
-        hint: "E.g., '$100k–$250k', '$1M–$2M', 'Unknown, but likely under $500k'. This is for context only, not a binding commitment."
+        hint: "Examples: $100k–$250k, $1M–$2M, Unknown (likely under $500k). Context only; not binding."
         required: true
       - id: background
         type: textarea
         label: "Background (technical landscape, users, technologies)"
-        hint: "Agency-provided context: technical landscape, end user needs, technologies in place. Auto-filled from regulations + tech stack if available; edit as needed."
+        hint: "Agency context: technical landscape, user needs, technologies. Auto-filled from Regulations and Tech stack when available; edit as needed."
         rows: 6
       - id: outcome_definition
         type: textarea
         label: "Outcome(s) to be achieved (plain language)"
-        hint: "Describe the mission/user outcome(s) the vendor must achieve. Avoid tasks, deliverables, or naming a solution. Example: 'Eligible residents can complete renewal end-to-end online with minimal support.'"
+        hint: "State the mission/user outcomes the vendor must achieve. Avoid tasks, deliverables, or naming a solution. Example: 'Eligible residents can complete renewal end-to-end online with minimal support.'"
         rows: 6
       - id: outcome_evidence
         type: textarea
         label: "How outcomes will be evidenced (signals and data sources)"
-        hint: "List the evidence you will use to judge outcomes (signals + where data comes from). Avoid vendor activity metrics. Example: 'completion rate from analytics', 'call center volume', 'time-to-complete from logs', 'user-reported success from surveys'."
+        hint: "List evidence to judge outcomes (signals and data sources). Avoid activity metrics. Example: 'completion rate from analytics', 'call center volume', 'time-to-complete from logs', 'user-reported success from surveys'."
         rows: 6
       - id: outcome_governance
         type: textarea
         label: "Outcome governance (review cadence, change triggers, incentives)"
-        hint: "How will you review outcomes, adapt priorities, and handle change? Include review cadence, what triggers re-planning, and whether incentives/withholds apply. Keep it high-level."
+        hint: "Describe governance: review cadence, change triggers, incentives. Keep it high-level."
         rows: 6
 
   - id: soo_review_gate
