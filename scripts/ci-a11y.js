@@ -3,16 +3,16 @@
  * Playwright + axe-core scan for SOO Wizard pages.
  * Fails on serious/critical issues, warns on moderate.
  */
-const { chromium } = require('@playwright/test');
-const { AxeBuilder } = require('@axe-core/playwright');
-const { URL } = require('url');
+import { chromium } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { URL } from 'node:url';
 
 const baseUrl = process.env.BASE_URL || 'http://127.0.0.1:8002';
 // Scan key entry point and a few important steps
-const pagePaths = (process.env.A11Y_PAGES || '/', '/#introduction', '/#readiness_assessment', '/#soo_inputs', '/#positioning_statement')
-  .split(',')
-  .map((p) => p.trim())
-  .filter(Boolean);
+const defaultPages = ['/', '/#introduction', '/#readiness_assessment', '/#soo_inputs', '/#positioning_statement'];
+const pagePaths = process.env.A11Y_PAGES
+  ? process.env.A11Y_PAGES.split(',').map((p) => p.trim()).filter(Boolean)
+  : defaultPages;
 
 const visitTimeoutMs = 20000;
 const settleMs = 800;
@@ -32,7 +32,7 @@ async function gotoWithRetry(page, url) {
   }
 }
 
-(async () => {
+async function run() {
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -105,4 +105,6 @@ async function gotoWithRetry(page, url) {
   }
 
   console.log('\nAccessibility scan completed with no blocking issues.');
-})();
+}
+
+run();
