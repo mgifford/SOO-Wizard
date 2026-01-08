@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor settings (optional)
+.vscode/
+.idea/
+
+# Archives
+*.zip
+
+# Logs
+*.log
