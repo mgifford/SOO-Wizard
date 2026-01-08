@@ -662,6 +662,8 @@ function render() {
               <li><button class="usa-button usa-button--outline" id="downloadBundleZip">Download bundle.zip (all outputs)</button></li>
               <li><button class="usa-button usa-button--outline" id="downloadAuditJson">Download audit.json</button></li>
               <li><button class="usa-button usa-button--outline" id="downloadPromptsTxt">Download prompts.txt</button></li>
+              <li><button class="usa-button usa-button--outline" id="downloadSooRtf">Download SOO (RTF for Word)</button></li>
+              <li><button class="usa-button usa-button--outline" id="downloadPwsRtf">Download PWS Pack (RTF for Word)</button></li>
             </ul>
           </div>
           <button class="usa-button usa-button--outline" id="reset">Reset wizard</button>
@@ -2185,6 +2187,29 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       
       const promptsTxt = sections.join('\n\n---\n\n');
       downloadText('prompts.txt', promptsTxt);
+    });
+  }
+  const downloadSooRtfBtn = app.querySelector('#downloadSooRtf');
+  if (downloadSooRtfBtn) {
+    downloadSooRtfBtn.addEventListener('click', () => {
+      const sooMd = getAnswer("soo_output", "soo_draft", "");
+      if (!sooMd || !sooMd.trim()) {
+        alert('No SOO draft found. Generate or enter the SOO first.');
+        return;
+      }
+      downloadText('soo.rtf', markdownToRtf(sooMd));
+    });
+  }
+  const downloadPwsRtfBtn = app.querySelector('#downloadPwsRtf');
+  if (downloadPwsRtfBtn) {
+    downloadPwsRtfBtn.addEventListener('click', () => {
+      const sooMd = getAnswer("soo_output", "soo_draft", "");
+      if (!sooMd || !sooMd.trim()) {
+        alert('No SOO draft found. Generate or enter the SOO first.');
+        return;
+      }
+      const pwsMd = getAnswer("pws_vendor_pack", "pws_pack_preview", "") || generatePwsRequestPack(sooMd);
+      downloadText('pws_request_pack.rtf', markdownToRtf(pwsMd));
     });
   }
   
