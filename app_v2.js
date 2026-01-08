@@ -1,7 +1,7 @@
 // SOO Wizard v2.0 - Updated 2025-12-02T23:15:00Z
 // Force cache invalidation with timestamp
 // Cache-busting with static version to force fresh YAML loads
-const CACHE_BUST = "?v=20251230-160500";
+const CACHE_BUST = "?v=20260108-073000";
 const FLOW_URL = "./content/flows/soo_wizard.yml" + CACHE_BUST;
 const LINT_RULES_URL = "./content/lint/rules_v2.yml" + CACHE_BUST;
 const PROMPT_SOO_URL = "./content/prompts/soo_prompt.yml" + CACHE_BUST;
