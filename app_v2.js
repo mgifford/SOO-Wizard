@@ -656,14 +656,11 @@ function render() {
             </div>
           </div>
           <div class="margin-bottom-2">
-            <strong>Export options:</strong>
+            <strong>Quick downloads:</strong>
             <ul class="usa-list">
-              <li><button class="usa-button usa-button--outline" id="exportInputs">Download inputs.yml</button></li>
-              <li><button class="usa-button usa-button--outline" id="downloadBundleZip">Download bundle.zip (all outputs)</button></li>
-              <li><button class="usa-button usa-button--outline" id="downloadAuditJson">Download audit.json</button></li>
-              <li><button class="usa-button usa-button--outline" id="downloadPromptsTxt">Download prompts.txt</button></li>
-              <li><button class="usa-button usa-button--outline" id="downloadSooRtf">Download SOO (RTF for Word)</button></li>
-              <li><button class="usa-button usa-button--outline" id="downloadPwsRtf">Download PWS Pack (RTF for Word)</button></li>
+              <li><button class="usa-button usa-button--outline" id="downloadOutputsOnly">Download outputs (MD+HTML+RTF)</button></li>
+              <li><button class="usa-button usa-button--outline" id="exportInputs">Download inputs.yml (session restore)</button></li>
+              <li><button class="usa-button usa-button--outline" id="downloadBundleZip">Download bundle.zip (outputs + audit + prompts)</button></li>
             </ul>
           </div>
           <button class="usa-button usa-button--outline" id="reset">Reset wizard</button>
@@ -2137,6 +2134,33 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       downloadZip('bundle.zip', files);
     });
   }
+  const downloadOutputsOnlyBtn = app.querySelector('#downloadOutputsOnly');
+  if (downloadOutputsOnlyBtn) {
+    downloadOutputsOnlyBtn.addEventListener('click', () => {
+      const sooMd = getAnswer("soo_output", "soo_draft", "");
+      const pwsMd = getAnswer("pws_vendor_pack", "pws_pack_preview", "");
+      
+      if (!sooMd || !sooMd.trim()) {
+        alert('No SOO draft found. Generate or enter the SOO first.');
+        return;
+      }
+      
+      const files = {
+        "soo.md": sooMd,
+        "soo.html": markdownToHtml(sooMd),
+        "soo.rtf": markdownToRtf(sooMd),
+        "pws_request_pack.md": pwsMd,
+        "pws_request_pack.html": markdownToHtml(pwsMd),
+        "pws_request_pack.rtf": markdownToRtf(pwsMd)
+      };
+      
+      const productName = getAnswer("positioning_statement", "product_name", "") || getAnswer("vision", "product", "") || "SOO";
+      const sanitizedName = productName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').substring(0, 50);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+      const filename = `${sanitizedName}-outputs-${timestamp}.zip`;
+      downloadZip(filename, files);
+    });
+  }
   const downloadAuditJsonBtn = app.querySelector('#downloadAuditJson');
   if (downloadAuditJsonBtn) {
     downloadAuditJsonBtn.addEventListener('click', () => {
@@ -2187,29 +2211,6 @@ GENERATE CRITICAL REVIEW QUESTIONS (MUST START EACH QUESTION WITH "- "):`;
       
       const promptsTxt = sections.join('\n\n---\n\n');
       downloadText('prompts.txt', promptsTxt);
-    });
-  }
-  const downloadSooRtfBtn = app.querySelector('#downloadSooRtf');
-  if (downloadSooRtfBtn) {
-    downloadSooRtfBtn.addEventListener('click', () => {
-      const sooMd = getAnswer("soo_output", "soo_draft", "");
-      if (!sooMd || !sooMd.trim()) {
-        alert('No SOO draft found. Generate or enter the SOO first.');
-        return;
-      }
-      downloadText('soo.rtf', markdownToRtf(sooMd));
-    });
-  }
-  const downloadPwsRtfBtn = app.querySelector('#downloadPwsRtf');
-  if (downloadPwsRtfBtn) {
-    downloadPwsRtfBtn.addEventListener('click', () => {
-      const sooMd = getAnswer("soo_output", "soo_draft", "");
-      if (!sooMd || !sooMd.trim()) {
-        alert('No SOO draft found. Generate or enter the SOO first.');
-        return;
-      }
-      const pwsMd = getAnswer("pws_vendor_pack", "pws_pack_preview", "") || generatePwsRequestPack(sooMd);
-      downloadText('pws_request_pack.rtf', markdownToRtf(pwsMd));
     });
   }
   
