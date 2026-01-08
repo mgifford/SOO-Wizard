@@ -1,7 +1,7 @@
 // SOO Wizard v2.0 - Updated 2025-12-02T23:15:00Z
 // Force cache invalidation with timestamp
 // Cache-busting with static version to force fresh YAML loads
-const CACHE_BUST = "?v=20260108-074500";
+const CACHE_BUST = "?v=20260108-080000";
 const FLOW_URL = "./content/flows/soo_wizard.yml" + CACHE_BUST;
 const LINT_RULES_URL = "./content/lint/rules_v2.yml" + CACHE_BUST;
 const PROMPT_SOO_URL = "./content/prompts/soo_prompt.yml" + CACHE_BUST;
@@ -136,15 +136,24 @@ function renderInlineWithAnchors(text) {
   escaped = escaped.replace(/__(.*?)__/g, '<strong>$1</strong>');
   escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
   escaped = escaped.replace(/_(.*?)_/g, '<em>$1</em>');
+  // Apply markdown links: [text](url) -> <a href="url" ...>text</a>
+  escaped = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, linkText, url) => {
+    const safeUrl = (/^(https?:\/\/|\.\/|\.\.\/|#)/i.test(url)) ? url : '#';
+    const target = /^https?:\/\//.test(safeUrl) ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return `<a href="${escapeHtml(safeUrl)}"${target}>${escapeHtml(linkText)}</a>`;
+  });
   return escaped;
 }
 
-// Minimal markdown renderer for headings, paragraphs, and bullet lists
+// Minimal markdown renderer for headings, paragraphs, lists, blockquotes, tables, and rules
 function renderMarkdown(md) {
   if (!md) return '';
   const lines = md.split('\n');
   let html = '';
   let inList = false;
+  let inBlockquote = false;
+  let inTable = false;
+  let tableRows = [];
 
   const closeList = () => {
     if (inList) {
@@ -153,30 +162,109 @@ function renderMarkdown(md) {
     }
   };
 
+  const closeBlockquote = () => {
+    if (inBlockquote) {
+      html += '</blockquote>';
+      inBlockquote = false;
+    }
+  };
+
+  const closeTable = () => {
+    if (inTable && tableRows.length > 0) {
+      html += '<table style="border-collapse:collapse;margin:1em 0;border:1px solid #ccc;">';
+      tableRows.forEach((row, rowIdx) => {
+        const cells = row.split('|').filter(c => c.trim());
+        const tag = rowIdx === 0 ? 'th' : 'td';
+        html += '<tr>';
+        cells.forEach(cell => {
+          html += `<${tag} style="border:1px solid #ccc;padding:0.5em;">${renderInlineWithAnchors(cell.trim())}</${tag}>`;
+        });
+        html += '</tr>';
+      });
+      html += '</table>';
+      inTable = false;
+      tableRows = [];
+    }
+  };
+
   lines.forEach(line => {
     const trimmed = line.trim();
+    
+    // Blank line closes all blocks
     if (!trimmed) {
       closeList();
-      return; // blank line -> break lists/paragraphs
+      closeBlockquote();
+      closeTable();
+      return;
     }
+
     // Allow certain raw HTML blocks (e.g., styled divs) to pass through as-is
     if (/^<div\b[\s\S]*><\/div>$/i.test(trimmed)) {
       closeList();
+      closeBlockquote();
+      closeTable();
       html += trimmed;
       return;
     }
+
     // Broader allowlist: pass through common full-line HTML tags (one-line blocks)
     if (/^<(p|h[1-6]|span|em|strong)\b[\s\S]*><\/(p|h[1-6]|span|em|strong)>$/i.test(trimmed)) {
       closeList();
+      closeBlockquote();
+      closeTable();
       html += trimmed;
       return;
     }
+
     // Allow self-closing line breaks
     if (/^<br\s*\/?>(\s*)$/i.test(trimmed)) {
       closeList();
+      closeBlockquote();
+      closeTable();
       html += trimmed;
       return;
     }
+
+    // Horizontal rules: ---, ***, ___
+    if (/^(---|___|\*\*\*)\s*$/.test(trimmed)) {
+      closeList();
+      closeBlockquote();
+      closeTable();
+      html += '<hr style="margin:1em 0;border:none;border-top:1px solid #ccc;">';
+      return;
+    }
+
+    // Table rows: lines with pipe delimiters (skip separator rows)
+    if (trimmed.includes('|') && trimmed.startsWith('|')) {
+      if (!inTable) {
+        closeList();
+        closeBlockquote();
+        inTable = true;
+        tableRows = [];
+      }
+      // Skip separator rows (|---|---|)
+      if (!/^\|\s*[-:]+\s*\|/.test(trimmed)) {
+        tableRows.push(trimmed);
+      }
+      return;
+    } else {
+      closeTable();
+    }
+
+    // Blockquotes: lines starting with >
+    if (trimmed.startsWith('> ')) {
+      closeList();
+      if (!inBlockquote) {
+        html += '<blockquote style="border-left:3px solid #ccc;margin:0.5em 0;padding-left:1em;color:#666;">';
+        inBlockquote = true;
+      }
+      html += `<p>${renderInlineWithAnchors(trimmed.slice(2))}</p>`;
+      return;
+    } else {
+      closeBlockquote();
+    }
+
+    // Headings
     if (trimmed.startsWith('## ')) {
       closeList();
       html += `<h3>${renderInlineWithAnchors(trimmed.slice(3))}</h3>`;
@@ -196,6 +284,8 @@ function renderMarkdown(md) {
   });
 
   closeList();
+  closeBlockquote();
+  closeTable();
   return html;
 }
 
