@@ -716,8 +716,8 @@ function render() {
     const summary = `
 Wizard Complete. Your export includes:
 - inputs.yml: All your answers and settings
-- outputs/soo.md: Final SOO Markdown
-- outputs/pws_request_pack.md: Vendor instruction pack
+- outputs/soo.md, soo.html, soo.rtf: Final SOO (Markdown, HTML, Word-compatible RTF)
+- outputs/pws_request_pack.md, .html, .rtf: Vendor instruction pack (multiple formats)
 - audit.json: Readiness scores, lint results, AI call logs
 - prompts.txt: All LLM prompts used (for transparency)
 
