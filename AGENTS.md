@@ -22,6 +22,12 @@ The project consists of:
 - Multiple export formats (Markdown, HTML, RTF) with complete audit trail
 - Session restore capability via inputs.yml import
 
+### AI Availability and Modes
+- AI config loads from config.json (endpoint, model, timeout).
+- When hosted on GitHub Pages, localhost AI endpoints are disabled (not reachable from github.io). Use a cloud-accessible endpoint instead.
+- If no reachable AI endpoint is configured, the wizard automatically runs in Prompt mode (no API calls) while keeping all features editable.
+- The page title and header reflect the current mode: “AI Wizard” vs “Prompt Wizard”.
+
 No server-side processing is required. All data processing, validation, and AI integration happens in the browser or via client-initiated API calls to configured endpoints.
 
 ## UI Contract (Wizard Pattern)
@@ -161,6 +167,11 @@ Automated testing is encouraged but does not replace manual checks.
 - **state.answers** – In-memory object with all user inputs, indexed by field ID
 - **state.audit** – Tracks readiness scores, lint results, step completions, AI usage
 - **Session restore** – Import `inputs.yml` to overwrite current state and resume work
+
+### Offline Support
+- A service worker (`sw.js`) caches static assets for offline use.
+- When offline, an in-page banner indicates offline mode; progress continues to save locally.
+- Sync is not implemented; all data remains on-device unless users export.
 
 ### Modification Patterns
 - **Add a wizard step:** Edit [soo_wizard.yml](content/flows/soo_wizard.yml), increment step numbers, add field definitions

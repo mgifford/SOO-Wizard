@@ -107,6 +107,33 @@ function escapeHtml(s) {
   return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
+function renderInlineWithAnchors(text) {
+  if (!text) return '';
+  const anchors = [];
+  const placeholder = (i) => `%%ANCHOR_${i}%%`;
+  const replaced = text.replace(/<a\b[^>]*>.*?<\/a>/gi, (m) => {
+    anchors.push(m);
+    return placeholder(anchors.length - 1);
+  });
+  let escaped = escapeHtml(replaced);
+  anchors.forEach((raw, i) => {
+    const m = raw.match(/<a\b([^>]*)>([\s\S]*?)<\/a>/i);
+    const attrStr = (m && m[1]) ? m[1] : '';
+    const inner = (m && m[2]) ? m[2] : '';
+    const hrefMatch = attrStr.match(/href\s*=\s*["]([^\"]+)["]|href\s*=\s*[']([^\']+)[']/i);
+    const targetMatch = attrStr.match(/target\s*=\s*["]([^\"]+)["]|target\s*=\s*[']([^\']+)[']/i);
+    const relMatch = attrStr.match(/rel\s*=\s*["]([^\"]+)["]|rel\s*=\s*[']([^\']+)[']/i);
+    const hrefVal = hrefMatch ? (hrefMatch[1] || hrefMatch[2] || '#') : '#';
+    const safeHref = (/^(https?:\/\/|\.\/|\.\.\/)/i.test(hrefVal)) ? hrefVal : '#';
+    const targetVal = targetMatch ? (targetMatch[1] || targetMatch[2] || '_blank') : '_blank';
+    const relVal = relMatch ? (relMatch[1] || relMatch[2] || 'noopener noreferrer') : 'noopener noreferrer';
+    const safeInner = escapeHtml(inner);
+    const safeAnchor = `<a href="${escapeHtml(safeHref)}" target="${escapeHtml(targetVal)}" rel="${escapeHtml(relVal)}">${safeInner}</a>`;
+    escaped = escaped.replace(placeholder(i), safeAnchor);
+  });
+  return escaped;
+}
+
 // Minimal markdown renderer for headings, paragraphs, and bullet lists
 function renderMarkdown(md) {
   if (!md) return '';
@@ -127,21 +154,39 @@ function renderMarkdown(md) {
       closeList();
       return; // blank line -> break lists/paragraphs
     }
+    // Allow certain raw HTML blocks (e.g., styled divs) to pass through as-is
+    if (/^<div\b[\s\S]*><\/div>$/i.test(trimmed)) {
+      closeList();
+      html += trimmed;
+      return;
+    }
+    // Broader allowlist: pass through common full-line HTML tags (one-line blocks)
+    if (/^<(p|h[1-6]|span|em|strong)\b[\s\S]*><\/(p|h[1-6]|span|em|strong)>$/i.test(trimmed)) {
+      closeList();
+      html += trimmed;
+      return;
+    }
+    // Allow self-closing line breaks
+    if (/^<br\s*\/?>(\s*)$/i.test(trimmed)) {
+      closeList();
+      html += trimmed;
+      return;
+    }
     if (trimmed.startsWith('## ')) {
       closeList();
-      html += `<h3>${escapeHtml(trimmed.slice(3))}</h3>`;
+      html += `<h3>${renderInlineWithAnchors(trimmed.slice(3))}</h3>`;
     } else if (trimmed.startsWith('# ')) {
       closeList();
-      html += `<h2>${escapeHtml(trimmed.slice(2))}</h2>`;
+      html += `<h2>${renderInlineWithAnchors(trimmed.slice(2))}</h2>`;
     } else if (trimmed.startsWith('- ')) {
       if (!inList) {
         html += '<ul>';
         inList = true;
       }
-      html += `<li>${escapeHtml(trimmed.slice(2))}</li>`;
+      html += `<li>${renderInlineWithAnchors(trimmed.slice(2))}</li>`;
     } else {
       closeList();
-      html += `<p>${escapeHtml(trimmed)}</p>`;
+      html += `<p>${renderInlineWithAnchors(trimmed)}</p>`;
     }
   });
 
