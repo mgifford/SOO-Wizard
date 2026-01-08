@@ -1,0 +1,32 @@
+{
+  "name": "soo-wizard",
+  "version": "2.0.0",
+  "description": "Outcome-focused Statement of Objectives wizard for federal procurement",
+  "type": "module",
+  "main": "app_v2.js",
+  "scripts": {
+    "test": "node scripts/ci-a11y.js && node scripts/ci-security.js",
+    "serve": "python3 -m http.server 8002",
+    "ci:a11y": "node scripts/ci-a11y.js",
+    "ci:security": "node scripts/ci-security.js",
+    "ci:html-validate": "npx html-validate index.html"
+  },
+  "keywords": [
+    "federal",
+    "procurement",
+    "SOO",
+    "statement-of-objectives",
+    "performance-based-acquisition",
+    "agile"
+  ],
+  "author": "SOO Wizard Contributors",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.8.0",
+    "@playwright/test": "^1.40.0",
+    "html-validate": "^8.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
