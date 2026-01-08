@@ -4,7 +4,7 @@ steps:
     title: "Introduction"
     help: |
       ## Welcome
-      The SOO Wizard keeps you outcome-focused and avoids slipping into task/requirement language. Work step-by-step; each step builds traceability from problem to objectives to constraints.
+      This is a CivicActions experiment. This is the SOO Wizard, an outcome-focused web application designed to support better outcome-focused requireemtns. Work step-by-step; each step builds traceability from problem to objectives to constraints.
 
       ## Why start from scratch (don’t paste old scopes)
       - Legacy SOOs often hide tasks and solutions; you need outcomes and constraints, not “shall build X.”
