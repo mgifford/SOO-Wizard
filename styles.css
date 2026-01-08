@@ -169,3 +169,10 @@ body {
 .usa-textarea.large-textarea {
   min-height: 500px;
 }
+
+/* Layout helpers */
+.navbar-flex {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
