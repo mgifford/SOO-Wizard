@@ -128,9 +128,11 @@ steps:
     step: 5
     title: "Product Positioning Statement"
     help: |
-      <div class="usa-prose margin-bottom-1" style="font-size:1.1em;">Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).</div>
+      Based on Geoffrey Moore’s positioning statement (Crossing the Chasm).
+
       This step compresses your Product Vision Board into a single, defensible positioning statement. Do not introduce new users, needs, or outcomes here. If you change them here, go back and update the Product Vision Board.
-      <div class="usa-prose margin-top-2" style="font-weight:600;">Mode: Synthesis, not discovery</div>
+
+      Mode: Synthesis, not discovery
     fields:
       - id: target_customer
         type: textarea
